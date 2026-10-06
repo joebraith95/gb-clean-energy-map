@@ -19,6 +19,17 @@ import {
   snap,
   type Insets,
 } from './levels';
+import {
+  FRAMES,
+  FRAME_MS,
+  STAGGER_MS,
+  STILL_MS,
+  effectPixels,
+  pickOnLoad,
+  stillPixels,
+  type EffectKind,
+  type EventCandidate,
+} from './animations';
 import { cableCells, isDash, type CableCell } from './cables';
 import {
   DOT_SIZES,
@@ -48,6 +59,12 @@ const WHEEL_COOLDOWN = 250;
 /** Time between turbine blade frames (ms). */
 const SPIN_INTERVAL = 450;
 
+/** What an effect plays on: the selection and its stage colour. */
+export interface EffectTarget {
+  selection: Selection;
+  colour: string;
+}
+
 export interface MapViewEvents {
   onSelect: (selection: Selection | null) => void;
   onLevelChange: (level: number) => void;
@@ -66,6 +83,10 @@ export class MapView {
   private readonly markerLayer = new Graphics();
   private readonly spriteLayer = new Container();
   private readonly highlight = new Graphics();
+  private readonly effectLayer = new Graphics();
+  private effects: { selection: Selection; kind: EffectKind; colour: string; startAt: number }[] =
+    [];
+  private effectTimer: number | undefined;
   private turbines: { sprite: Sprite; marker: Marker; pixelSize: number }[] = [];
   private spinFrame = 0;
   private spinTimer: number | undefined;
@@ -135,6 +156,7 @@ export class MapView {
       this.markerLayer,
       this.spriteLayer,
       this.highlight,
+      this.effectLayer,
     );
     this.app.stage.addChild(this.world);
     this.host.appendChild(this.app.canvas);
@@ -150,6 +172,7 @@ export class MapView {
   destroy(): void {
     this.destroyed = true;
     window.clearInterval(this.spinTimer);
+    window.clearInterval(this.effectTimer);
     this.resizeObserver?.disconnect();
     // Sprite tile textures are shared through a cache, so only the land textures are destroyed here.
     for (const texture of this.landTextures) texture.destroy(true);
@@ -221,6 +244,87 @@ export class MapView {
     this.insets = insets;
     this.applyOffset();
     this.revealSelected();
+  }
+
+  /**
+   * Plays the opening sequence: recent qualifying events visible at the current zoom, largest
+   * first, staggered. Events whose marker is not drawn or is covered are skipped.
+   */
+  playOnLoad(candidates: EventCandidate<EffectTarget>[]): void {
+    const picked = pickOnLoad(candidates, (target) => this.isOnScreen(target.selection));
+    const now = performance.now();
+    picked.forEach((c, i) =>
+      this.addEffect(c.target.selection, c.kind, c.target.colour, now + i * STAGGER_MS),
+    );
+  }
+
+  /**
+   * Shows an event picked in the feed: if the marker is not drawn at this zoom because of the
+   * level's capacity floor, zooms in until it is, then plays the effect (if the event has one).
+   */
+  playEvent(selection: Selection, kind: EffectKind | null, colour: string): void {
+    if (!this.markers.some((m) => sameSelection(m, selection))) {
+      for (let level = this.level + 1; level < ZOOM_LEVELS.length; level++) {
+        this.zoomTo(level);
+        if (this.markers.some((m) => sameSelection(m, selection))) break;
+      }
+      this.revealSelected();
+    }
+    if (kind) this.addEffect(selection, kind, colour, performance.now());
+  }
+
+  private isOnScreen(selection: Selection): boolean {
+    const marker = this.markers.find((m) => sameSelection(m, selection));
+    if (!marker) return false;
+    const { left, top, size } = this.markerBox(marker);
+    const x = this.world.position.x + left + size / 2;
+    const y = this.world.position.y + top + size / 2;
+    const area = this.visibleArea;
+    return x >= area.left && x <= area.right && y >= area.top && y <= area.bottom;
+  }
+
+  private addEffect(selection: Selection, kind: EffectKind, colour: string, startAt: number): void {
+    this.effects.push({ selection, kind, colour, startAt });
+    if (this.effectTimer === undefined) {
+      this.effectTimer = window.setInterval(() => this.drawEffects(), FRAME_MS);
+    }
+    this.drawEffects();
+  }
+
+  /** Draws running effects; under reduced motion, a still outline instead of moving frames. */
+  private drawEffects(): void {
+    const now = performance.now();
+    const still = this.motionQuery.matches;
+    const length = still ? STILL_MS : FRAMES * FRAME_MS;
+    this.effects = this.effects.filter((e) => now - e.startAt < length);
+    const g = this.effectLayer.clear();
+    for (const effect of this.effects) {
+      if (now < effect.startAt) continue;
+      const marker = this.markers.find((m) => sameSelection(m, effect.selection));
+      if (!marker) continue;
+      const { left, top, size } = this.markerBox(marker);
+      const unit =
+        (marker.tier < FIRST_SPRITE_TIER
+          ? Math.max(1, Math.round(this.dpr))
+          : this.spritePixelSize(marker)) / this.dpr;
+      const cx = left + size / 2;
+      const cy = top + size / 2;
+      const frame = Math.floor((now - effect.startAt) / FRAME_MS);
+      const pixels = still ? stillPixels() : effectPixels(effect.kind, frame);
+      for (const [px, py] of pixels) {
+        g.rect(
+          snap(cx + px * unit - unit / 2, this.dpr),
+          snap(cy + py * unit - unit / 2, this.dpr),
+          unit,
+          unit,
+        ).fill(effect.colour);
+      }
+    }
+    if (this.effects.length === 0) {
+      window.clearInterval(this.effectTimer);
+      this.effectTimer = undefined;
+    }
+    this.requestRender();
   }
 
   /** Pans the selected marker into the uncovered part of the map if it is hidden or near an edge. */

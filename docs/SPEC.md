@@ -205,7 +205,19 @@ Rules for dated events:
 
 **The change list.** `data/changes.json` is rebuilt every run: the dated events plus spotted changes from the last 12 months, newest first. Two runs on unchanged sources produce byte-identical output.
 
-**The feed panel** applies the same technology, stage, flexibility and capacity filters as the map, so by default it lists projects of 1MW and above.
+**The feed panel** applies the same technology, flexibility and capacity filters as the map, so by default it lists projects of 1MW and above. It does not apply the stage filter, so refusals and withdrawals still show; it has its own type filter (All, Consents, Construction, Operational, Planning) instead. Tapping an entry opens its card. If the project is not drawn at the current zoom because of the level's capacity floor, the map zooms in until it is.
+
+**Animations** (`src/map/animations.ts`). They play for dated consent, construction-start and operational events of 5MW or more:
+- **Consent:** an expanding square ring.
+- **Construction:** blinking scaffold corners.
+- **Operational:** eight sparks.
+
+Each effect is drawn in the new stage's colour, lasts about 1.2 seconds, and scales with the marker so it clears the tile.
+
+When effects play:
+- **When the map opens:** events from the three months before the newest event that are on screen and pass the filters play once, largest first, staggered, at most 30.
+- **From the feed:** an animated event replays when picked.
+- **Reduced motion:** under `prefers-reduced-motion`, a still outline shows for three seconds instead.
 
 ## Live layer
 

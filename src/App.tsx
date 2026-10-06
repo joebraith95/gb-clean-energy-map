@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { loadChanges, type Change, type ChangeFile } from './data/changes';
+import { isAnimated, loadChanges, type Change, type ChangeFile } from './data/changes';
 import { loadInterconnectors, type InterconnectorFile } from './data/interconnectors';
 import { loadProjects, type ProjectIndex } from './data/projects';
 import { loadGrid, type GridFile } from './map/grid';
+import type { EffectKind, EventCandidate } from './map/animations';
 import { MapCanvas } from './map/MapCanvas';
+import type { EffectTarget } from './map/MapView';
 import type { Selection } from './map/markers';
 import { AboutPage } from './ui/AboutPage';
 import { FeedPanel } from './ui/FeedPanel';
@@ -11,6 +13,7 @@ import { FilterPanel } from './ui/FilterPanel';
 import { DEFAULT_FILTERS, makeInclude, makeIncludeLink, type Filters } from './ui/filters';
 import { InterconnectorCard } from './ui/InterconnectorCard';
 import { ProjectCard } from './ui/ProjectCard';
+import { palette, stageColours, type Stage } from './theme/tokens';
 
 interface MapData {
   grid: GridFile;
@@ -43,6 +46,11 @@ export function App() {
   const [panel, setPanel] = useState<'filters' | 'feed' | null>(null);
   const [changes, setChanges] = useState<ChangeFile | null>(null);
   const [changesError, setChangesError] = useState<string | null>(null);
+  const [play, setPlay] = useState<{
+    selection: Selection;
+    kind: EffectKind | null;
+    colour: string;
+  } | null>(null);
   const [aboutOpen, setAboutOpen] = useState(() => window.location.hash === ABOUT_HASH);
 
   useEffect(() => {
@@ -124,9 +132,39 @@ export function App() {
     [data, indexById],
   );
   const openChange = useCallback(
-    (change: Change) => select(selectionForChange(change)),
+    (change: Change) => {
+      const selection = selectionForChange(change);
+      select(selection);
+      if (selection) {
+        const kind = isAnimated(change) ? (change.type as EffectKind) : null;
+        setPlay({ selection, kind, colour: stageColour(change.stage) });
+      }
+    },
     [select, selectionForChange],
   );
+
+  // Recent qualifying events on the map as it opens, filtered like the map itself.
+  const openingEvents = useMemo(() => {
+    if (!changes) return null;
+    const events: EventCandidate<EffectTarget>[] = [];
+    for (const change of changes.changes) {
+      if (!isAnimated(change)) continue;
+      const selection = selectionForChange(change);
+      if (!selection) continue;
+      const shown =
+        selection.source === 'project' ? include(selection.index) : includeLink(selection.index);
+      if (!shown) continue;
+      events.push({
+        target: { selection, colour: stageColour(change.stage) },
+        kind: change.type as EffectKind,
+        date: change.date,
+        mw: change.mw ?? 0,
+      });
+    }
+    return events;
+    // Only the filters at the moment the list arrives matter: the sequence plays once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [changes, selectionForChange]);
   const closeAbout = useCallback(() => {
     history.replaceState(null, '', window.location.pathname + window.location.search);
     setAboutOpen(false);
@@ -172,6 +210,8 @@ export function App() {
             includeLink={includeLink}
             selected={selected}
             onSelect={select}
+            openingEvents={openingEvents}
+            play={play}
           />
         )}
         {!data && !error && <p className="status">Loading map data…</p>}
@@ -225,4 +265,8 @@ export function App() {
       )}
     </div>
   );
+}
+
+function stageColour(stage: string | null): string {
+  return stage && stage in stageColours ? stageColours[stage as Stage] : palette.ink;
 }
