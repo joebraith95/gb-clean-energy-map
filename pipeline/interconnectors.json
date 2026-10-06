@@ -1,0 +1,204 @@
+{
+  "_about": "Hand-curated interconnector details that the NESO Interconnector Register does not hold. Capacity, status and GB connection site come from the register at pipeline run time, matched by registerProject. Landing points are OpenStreetMap features (ODbL), checked 2026-10-06; gbEnd.kind is 'converter', 'converter_under_construction' or 'connection_substation' (where no converter station exists yet). A null end has no published location. Milestones are Ofgem cap and floor stages with their decision pages.",
+  "interconnectors": [
+    {
+      "id": "ifa",
+      "name": "IFA",
+      "registerProject": "IFA Interconnector",
+      "partner": "France",
+      "commissioned": "1986",
+      "gbEnd": { "name": "Sellindge Converter Station", "kind": "converter", "osm": "way/23281217", "lat": 51.1059, "lon": 0.9752 },
+      "partnerEnd": { "name": "Les Mandarins converter station, Bonningues-lès-Calais", "osm": "way/1271288346", "lat": 50.9034, "lon": 1.782 },
+      "milestones": [],
+      "sources": ["https://en.wikipedia.org/wiki/List_of_high-voltage_transmission_links_in_the_United_Kingdom"]
+    },
+    {
+      "id": "ifa2",
+      "name": "IFA2",
+      "registerProject": "IFA2 Interconnector",
+      "partner": "France",
+      "commissioned": "2021",
+      "gbEnd": { "name": "Daedalus Converter Station, Lee-on-the-Solent", "kind": "converter", "osm": "way/636630368", "lat": 50.8181, "lon": -1.1945 },
+      "partnerEnd": { "name": "Tourbe converter station", "osm": "way/753113423", "lat": 49.1108, "lon": -0.2622 },
+      "milestones": [],
+      "sources": ["https://en.wikipedia.org/wiki/List_of_high-voltage_transmission_links_in_the_United_Kingdom"]
+    },
+    {
+      "id": "eleclink",
+      "name": "ElecLink",
+      "registerProject": "ElecLink",
+      "partner": "France",
+      "commissioned": "2022",
+      "gbEnd": { "name": "Folkestone Converter Station", "kind": "converter", "osm": "way/775577829", "lat": 51.0984, "lon": 1.1447 },
+      "partnerEnd": { "name": "Peuplingues converter station", "osm": "way/775577827", "lat": 50.9202, "lon": 1.7805 },
+      "milestones": [],
+      "sources": ["https://en.wikipedia.org/wiki/List_of_high-voltage_transmission_links_in_the_United_Kingdom"]
+    },
+    {
+      "id": "britned",
+      "name": "BritNed",
+      "registerProject": "Britned",
+      "partner": "Netherlands",
+      "commissioned": "2011",
+      "gbEnd": { "name": "Grain converter station, Isle of Grain", "kind": "converter", "osm": "way/109189896", "lat": 51.4405, "lon": 0.7162 },
+      "partnerEnd": { "name": "BritNed converter station, Maasvlakte", "osm": "way/920127890", "lat": 51.957, "lon": 4.0218 },
+      "milestones": [],
+      "sources": ["https://en.wikipedia.org/wiki/List_of_high-voltage_transmission_links_in_the_United_Kingdom"]
+    },
+    {
+      "id": "nemo",
+      "name": "Nemo Link",
+      "registerProject": "Nemo Link",
+      "partner": "Belgium",
+      "commissioned": "2019",
+      "gbEnd": { "name": "Nemo Link converter station, Richborough", "kind": "converter", "osm": "relation/10695345", "lat": 51.31, "lon": 1.3464 },
+      "partnerEnd": { "name": "Nemo Link converter station, Zeebrugge", "osm": "way/500788534", "lat": 51.2651, "lon": 3.2097 },
+      "milestones": [],
+      "sources": ["https://en.wikipedia.org/wiki/List_of_high-voltage_transmission_links_in_the_United_Kingdom"]
+    },
+    {
+      "id": "nsl",
+      "name": "North Sea Link",
+      "registerProject": "NS Link",
+      "partner": "Norway",
+      "commissioned": "2021",
+      "gbEnd": { "name": "Cambois Converter Station, Blyth", "kind": "converter", "osm": "way/642490160", "lat": 55.1465, "lon": -1.5404 },
+      "partnerEnd": { "name": "North Sea Link converter station, Kvilldal", "osm": "relation/12832053", "lat": 59.5302, "lon": 6.6549 },
+      "milestones": [],
+      "sources": ["https://en.wikipedia.org/wiki/List_of_high-voltage_transmission_links_in_the_United_Kingdom"]
+    },
+    {
+      "id": "viking",
+      "name": "Viking Link",
+      "registerProject": "Viking Link Denmark Interconnector",
+      "partner": "Denmark",
+      "commissioned": "2023",
+      "gbEnd": { "name": "Viking Link Converter Station, Bicker Fen", "kind": "converter", "osm": "way/1078532568", "lat": 52.921, "lon": -0.2365 },
+      "partnerEnd": { "name": "Viking Link converter station, Revsing", "osm": "way/1101832649", "lat": 55.5051, "lon": 9.168 },
+      "milestones": [],
+      "sources": ["https://en.wikipedia.org/wiki/List_of_high-voltage_transmission_links_in_the_United_Kingdom"]
+    },
+    {
+      "id": "moyle",
+      "name": "Moyle",
+      "registerProject": "Auchencrosh (interconnector CCT)",
+      "partner": "Northern Ireland",
+      "commissioned": "2001",
+      "gbEnd": { "name": "Auchencrosh converter station", "kind": "converter", "osm": "way/148382435", "lat": 55.0697, "lon": -4.9808 },
+      "partnerEnd": { "name": "Ballycronan More converter station", "osm": "way/137050527", "lat": 54.8432, "lon": -5.7705 },
+      "milestones": [],
+      "sources": ["https://en.wikipedia.org/wiki/List_of_high-voltage_transmission_links_in_the_United_Kingdom"]
+    },
+    {
+      "id": "ewic",
+      "name": "East West Interconnector",
+      "registerProject": "East West Interconnector",
+      "partner": "Ireland",
+      "commissioned": "2012",
+      "gbEnd": { "name": "Shotton Converter Station", "kind": "converter", "osm": "way/536905500", "lat": 53.2366, "lon": -3.0504 },
+      "partnerEnd": { "name": "Portan Converter Station", "osm": "way/260836695", "lat": 53.4712, "lon": -6.5676 },
+      "milestones": [],
+      "sources": ["https://en.wikipedia.org/wiki/List_of_high-voltage_transmission_links_in_the_United_Kingdom"]
+    },
+    {
+      "id": "greenlink",
+      "name": "Greenlink",
+      "registerProject": "Greenlink",
+      "partner": "Ireland",
+      "commissioned": "2025",
+      "gbEnd": { "name": "Penfro Converter Station, Pembroke", "kind": "converter", "osm": "way/1151065330", "lat": 51.6753, "lon": -4.9898 },
+      "partnerEnd": { "name": "Campile Converter Station, Great Island", "osm": "way/1154822210", "lat": 52.2817, "lon": -6.9856 },
+      "milestones": [],
+      "sources": ["https://en.wikipedia.org/wiki/List_of_high-voltage_transmission_links_in_the_United_Kingdom"]
+    },
+    {
+      "id": "isle-of-man",
+      "name": "Isle of Man Interconnector",
+      "registerProject": "Isle of Man Interconnector",
+      "partner": "Isle of Man",
+      "commissioned": null,
+      "gbEnd": { "name": "Isle of Man Substation, Bispham", "kind": "connection_substation", "osm": "way/144108127", "lat": 53.8492, "lon": -3.0289 },
+      "partnerEnd": null,
+      "milestones": [],
+      "sources": []
+    },
+    {
+      "id": "neuconnect",
+      "name": "NeuConnect",
+      "registerProject": "NeuConnect Interconnector",
+      "partner": "Germany",
+      "commissioned": null,
+      "gbEnd": { "name": "NeuConnect converter station, Isle of Grain (under construction)", "kind": "converter_under_construction", "osm": "way/964632281", "lat": 51.4557, "lon": 0.6989 },
+      "partnerEnd": { "name": "Fedderwarden converter station, Wilhelmshaven", "osm": "way/31024391", "lat": 53.5582, "lon": 8.0717 },
+      "milestones": [
+        { "type": "fpa", "label": "Final project assessment", "date": "2022-07-01", "source": "https://www.ofgem.gov.uk/decision/decision-final-project-assessment-neuconnect-interconnector-germany" }
+      ],
+      "sources": ["https://www.renewable-energy-industry.com/news/world/article-7572-neuconnect-on-track-first-14-gw-power-link-between-germany-and-uk-reaches-construction-halfway-point"]
+    },
+    {
+      "id": "nautilus",
+      "name": "Nautilus",
+      "registerProject": "Nautilus",
+      "partner": "Belgium",
+      "commissioned": null,
+      "gbEnd": { "name": "Wallend Substation, Isle of Grain (under construction)", "kind": "connection_substation", "osm": "way/1385610401", "lat": 51.4574, "lon": 0.701 },
+      "partnerEnd": { "name": "Princess Elisabeth Island (offshore energy island)", "osm": "way/1390027721", "lat": 51.528, "lon": 2.4975 },
+      "milestones": [
+        { "type": "ipa", "label": "Initial project assessment approved", "date": "2024-11-12", "source": "https://www.ofgem.gov.uk/decision/initial-project-assessment-offshore-hybrid-asset-pilot-projects-decision" }
+      ],
+      "sources": ["https://www.elia.be/en/press/2024/11/20241112_nautilus"]
+    },
+    {
+      "id": "lionlink",
+      "name": "LionLink",
+      "registerProject": "LionLink (EuroLink)",
+      "partner": "Netherlands",
+      "commissioned": null,
+      "gbEnd": null,
+      "partnerEnd": null,
+      "milestones": [
+        { "type": "ipa", "label": "Initial project assessment approved", "date": "2024-11-12", "source": "https://www.ofgem.gov.uk/decision/initial-project-assessment-offshore-hybrid-asset-pilot-projects-decision" }
+      ],
+      "sources": []
+    },
+    {
+      "id": "liric",
+      "name": "LirIC",
+      "registerProject": "LIRIC Interconnector",
+      "partner": "Northern Ireland",
+      "commissioned": null,
+      "gbEnd": { "name": "Hunterston East Substation", "kind": "connection_substation", "osm": "way/304620092", "lat": 55.72, "lon": -4.8872 },
+      "partnerEnd": { "name": "Kilroot 275kV Substation", "osm": "way/339008021", "lat": 54.7271, "lon": -5.7679 },
+      "milestones": [
+        { "type": "ipa", "label": "Initial project assessment approved", "date": "2024-11-12", "source": "https://www.ofgem.gov.uk/decision/initial-project-assessment-window-3-interconnectors-decision" }
+      ],
+      "sources": ["https://www.newcivilengineer.com/latest/procurement-planned-for-848m-of-contracts-for-scotland-northern-ireland-interconnector-07-03-2025/"]
+    },
+    {
+      "id": "maresconnect",
+      "name": "MaresConnect",
+      "registerProject": "MARES",
+      "partner": "Ireland",
+      "commissioned": null,
+      "gbEnd": { "name": "Bodelwyddan Substation", "kind": "connection_substation", "osm": "way/280317944", "lat": 53.25, "lon": -3.4741 },
+      "partnerEnd": null,
+      "milestones": [
+        { "type": "ipa", "label": "Initial project assessment approved", "date": "2024-11-12", "source": "https://www.ofgem.gov.uk/decision/initial-project-assessment-window-3-interconnectors-decision" }
+      ],
+      "sources": []
+    },
+    {
+      "id": "tarchon",
+      "name": "Tarchon",
+      "registerProject": "Tarchon",
+      "partner": "Germany",
+      "commissioned": null,
+      "gbEnd": null,
+      "partnerEnd": null,
+      "milestones": [
+        { "type": "ipa", "label": "Initial project assessment approved", "date": "2024-11-12", "source": "https://www.ofgem.gov.uk/decision/initial-project-assessment-window-3-interconnectors-decision" }
+      ],
+      "sources": ["https://tarchoninterconnector.com/"]
+    }
+  ]
+}

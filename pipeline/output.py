@@ -36,7 +36,7 @@ def write(records: list[dict], source: dict, data_dir: Path) -> None:
         "group": [r.get("group", -1) for r in records],
     }
     data_dir.mkdir(parents=True, exist_ok=True)
-    _write_json(data_dir / "projects.json", index)
+    write_json(data_dir / "projects.json", index)
 
     shards: dict[int, dict] = {n: {} for n in range(DETAIL_SHARDS)}
     for r in records:
@@ -44,7 +44,7 @@ def write(records: list[dict], source: dict, data_dir: Path) -> None:
     details_dir = data_dir / "details"
     details_dir.mkdir(exist_ok=True)
     for n, shard in shards.items():
-        _write_json(details_dir / f"{n:02d}.json", shard)
+        write_json(details_dir / f"{n:02d}.json", shard)
 
 
 def summarise(index: dict) -> dict:
@@ -70,5 +70,5 @@ def read_index(data_dir: Path) -> dict | None:
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 
-def _write_json(path: Path, value) -> None:
+def write_json(path: Path, value) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

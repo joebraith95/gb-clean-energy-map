@@ -4,7 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
-from pipeline import corrections, output, phases, repd
+from pipeline import corrections, interconnectors, output, phases, repd
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "pipeline" / "raw"
@@ -47,9 +47,33 @@ def main() -> None:
     print(f"Corrections applied: {len(fixes.applied)}  Skipped for review: {len(fixes.stale)}")
     print(f"Phase groups matched: {len(groups)} covering {sum(len(g) for g in groups)} records")
 
+    build_interconnectors(args.offline)
+
     if args.report:
         after = output.read_index(DATA_DIR)
         print_report(output.summarise(before) if before else None, output.summarise(after))
+
+
+def build_interconnectors(offline: bool) -> None:
+    register_csv = RAW_DIR / "interconnector-register.csv"
+    source_file = RAW_DIR / "interconnector-register-source.json"
+    if offline:
+        if not register_csv.exists() or not source_file.exists():
+            raise SystemExit("No cached Interconnector Register. Run once without --offline.")
+        source = json.loads(source_file.read_text(encoding="utf-8"))
+    else:
+        url = interconnectors.latest_register_url()
+        print("Downloading NESO Interconnector Register")
+        repd.download(url, register_csv)
+        source = {"name": "Interconnector Register (NESO)", "page": interconnectors.REGISTER_PAGE, "file": url}
+        source_file.write_text(json.dumps(source), encoding="utf-8")
+
+    records = interconnectors.build(interconnectors.load_register(register_csv), interconnectors.load_curated())
+    output.write_json(DATA_DIR / "interconnectors.json", {"source": source, "interconnectors": records})
+    drawn = sum(1 for r in records if r["gbEnd"])
+    print(f"Wrote {len(records)} interconnectors ({drawn} with a GB landing point)")
+    for r in records:
+        print(f"  {r['name']:26} {r['partner']:17} {r['stage'] or '-':19} {r['importMw']}/{r['exportMw']} MW")
 
 
 def print_report(before: dict | None, after: dict) -> None:
