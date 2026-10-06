@@ -1,9 +1,10 @@
 """Pipeline entry point. Run from the repo root: python -m pipeline.run [--report] [--offline]"""
 
 import argparse
+import json
 from pathlib import Path
 
-from pipeline import output, repd
+from pipeline import corrections, output, repd
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "pipeline" / "raw"
@@ -17,20 +18,27 @@ def main() -> None:
     args = parser.parse_args()
 
     raw_csv = RAW_DIR / "repd.csv"
+    source_file = RAW_DIR / "repd-source.json"
     if args.offline:
-        if not raw_csv.exists():
+        if not raw_csv.exists() or not source_file.exists():
             raise SystemExit("No cached REPD file. Run once without --offline.")
-        source = {"name": "REPD (DESNZ)", "page": repd.SOURCE_PAGE, "file": "cached copy", "updated": None}
+        source = json.loads(source_file.read_text(encoding="utf-8"))
     else:
         release = repd.latest_release()
         print(f"Downloading {release.title}")
         repd.download(release.url, raw_csv)
         source = {"name": "REPD (DESNZ)", "page": repd.SOURCE_PAGE, "file": release.url, "updated": release.updated}
+        source_file.write_text(json.dumps(source), encoding="utf-8")
 
     before = output.read_index(DATA_DIR)
-    records = repd.build_records(repd.load(raw_csv))
+    df = repd.load(raw_csv)
+    fixes = corrections.apply(df, corrections.load_corrections())
+    for ref_id, reason in fixes.stale:
+        print(f"WARNING: correction for REPD {ref_id} skipped ({reason}). Review pipeline/corrections.json.")
+    records = repd.build_records(df, fixes.notes)
     output.write(records, source, DATA_DIR)
     print(f"Wrote {len(records)} projects to {DATA_DIR}")
+    print(f"Corrections applied: {len(fixes.applied)}  Skipped for review: {len(fixes.stale)}")
 
     if args.report:
         after = output.read_index(DATA_DIR)

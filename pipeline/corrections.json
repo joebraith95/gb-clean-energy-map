@@ -1,0 +1,42 @@
+[
+  {
+    "id": 8982,
+    "fields": {
+      "X-coordinate": { "repd": "807158", "corrected": "352561" },
+      "Y-coordinate": { "repd": "352561", "corrected": "807158" }
+    },
+    "reason": "X and Y swapped. Swapped back, the point is at 57.15N 2.79W, near Cushnie and Alford, matching the address and postcode AB33 8LP.",
+    "note": "Location corrected from REPD (X and Y were swapped)",
+    "checked": "2026-10-06"
+  },
+  {
+    "id": 12780,
+    "fields": {
+      "X-coordinate": { "repd": "870800", "corrected": "264300" },
+      "Y-coordinate": { "repd": "264300", "corrected": "870800" }
+    },
+    "reason": "X and Y swapped. Swapped back, the point is at 57.71N 4.28W, at Alness, matching the address and postcode IV17 0XL.",
+    "note": "Location corrected from REPD (X and Y were swapped)",
+    "checked": "2026-10-06"
+  },
+  {
+    "id": 15038,
+    "fields": {
+      "X-coordinate": { "repd": "844740", "corrected": "268618" },
+      "Y-coordinate": { "repd": "268618", "corrected": "844740" }
+    },
+    "reason": "X and Y swapped. Swapped back, the point is at 57.47N 4.19W, at Raigmore in Inverness, matching the address and postcode IV2 3UJ.",
+    "note": "Location corrected from REPD (X and Y were swapped)",
+    "checked": "2026-10-06"
+  },
+  {
+    "id": 15088,
+    "fields": {
+      "X-coordinate": { "repd": "966043", "corrected": "310748" },
+      "Y-coordinate": { "repd": "310748", "corrected": "966043" }
+    },
+    "reason": "X and Y swapped. Swapped back, the point is at 58.57N 3.54W, by Thurso, matching the address and postcode KW14 7XH.",
+    "note": "Location corrected from REPD (X and Y were swapped)",
+    "checked": "2026-10-06"
+  }
+]

@@ -72,6 +72,14 @@ Early development is mainly populated from the TEC register in phase 4.
 - The consented date shown is the final grant: the latest of planning permission granted, appeal granted and Secretary of State granted.
 - The pipeline finds the latest CSV through the GOV.UK content API for the publication page.
 
+### Corrections
+
+Clear errors in source data (for example X and Y swapped) can be fixed in a hand-maintained file, `pipeline/corrections.json`. Rules:
+- Each correction names the REPD ID, the field, the value found in REPD, the corrected value, and the reason.
+- A correction is applied only while REPD still holds the value it was written against. If REPD changes that value, the correction is skipped and the pipeline report flags it for review.
+- Only fix errors with clear evidence. Never use corrections to fill in missing data.
+- The project card notes any corrected field, for example "Location corrected from REPD (X and Y were swapped)".
+
 ### Connection badge (shown on the card, separate from the headline stage)
 
 - **Not published:** no connection data (expected for most distribution-connected projects)

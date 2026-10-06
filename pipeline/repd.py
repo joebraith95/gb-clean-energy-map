@@ -67,8 +67,9 @@ def load(path: Path) -> pd.DataFrame:
     return df
 
 
-def build_records(df: pd.DataFrame) -> list[dict]:
+def build_records(df: pd.DataFrame, correction_notes: dict[int, list[str]] | None = None) -> list[dict]:
     """Apply the spec's scope and stage rules. Returns one dict per kept record, sorted by ID."""
+    correction_notes = correction_notes or {}
     records = []
     for row in df.to_dict("records"):
         if row["Country"] not in {"England", "Scotland", "Wales"}:
@@ -83,9 +84,12 @@ def build_records(df: pd.DataFrame) -> list[dict]:
 
         x, y = _parse_number(row["X-coordinate"]), _parse_number(row["Y-coordinate"])
         mw = _parse_number(row["Installed Capacity (MWelec)"])
+        ref_id = int(row["Ref ID"])
+        details = _details(row, stage_dates)
+        details["corrections"] = correction_notes.get(ref_id, [])
         records.append(
             {
-                "id": int(row["Ref ID"]),
+                "id": ref_id,
                 "name": row["Site Name"],
                 "technology": row["Technology Type"],
                 "layer": layer,
@@ -94,7 +98,7 @@ def build_records(df: pd.DataFrame) -> list[dict]:
                 "x": round(x) if x is not None else None,
                 "y": round(y) if y is not None else None,
                 "mw": mw,
-                "details": _details(row, stage_dates),
+                "details": details,
             }
         )
     records.sort(key=lambda r: r["id"])
