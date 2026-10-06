@@ -14,7 +14,7 @@ export interface ZoomLevel {
 
 // Draft values: national, regional, local.
 export const ZOOM_LEVELS: readonly ZoomLevel[] = [
-  { cellMetres: 4000, scaleFactor: 1, minMw: 30 },
+  { cellMetres: 4000, scaleFactor: 1, minMw: 50 },
   { cellMetres: 2000, scaleFactor: 1, minMw: 5 },
   { cellMetres: 1000, scaleFactor: 1.5, minMw: 0 },
 ];

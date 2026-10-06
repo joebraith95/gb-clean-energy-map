@@ -108,7 +108,7 @@ One dot per phase (one REPD row). The card links to sibling phases. Clustered at
 
 - Default capacity filter: 1MW and above, adjustable with a slider. All REPD rows are ingested regardless.
 - Filters: technology, headline stage, flexibility layer toggle, capacity.
-- Zoom: three fixed levels. National view shows larger projects only; smaller projects appear as you zoom in. Current draft values (in `src/map/levels.ts`): National is 4km cells and 30MW or more, Regional is 2km cells and 5MW or more, Local is 1km cells and every size. The national view uses the largest whole number of physical pixels per cell that fits the screen; Regional uses the same scale and Local 1.5 times it (rounded), so every cell is a whole number of physical pixels at any screen density.
+- Zoom: three fixed levels. National view shows larger projects only; smaller projects appear as you zoom in. Current draft values (in `src/map/levels.ts`): National is 4km cells and 50MW or more, Regional is 2km cells and 5MW or more, Local is 1km cells and every size. The national view uses the largest whole number of physical pixels per cell that fits the screen; Regional uses the same scale and Local 1.5 times it (rounded), so every cell is a whole number of physical pixels at any screen density.
 - Zoom controls: plus and minus buttons, mouse wheel, pinch, and the + and - keys, each moving one level and keeping the point under the cursor or fingers fixed. Drag or the arrow keys to pan.
 - Onshore projects whose cell is sea but next to the coast are drawn on the nearest land cell at that level. This affects drawing only; the data keeps REPD's coordinates.
 - The map extent must include offshore wind areas as far out as Dogger Bank.
