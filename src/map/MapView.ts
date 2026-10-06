@@ -1,9 +1,10 @@
 // The PixiJS map: land grid, project markers, snap zoom and panning.
 // Every cell and marker edge lands on a whole physical pixel, so nothing is ever smoothed.
+// Frames are drawn on demand (and for the turbine animation), not on a constant loop.
 
 import { Application, Container, Graphics, Sprite, Texture } from 'pixi.js';
 import type { ProjectIndex } from '../data/projects';
-import { palette, stageColours } from '../theme/tokens';
+import { palette, spriteInk, stageColours } from '../theme/tokens';
 import { GB_LAND, OTHER_LAND, SEA, decodeLevel, type GridFile } from './grid';
 import { gridTexture } from './gridTexture';
 import {
@@ -15,7 +16,8 @@ import {
   screenToBng,
   snap,
 } from './levels';
-import { TIER_SIZES, buildMarkers, type Marker } from './markers';
+import { DOT_SIZES, FIRST_SPRITE_TIER, buildMarkers, type Marker } from './markers';
+import { TILE_SIZE, tileTexture } from './sprites';
 
 const LAND_COLOURS = {
   [SEA]: palette.sea,
@@ -31,6 +33,8 @@ const TAP_REACH = 8;
 const PINCH_STEP = 1.5;
 /** Minimum gap between wheel-triggered zoom steps (ms). */
 const WHEEL_COOLDOWN = 250;
+/** Time between turbine blade frames (ms). */
+const SPIN_INTERVAL = 450;
 
 export interface MapViewEvents {
   onSelect: (index: number | null) => void;
@@ -47,7 +51,13 @@ export class MapView {
   private readonly world = new Container();
   private readonly land = new Sprite();
   private readonly markerLayer = new Graphics();
+  private readonly spriteLayer = new Container();
   private readonly highlight = new Graphics();
+  private turbines: { sprite: Sprite; marker: Marker; pixelSize: number }[] = [];
+  private spinFrame = 0;
+  private spinTimer: number | undefined;
+  private readonly motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  private renderQueued = false;
   private landTextures: Texture[] = [];
   private landCells: Uint8Array[] = [];
 
@@ -94,11 +104,13 @@ export class MapView {
       autoDensity: true,
       antialias: false,
       background: palette.sea,
+      autoStart: false,
     });
+    this.app.ticker.stop();
     this.landTextures = this.grid.levels.map((level) => gridTexture(level, LAND_COLOURS));
     this.landCells = this.grid.levels.map(decodeLevel);
 
-    this.world.addChild(this.land, this.markerLayer, this.highlight);
+    this.world.addChild(this.land, this.markerLayer, this.spriteLayer, this.highlight);
     this.app.stage.addChild(this.world);
     this.host.appendChild(this.app.canvas);
     this.bindInput();
@@ -107,12 +119,35 @@ export class MapView {
     this.resizeObserver.observe(this.host);
     this.national = nationalScale(this.host.clientWidth, this.host.clientHeight, this.dpr);
     this.render();
+    this.spinTimer = window.setInterval(() => this.spin(), SPIN_INTERVAL);
   }
 
   destroy(): void {
     this.destroyed = true;
+    window.clearInterval(this.spinTimer);
     this.resizeObserver?.disconnect();
-    this.app.destroy(true, { children: true, texture: true });
+    // Sprite tile textures are shared through a cache, so only the land textures are destroyed here.
+    for (const texture of this.landTextures) texture.destroy(true);
+    this.app.destroy(true, { children: true, texture: false });
+  }
+
+  private requestRender(): void {
+    if (this.renderQueued || this.destroyed) return;
+    this.renderQueued = true;
+    requestAnimationFrame(() => {
+      this.renderQueued = false;
+      if (!this.destroyed) this.app.render();
+    });
+  }
+
+  /** Turns the blades of operational turbines, unless the viewer prefers reduced motion. */
+  private spin(): void {
+    if (this.motionQuery.matches || this.turbines.length === 0) return;
+    this.spinFrame = 1 - this.spinFrame;
+    for (const { sprite, marker, pixelSize } of this.turbines) {
+      sprite.texture = tileTexture(marker.kind, this.spinFrame, marker.stage, pixelSize);
+    }
+    this.requestRender();
   }
 
   get levelIndex(): number {
@@ -189,10 +224,20 @@ export class MapView {
       y: clampAxis(this.offset.y, level.rows * this.cssPerCell, this.view.height),
     };
     this.world.position.set(snap(this.offset.x, this.dpr), snap(this.offset.y, this.dpr));
+    this.requestRender();
+  }
+
+  /** Physical pixels per sprite art pixel. The largest tier doubles, except on the national view. */
+  private spritePixelSize(marker: Marker): number {
+    const doubled = marker.tier > FIRST_SPRITE_TIER && this.level > 0;
+    return Math.max(1, Math.round(this.dpr)) * (doubled ? 2 : 1);
   }
 
   private markerBox(marker: Marker): { left: number; top: number; size: number } {
-    const size = Math.max(2, Math.round(TIER_SIZES[marker.tier] * this.dpr)) / this.dpr;
+    const size =
+      marker.tier < FIRST_SPRITE_TIER
+        ? Math.max(2, Math.round(DOT_SIZES[marker.tier] * this.dpr)) / this.dpr
+        : (TILE_SIZE * this.spritePixelSize(marker)) / this.dpr;
     const css = this.cssPerCell;
     return {
       left: snap((marker.col + 0.5) * css - size / 2, this.dpr),
@@ -211,12 +256,25 @@ export class MapView {
     );
     const outline = 1 / this.dpr;
     const g = this.markerLayer.clear();
+    for (const child of this.spriteLayer.removeChildren()) child.destroy();
+    this.turbines = [];
     for (const marker of this.markers) {
       const { left, top, size } = this.markerBox(marker);
-      g.rect(left - outline, top - outline, size + 2 * outline, size + 2 * outline).fill(
-        palette.seaDeep,
-      );
-      g.rect(left, top, size, size).fill(stageColours[marker.stage]);
+      if (marker.tier < FIRST_SPRITE_TIER) {
+        g.rect(left - outline, top - outline, size + 2 * outline, size + 2 * outline).fill(
+          spriteInk,
+        );
+        g.rect(left, top, size, size).fill(stageColours[marker.stage]);
+        continue;
+      }
+      const pixelSize = this.spritePixelSize(marker);
+      const sprite = new Sprite(tileTexture(marker.kind, this.spinFrame, marker.stage, pixelSize));
+      sprite.scale.set(1 / this.dpr);
+      sprite.position.set(left, top);
+      this.spriteLayer.addChild(sprite);
+      if (marker.kind === 'wind' && marker.stage === 'operational') {
+        this.turbines.push({ sprite, marker, pixelSize });
+      }
     }
     this.drawHighlight();
   }
@@ -224,7 +282,10 @@ export class MapView {
   private drawHighlight(): void {
     const g = this.highlight.clear();
     const marker = this.markers.find((m) => m.index === this.selected);
-    if (!marker) return;
+    if (!marker) {
+      this.requestRender();
+      return;
+    }
     const { left, top, size } = this.markerBox(marker);
     const gap = 2 / this.dpr;
     const width = Math.max(1, Math.round(this.dpr)) / this.dpr;
@@ -234,6 +295,7 @@ export class MapView {
       size + 2 * (gap + width),
       size + 2 * (gap + width),
     ).stroke({ color: palette.ink, width, alignment: 1 });
+    this.requestRender();
   }
 
   /** Topmost marker within reach of a screen point. */

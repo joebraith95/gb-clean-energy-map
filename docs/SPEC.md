@@ -112,7 +112,7 @@ One dot per phase (one REPD row). The card links to sibling phases. Clustered at
 - Zoom controls: plus and minus buttons, mouse wheel, pinch, and the + and - keys, each moving one level and keeping the point under the cursor or fingers fixed. Drag or the arrow keys to pan.
 - Onshore projects whose cell is sea but next to the coast are drawn on the nearest land cell at that level. This affects drawing only; the data keeps REPD's coordinates.
 - The map extent must include offshore wind areas as far out as Dogger Bank.
-- Capacity is shown by sprite size in three or four tiers.
+- Capacity is shown in four tiers: under 10MW a 3px stage-coloured dot, 10 to 50MW a 5px dot, 50 to 300MW a 9px sprite tile, and 300MW or more the same tile at double size (single size on the national view, to limit clutter).
 - Rows with no coordinates, coordinates outside the map extent, or no published capacity are kept in the data but not shown on the map. Nothing is estimated to fill the gap, and the pipeline report lists each hidden reason.
 - Map extent: BNG x 0 to 760,000 and y 0 to 1,230,000 (Scilly to Shetland, east past Dogger Bank).
 - Land grid: cells of 4km, 2km and 1km. GB land and other land are sampled every 250m, and a cell counts as land when at least 40% of its samples are land. Only GB land is drawn in the main land colour.
@@ -142,7 +142,9 @@ One dot per phase (one REPD row). The card links to sibling phases. Clustered at
 
 - Flat, top-down pixel-art map of GB, like an old game overworld
 - Sprites: turbine with two-frame spinning blades, solar panel, battery, hydro, tidal; interconnectors as dashed cables pulsing out to sea
-- Retro-feeling palette, checked for colour-blind safety, rather than copying a console palette exactly
+- Retro-feeling palette, checked for colour-blind safety, rather than copying a console palette exactly. A test (`src/theme/colourCheck.test.ts`) simulates protan, deutan and tritan vision and requires every pair of stage colours, and each against land, to differ by at least 20 (CIE76).
+- Sprite tiles: a dark outline, the stage colour as background, and a dark technology glyph (turbine, solar panel, battery for all non-hydrogen storage, hydrogen "H", water drop for hydro and pumped storage, waves for tidal and wave). Defined as character grids in `src/map/sprites.ts`.
+- Only operational wind turbines spin, as they are the ones generating. No animation under `prefers-reduced-motion`.
 - Pixel font (for example Press Start 2P) for titles only; clean sans-serif for everything else
 
 ## Change feed and animations

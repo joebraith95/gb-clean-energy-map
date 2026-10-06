@@ -4,11 +4,14 @@ import { MARINE_TECHNOLOGIES, type ProjectIndex } from '../data/projects';
 import type { Stage } from '../theme/tokens';
 import { SEA } from './grid';
 import { EXTENT, type ZoomLevel } from './levels';
+import { spriteKind, type SpriteKind } from './sprites';
 
 /** Capacity tier boundaries in MW: under 10, 10 to 50, 50 to 300, 300 and over. */
 export const TIER_LIMITS_MW = [10, 50, 300];
-/** Marker size per tier in CSS pixels. Replaced by sprites in step 4. */
-export const TIER_SIZES = [3, 4, 6, 8];
+/** Dot size in CSS pixels for the two smallest tiers. Larger tiers use sprite tiles. */
+export const DOT_SIZES = [3, 5];
+/** First tier drawn as a sprite tile rather than a dot. */
+export const FIRST_SPRITE_TIER = DOT_SIZES.length;
 
 export interface Marker {
   /** Position in the project index arrays. */
@@ -17,6 +20,7 @@ export interface Marker {
   row: number;
   tier: number;
   stage: Stage;
+  kind: SpriteKind;
 }
 
 export function capacityTier(mw: number): number {
@@ -46,7 +50,8 @@ export function buildMarkers(
 
     let col = Math.floor((x - EXTENT.minX) / level.cellMetres);
     let row = Math.floor((EXTENT.maxY - y) / level.cellMetres);
-    if (!MARINE_TECHNOLOGIES.has(projects.technologies[projects.tech[i]])) {
+    const technology = projects.technologies[projects.tech[i]];
+    if (!MARINE_TECHNOLOGIES.has(technology)) {
       [col, row] = nearestLand(x, y, col, row, level, land);
     }
     markers.push({
@@ -55,6 +60,7 @@ export function buildMarkers(
       row,
       tier: capacityTier(mw),
       stage: projects.stages[projects.stage[i]] as Stage,
+      kind: spriteKind(technology),
     });
   }
   return markers.sort((a, b) => (projects.mw[a.index] ?? 0) - (projects.mw[b.index] ?? 0));

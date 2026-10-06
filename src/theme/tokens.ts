@@ -1,11 +1,12 @@
 // All colours used by the map and UI. Nothing else should hard-code a colour.
-// Stage colours are a draft based on the Okabe-Ito colour-blind safe set; checked in phase 1 step 4.
+// Stage colours started from the Okabe-Ito colour-blind safe set and were tuned so every pair, and
+// each against land, stays clearly apart under protan, deutan and tritan vision (see colourCheck.test.ts).
 
 export const palette = {
   sea: '#1d2b53',
   seaDeep: '#14203f',
-  land: '#3e7a3a',
-  landEdge: '#2c5a2a',
+  land: '#40651d',
+  landEdge: '#2f4b15',
   // Land outside GB (Ireland, France, Isle of Man, Channel Islands): scenery only, kept muted.
   otherLand: '#4a4f5c',
   ink: '#f4f1e8',
@@ -15,12 +16,15 @@ export const palette = {
 } as const;
 
 export const stageColours = {
-  early_development: '#cc79a7',
-  in_planning: '#e69f00',
-  consented: '#56b4e9',
-  under_construction: '#f0e442',
-  operational: '#009e73',
+  early_development: '#bc82b1',
+  in_planning: '#d38326',
+  consented: '#5bd9ff',
+  under_construction: '#ede668',
+  operational: '#28a16d',
 } as const;
+
+/** Dark ink for sprite glyphs and marker outlines. */
+export const spriteInk = '#101624';
 
 export type Stage = keyof typeof stageColours;
 
