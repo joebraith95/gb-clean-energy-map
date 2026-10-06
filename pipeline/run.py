@@ -6,7 +6,7 @@ import re
 from datetime import date
 from pathlib import Path
 
-from pipeline import changes, corrections, events, interconnectors, output, phases, repd
+from pipeline import bmu, changes, corrections, events, interconnectors, output, phases, repd
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "pipeline" / "raw"
@@ -57,6 +57,10 @@ def main() -> None:
     print(f"Phase groups matched: {len(groups)} covering {sum(len(g) for g in groups)} records")
 
     links, link_source = build_interconnectors(args.offline)
+
+    farms = bmu.validate(bmu.load(), records)
+    bmu.write(farms, DATA_DIR)
+    print(f"BM unit map: {len(farms)} wind farms, {sum(len(f['units']) for f in farms)} units")
 
     release_date = date.fromisoformat(source["updated"])
     dated, ignored = events.dated_events(df, records, release_date)

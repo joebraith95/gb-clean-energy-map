@@ -1,0 +1,472 @@
+{
+  "_about": "Hand-checked links between REPD wind farms and their Elexon BM units, for live scheduled output. Built from pipeline/bmu_candidates.py suggestions; each match was checked by name, operator and capacity. Where Elexon's units cannot be split between REPD records (phases), one entry lists several REPD IDs and the card says the output is for all of them.",
+  "farms": [
+    {
+      "repdIds": [
+        2502
+      ],
+      "units": [
+        "T_HOWBO-1",
+        "T_HOWBO-2",
+        "T_HOWBO-3"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2525
+      ],
+      "units": [
+        "T_HOWAO-1",
+        "T_HOWAO-2",
+        "T_HOWAO-3"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2540
+      ],
+      "units": [
+        "T_SGRWO-1",
+        "T_SGRWO-2",
+        "T_SGRWO-3",
+        "T_SGRWO-4",
+        "T_SGRWO-5",
+        "T_SGRWO-6"
+      ],
+      "note": "Elexon's unit capacities add up to more than REPD's figure; the names match exactly.",
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2534
+      ],
+      "units": [
+        "T_MOWEO-1",
+        "T_MOWEO-2",
+        "T_MOWEO-3"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        6158
+      ],
+      "units": [
+        "T_MOWWO-1",
+        "T_MOWWO-2",
+        "T_MOWWO-3",
+        "T_MOWWO-4"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2532
+      ],
+      "units": [
+        "T_TKNEW-1",
+        "T_TKNWW-1"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2524
+      ],
+      "units": [
+        "T_EAAO-1",
+        "T_EAAO-2"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2533
+      ],
+      "units": [
+        "T_WLNYO-3",
+        "T_WLNYO-4"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2500
+      ],
+      "units": [
+        "T_WLNYW-1"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2506
+      ],
+      "units": [
+        "T_WLNYO-2"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2511
+      ],
+      "units": [
+        "T_LARYW-1",
+        "T_LARYW-2",
+        "T_LARYW-3",
+        "T_LARYW-4"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2521
+      ],
+      "units": [
+        "T_BEATO-1",
+        "T_BEATO-2",
+        "T_BEATO-3",
+        "T_BEATO-4"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2543
+      ],
+      "units": [
+        "T_GYMR-15",
+        "T_GYMR-17",
+        "T_GYMR-26",
+        "T_GYMR-28"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2510
+      ],
+      "units": [
+        "T_GRGBW-1",
+        "T_GRGBW-2",
+        "T_GRGBW-3"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2522
+      ],
+      "units": [
+        "T_NNGAO-1",
+        "T_NNGAO-2"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        6828
+      ],
+      "units": [
+        "T_VKNGW-1",
+        "T_VKNGW-2",
+        "T_VKNGW-3",
+        "T_VKNGW-4"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2538
+      ],
+      "units": [
+        "T_DDGNO-1",
+        "T_DDGNO-2",
+        "T_DDGNO-3",
+        "T_DDGNO-4"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2520
+      ],
+      "units": [
+        "T_RMPNO-1",
+        "T_RMPNO-2"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2519
+      ],
+      "units": [
+        "T_WDNSO-1",
+        "T_WDNSO-2"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2526
+      ],
+      "units": [
+        "T_GANW-11",
+        "T_GANW-13",
+        "T_GANW-22",
+        "T_GANW-24"
+      ],
+      "note": "Elexon's unit capacities add up to more than REPD's figure; the names match exactly.",
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        4011,
+        4178
+      ],
+      "units": [
+        "T_CLDCW-1",
+        "T_CLDNW-1",
+        "T_CLDSW-1"
+      ],
+      "note": "Elexon's units cover the Clyde wind farm and its extension together, so output is for both.",
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        3489
+      ],
+      "units": [
+        "T_WHILW-1"
+      ],
+      "note": "Unit named only by its ID; matched on operator (SP Renewables) and capacity (309MW against 322MW).",
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2757,
+        3981
+      ],
+      "units": [
+        "T_WHILW-2"
+      ],
+      "note": "One Elexon unit covers both phases of the Whitelee extension, so output is for both.",
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2512
+      ],
+      "units": [
+        "T_SHRSW-1",
+        "T_SHRSW-2"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2499
+      ],
+      "units": [
+        "T_THNTO-1",
+        "T_THNTO-2"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2515,
+        6501
+      ],
+      "units": [
+        "T_RCBKO-1",
+        "T_RCBKO-2"
+      ],
+      "note": "Elexon's two Race Bank units cannot be tied to REPD's two phases, so output is for the whole farm.",
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2513
+      ],
+      "units": [
+        "T_LNCSW-1",
+        "T_LNCSW-2"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2539
+      ],
+      "units": [
+        "T_BRBEO-1"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        4586
+      ],
+      "units": [
+        "T_SOKYW-1"
+      ],
+      "note": "Elexon's unit capacities add up to more than REPD's figure; the names match exactly.",
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        4386
+      ],
+      "units": [
+        "T_KLGLW-1"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        4595
+      ],
+      "units": [
+        "T_PNYCW-1"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        4597
+      ],
+      "units": [
+        "T_STLGW-1",
+        "T_STLGW-2",
+        "T_STLGW-3"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2544
+      ],
+      "units": [
+        "T_HMGTO-1",
+        "T_HMGTO-2"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2545
+      ],
+      "units": [
+        "T_WTMSO-1"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        4244
+      ],
+      "units": [
+        "T_DOREW-1",
+        "T_DOREW-2"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        4028
+      ],
+      "units": [
+        "T_GRIFW-1",
+        "T_GRIFW-2"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2509
+      ],
+      "units": [
+        "T_OMNDW-1"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        4059
+      ],
+      "units": [
+        "T_FALGW-1"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        3440
+      ],
+      "units": [
+        "T_CRYRW-2"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        4119
+      ],
+      "units": [
+        "T_HRSTW-1"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        3116
+      ],
+      "units": [
+        "T_BLLA-1"
+      ],
+      "note": "Unit named only by its ID; matched on operator (SP Renewables) and capacity (118MW against 124MW).",
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        3109
+      ],
+      "units": [
+        "T_HADHW-1"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        3258
+      ],
+      "units": [
+        "T_ARCHW-1"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        4640
+      ],
+      "units": [
+        "T_BHLAW-1"
+      ],
+      "checked": "2026-10-06"
+    },
+    {
+      "repdIds": [
+        2490
+      ],
+      "units": [
+        "T_GNFSW-1"
+      ],
+      "checked": "2026-10-06"
+    }
+  ]
+}

@@ -227,7 +227,7 @@ When effects play:
 
 - National generation mix and interconnector flows (flow direction animated on the cables)
 - Regional mix and carbon intensity
-- Output for large wind farms registered in the Balancing Mechanism, using a hand-maintained file that maps BM unit IDs to REPD records
+- Output for large wind farms registered in the Balancing Mechanism, using a hand-maintained file that maps BM unit IDs to REPD records (`pipeline/bmu_map.json`, published as `data/bmu-map.json`). It covers all 48 operational wind farms of 100MW or more in REPD (96 units), each match checked by name, operator and capacity. `pipeline/bmu_candidates.py` suggests matches for review. Where Elexon's units cannot be split between REPD phases (Race Bank, Clyde and its extension, the Whitelee extension), one entry covers both records and the card says the output is for all of them. A mapped REPD ID missing from the data, or a unit used twice, stops the pipeline.
 - The UI makes clear that live output is only available for large transmission-connected sites
 - Per-unit output comes from Elexon Final Physical Notifications (FPN) adjusted by Bid-Offer Acceptances (BOALF). Metered output (B1610) is published about five days late, so it is not used for the live layer. The card labels this figure "Scheduled output (Elexon)", never as metered output
 - National generation mix comes from Elexon's generation by fuel type data (FUELINST)
@@ -287,4 +287,4 @@ The TEC register has no coordinates or REPD IDs, so matching uses project name, 
 
 Checked on 6 October 2026: REPD columns and status values, TEC register Gate flag, Elexon per-unit dataset, licence wording. Findings are recorded in the sections above.
 
-- Which large wind farms to include in the BM unit mapping file (phase 3). Starting point: wind farms of 100MW or more with transmission (`T_`) BM units.
+- Which large wind farms to include in the BM unit mapping file: done 6 October 2026 (all 48 operational wind farms of 100MW or more).
