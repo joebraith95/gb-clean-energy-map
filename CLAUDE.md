@@ -16,7 +16,7 @@ The full product spec is in `docs/SPEC.md`. Read it before starting any new feat
 
 ```
 /pipeline      Python ingest, cleaning, stage mapping, change detection
-/data          Generated JSON (projects, changes, interconnectors) and snapshots; served as Vite's public dir
+/data          Generated JSON (projects, details, changes, interconnectors, grid) and snapshots/ (stage snapshots and the spotted-change log); served as Vite's public dir
 /worker        Cloudflare Worker for live data
 /src           Front end
   /data        Loading and types for the generated JSON

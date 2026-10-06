@@ -78,5 +78,17 @@
     "reason": "X and Y swapped. Swapped back, the point is at 58.57N 3.54W, by Thurso, matching the address and postcode KW14 7XH.",
     "note": "Location corrected from REPD (X and Y were swapped)",
     "checked": "2026-10-06"
+  },
+  {
+    "id": 20519,
+    "fields": {
+      "Planning Permission Refused": {
+        "repd": "4/17/2026",
+        "corrected": "17/04/2026"
+      }
+    },
+    "reason": "Date written month first, unlike every other REPD date. 17 cannot be a month, so it is 17 April 2026, which also follows the application date of 13 February 2026.",
+    "note": "Refusal date corrected from REPD (it was written month first)",
+    "checked": "2026-10-06"
   }
 ]

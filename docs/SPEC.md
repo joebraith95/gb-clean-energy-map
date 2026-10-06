@@ -182,6 +182,31 @@ The project name uses the body font rather than the pixel font, because long nam
 - Animated events, for projects of 5MW or more: consent granted, construction start, energisation.
 - Every stage change, of any size, appears in the "what changed" feed.
 
+GOV.UK redirects superseded REPD files to the latest release, so past releases cannot be fetched. The feed therefore combines two sources (`pipeline/events.py`, `pipeline/changes.py`).
+
+**Dated events from the current release.** Taken from REPD's own date columns, for the 12 months up to the release date:
+
+| Event | REPD date columns |
+|---|---|
+| Application submitted | Planning Application Submitted |
+| Appeal lodged | Appeal Lodged |
+| Consent granted | Planning Permission Granted, Appeal Granted, Secretary of State - Granted |
+| Refused | Planning Permission Refused, Appeal Refused, Secretary of State - Refusal |
+| Withdrawn | Planning Application Withdrawn, Appeal Withdrawn |
+| Construction started | Under Construction |
+| Now operational | Operational |
+| Permission expired | Planning Permission Expired |
+
+Rules for dated events:
+- Dates after the release date cannot have happened yet. They are ignored and counted in the pipeline report.
+- "Planning Permission Expired" is a deadline. It only counts as an event once the date has passed and the status is "Planning Permission Expired".
+
+**Spotted changes.** Each run writes a snapshot (`data/snapshots/<date>.json`, the headline stage of every project and interconnector), but only when a stage differs from the latest snapshot. Each difference that no dated event explains goes into `data/snapshots/spotted.json`, dated with the run and labelled with its source (for example "the July 2026 REPD release"). This covers records added or removed, abandoned and decommissioned projects, and interconnector stage changes.
+
+**The change list.** `data/changes.json` is rebuilt every run: the dated events plus spotted changes from the last 12 months, newest first. Two runs on unchanged sources produce byte-identical output.
+
+**The feed panel** applies the same technology, stage, flexibility and capacity filters as the map, so by default it lists projects of 1MW and above.
+
 ## Live layer
 
 - National generation mix and interconnector flows (flow direction animated on the cables)
