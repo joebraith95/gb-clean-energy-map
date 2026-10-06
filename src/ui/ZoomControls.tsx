@@ -1,4 +1,4 @@
-const LEVEL_NAMES = ['National', 'Regional', 'Local'];
+import { LEVEL_NAMES } from '../map/levels';
 
 interface Props {
   level: number;

@@ -4,8 +4,13 @@
 export const EXTENT = { minX: 0, minY: 0, maxX: 760_000, maxY: 1_230_000 } as const;
 
 export interface ZoomLevel {
-  /** Size of one map cell in metres. */
+  /** Size of the grid that places markers, in metres. */
   cellMetres: number;
+  /**
+   * Size of the land texture's cells, in metres: the finest land grid is 500m, so deeper levels
+   * draw it with bigger pixels. Always a whole multiple of cellMetres.
+   */
+  landMetres: number;
   /** Physical pixels per cell, as a multiple of the national view's fitted scale. */
   scaleFactor: number;
   /** Smallest capacity (MW) drawn at this level, so the national view shows larger projects only. */
@@ -14,12 +19,19 @@ export interface ZoomLevel {
   clusterPhases: boolean;
 }
 
-// Draft values: national, regional, local.
+// Seven fixed levels; each roughly doubles the detail of the one before.
 export const ZOOM_LEVELS: readonly ZoomLevel[] = [
-  { cellMetres: 4000, scaleFactor: 1, minMw: 50, clusterPhases: true },
-  { cellMetres: 2000, scaleFactor: 1, minMw: 5, clusterPhases: false },
-  { cellMetres: 1000, scaleFactor: 1.5, minMw: 0, clusterPhases: false },
+  { cellMetres: 4000, landMetres: 4000, scaleFactor: 1, minMw: 50, clusterPhases: true },
+  { cellMetres: 2000, landMetres: 2000, scaleFactor: 1, minMw: 5, clusterPhases: false },
+  { cellMetres: 1000, landMetres: 1000, scaleFactor: 1.5, minMw: 0, clusterPhases: false },
+  { cellMetres: 500, landMetres: 500, scaleFactor: 1.5, minMw: 0, clusterPhases: false },
+  { cellMetres: 250, landMetres: 500, scaleFactor: 1.5, minMw: 0, clusterPhases: false },
+  { cellMetres: 125, landMetres: 500, scaleFactor: 1.5, minMw: 0, clusterPhases: false },
+  { cellMetres: 62.5, landMetres: 500, scaleFactor: 1.5, minMw: 0, clusterPhases: false },
 ];
+
+/** Names for the zoom readout, one per level. */
+export const LEVEL_NAMES = ['National', 'Regional', 'Local', 'District', 'Town', 'Village', 'Site'];
 
 export function gridSize(level: ZoomLevel): { cols: number; rows: number } {
   return {

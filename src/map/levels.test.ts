@@ -69,4 +69,24 @@ describe('levels', () => {
     // A small map is centred in the uncovered 150px.
     expect(clampAxis(0, 100, 400, 0, 250)).toBe(25);
   });
+
+  it('draws land cells as whole physical pixels at every level, coarse enough for phones', () => {
+    for (const dpr of [1, 1.25, 2, 3]) {
+      const national = nationalScale(380, 700, dpr);
+      for (const level of ZOOM_LEVELS) {
+        const ratio = level.landMetres / level.cellMetres;
+        expect(Number.isInteger(ratio)).toBe(true);
+        expect(Number.isInteger(physicalScale(level, national) * ratio)).toBe(true);
+        // The finest land texture is 1,520 x 2,460, inside the 4,096 limit of many phones.
+        expect(level.landMetres).toBeGreaterThanOrEqual(500);
+      }
+    }
+  });
+
+  it('has seven levels, each at least 1.5 times as detailed as the one before', () => {
+    expect(ZOOM_LEVELS).toHaveLength(7);
+    const national = nationalScale(380, 700, 2);
+    const mpp = ZOOM_LEVELS.map((l) => l.cellMetres / physicalScale(l, national));
+    for (let i = 1; i < mpp.length; i++) expect(mpp[i - 1] / mpp[i]).toBeGreaterThanOrEqual(1.5);
+  });
 });

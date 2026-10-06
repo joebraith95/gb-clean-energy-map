@@ -91,4 +91,18 @@ describe('markers', () => {
     const national = { ...ZOOM_LEVELS[0], cellMetres: 1000, minMw: 50 };
     expect(buildMarkers(projects, national, land, (i) => i === 1)).toEqual([]);
   });
+
+  it('separates nearby projects at deep zoom while still snapping coastal ones to land', () => {
+    const site = { ...ZOOM_LEVELS[6], landMetres: 1000 };
+    const projects = index([
+      { x: 1100, y: 1_229_100, mw: 5 },
+      { x: 1400, y: 1_229_100, mw: 5 },
+      { ...at(0, 1), mw: 5 },
+    ]);
+    const [a, b, coastal] = buildMarkers(projects, site, land, () => true);
+    expect(a.col).not.toBe(b.col);
+    // The coastal project moves to the centre of the land cell at col 1, row 1 (1km cells).
+    expect(coastal.col).toBe(Math.floor(1500 / site.cellMetres));
+    expect(coastal.row).toBe(Math.floor(1500 / site.cellMetres));
+  });
 });

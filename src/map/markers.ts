@@ -91,12 +91,12 @@ export function buildMarkers(
     if (mw < level.minMw) continue;
     const x = projects.x[i]!;
     const y = projects.y[i]!;
-    let col = Math.floor((x - EXTENT.minX) / level.cellMetres);
-    let row = Math.floor((EXTENT.maxY - y) / level.cellMetres);
     const technology = projects.technologies[projects.tech[i]];
-    if (!MARINE_TECHNOLOGIES.has(technology)) {
-      [col, row] = nearestLand(x, y, col, row, level, land);
-    }
+    const [px, py] = MARINE_TECHNOLOGIES.has(technology)
+      ? [x, y]
+      : nearestLandPoint(x, y, level.landMetres, land);
+    const col = Math.floor((px - EXTENT.minX) / level.cellMetres);
+    const row = Math.floor((py - EXTENT.maxY) / -level.cellMetres);
     markers.push({
       source: 'project',
       index: i,
@@ -135,29 +135,33 @@ export function buildLinkMarkers(
   return markers.sort((a, b) => a.mw - b.mw);
 }
 
-function nearestLand(
+/**
+ * Where to draw an onshore project: its own position if its land cell is land, otherwise the
+ * centre of the nearest neighbouring land cell, or its own position if there is none.
+ */
+function nearestLandPoint(
   x: number,
   y: number,
-  col: number,
-  row: number,
-  level: ZoomLevel,
+  landMetres: number,
   land: { cells: Uint8Array; cols: number; rows: number },
 ): [number, number] {
+  const col = Math.floor((x - EXTENT.minX) / landMetres);
+  const row = Math.floor((EXTENT.maxY - y) / landMetres);
   const at = (c: number, r: number) =>
     c >= 0 && r >= 0 && c < land.cols && r < land.rows ? land.cells[r * land.cols + c] : SEA;
-  if (at(col, row) !== SEA) return [col, row];
+  if (at(col, row) !== SEA) return [x, y];
 
-  let best: [number, number] = [col, row];
+  let best: [number, number] = [x, y];
   let bestDistance = Infinity;
   for (let dr = -1; dr <= 1; dr++) {
     for (let dc = -1; dc <= 1; dc++) {
       if (at(col + dc, row + dr) === SEA) continue;
-      const cx = EXTENT.minX + (col + dc + 0.5) * level.cellMetres;
-      const cy = EXTENT.maxY - (row + dr + 0.5) * level.cellMetres;
+      const cx = EXTENT.minX + (col + dc + 0.5) * landMetres;
+      const cy = EXTENT.maxY - (row + dr + 0.5) * landMetres;
       const distance = (cx - x) ** 2 + (cy - y) ** 2;
       if (distance < bestDistance) {
         bestDistance = distance;
-        best = [col + dc, row + dr];
+        best = [cx, cy];
       }
     }
   }

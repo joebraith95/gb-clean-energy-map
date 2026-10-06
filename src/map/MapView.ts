@@ -94,6 +94,8 @@ export class MapView {
   private renderQueued = false;
   private landTextures: Texture[] = [];
   private landCells: Uint8Array[] = [];
+  /** For each zoom level, the index of the land grid it draws. */
+  private landFor: number[] = [];
 
   private level = 0;
   private national = 1;
@@ -149,6 +151,11 @@ export class MapView {
     this.app.ticker.stop();
     this.landTextures = this.grid.levels.map((level) => gridTexture(level, LAND_COLOURS));
     this.landCells = this.grid.levels.map(decodeLevel);
+    this.landFor = ZOOM_LEVELS.map((level) => {
+      const index = this.grid.levels.findIndex((g) => g.cellMetres === level.landMetres);
+      if (index < 0) throw new Error(`No ${level.landMetres}m land grid in grid.json`);
+      return index;
+    });
 
     this.world.addChild(
       this.land,
@@ -369,6 +376,12 @@ export class MapView {
     return physicalScale(ZOOM_LEVELS[this.level], this.national) / this.dpr;
   }
 
+  /** CSS pixels per land texture cell at the current level. */
+  private get cssPerLandCell(): number {
+    const level = ZOOM_LEVELS[this.level];
+    return this.cssPerCell * (level.landMetres / level.cellMetres);
+  }
+
   private get view(): { width: number; height: number } {
     return { width: this.app.screen.width, height: this.app.screen.height };
   }
@@ -403,25 +416,25 @@ export class MapView {
   }
 
   private render(): void {
-    this.land.texture = this.landTextures[this.level];
-    this.land.scale.set(this.cssPerCell);
+    this.land.texture = this.landTextures[this.landFor[this.level]];
+    this.land.scale.set(this.cssPerLandCell);
     this.drawMarkers();
     this.applyOffset();
   }
 
   private applyOffset(): void {
-    const level = this.grid.levels[this.level];
+    const level = this.grid.levels[this.landFor[this.level]];
     this.offset = {
       x: clampAxis(
         this.offset.x,
-        level.cols * this.cssPerCell,
+        level.cols * this.cssPerLandCell,
         this.view.width,
         this.insets.left,
         this.insets.right,
       ),
       y: clampAxis(
         this.offset.y,
-        level.rows * this.cssPerCell,
+        level.rows * this.cssPerLandCell,
         this.view.height,
         this.insets.top,
         this.insets.bottom,
@@ -451,11 +464,12 @@ export class MapView {
   }
 
   private drawMarkers(): void {
-    const gridLevel = this.grid.levels[this.level];
+    const landIndex = this.landFor[this.level];
+    const gridLevel = this.grid.levels[landIndex];
     this.markers = buildMarkers(
       this.projects,
       ZOOM_LEVELS[this.level],
-      { cells: this.landCells[this.level], cols: gridLevel.cols, rows: gridLevel.rows },
+      { cells: this.landCells[landIndex], cols: gridLevel.cols, rows: gridLevel.rows },
       this.include,
     ).concat(buildLinkMarkers(this.links, ZOOM_LEVELS[this.level], this.includeLink));
     this.cables = this.links.flatMap((link, i) => {
@@ -463,7 +477,7 @@ export class MapView {
       const cells = cableCells(
         link.gbEnd,
         link.partnerEnd,
-        ZOOM_LEVELS[this.level],
+        gridLevel,
         gridLevel.cols,
         gridLevel.rows,
       );
@@ -498,7 +512,8 @@ export class MapView {
   /** Dashed pixel cables; operational ones pulse outwards from Britain. */
   private drawCables(): void {
     const g = this.cableLayer.clear();
-    const css = this.cssPerCell;
+    // Cables are drawn on the land grid, so they stay a sensible number of cells long.
+    const css = this.cssPerLandCell;
     for (const cable of this.cables) {
       const phase = cable.pulses ? this.pulsePhase : 0;
       for (const { col, row, step } of cable.cells) {

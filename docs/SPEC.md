@@ -135,14 +135,18 @@ REPD has no field linking phases, so the pipeline (`pipeline/phases.py`) groups 
   - Capacity slider stops: all sizes, 1, 5, 10, 50, 100, 300 and 1,000MW.
 - A project can be shared as `?project=<REPD ID>`, which opens its card.
 - On screens narrower than 768px the card and filters are bottom sheets and only one is open at a time; on wider screens they are side panels and can be open together.
-- Zoom: three fixed levels. National view shows larger projects only; smaller projects appear as you zoom in. Current draft values (in `src/map/levels.ts`): National is 4km cells and 50MW or more, Regional is 2km cells and 5MW or more, Local is 1km cells and every size. The national view uses the largest whole number of physical pixels per cell that fits the screen; Regional uses the same scale and Local 1.5 times it (rounded), so every cell is a whole number of physical pixels at any screen density.
+- Zoom: seven fixed levels (National, Regional, Local, District, Town, Village, Site), each roughly doubling the detail of the one before; values in `src/map/levels.ts`.
+  - National uses 4km cells and shows 50MW or more; Regional uses 2km cells and shows 5MW or more; Local (1km) and deeper show every size.
+  - Each level places markers on its own grid (down to 62.5m at Site), so nearby projects separate as you zoom.
+  - Land is drawn from the 4km, 2km, 1km and 500m grids; deeper levels draw the 500m grid with bigger pixels, which keeps the largest land texture (1,520 x 2,460) inside the 4,096-pixel limit of many phones.
+  - The national view uses the largest whole number of physical pixels per cell that fits the screen, and every other level is a fixed multiple of it, so every cell is a whole number of physical pixels at any screen density.
 - Zoom controls: plus and minus buttons, mouse wheel, pinch, and the + and - keys, each moving one level and keeping the point under the cursor or fingers fixed. Drag or the arrow keys to pan.
 - Onshore projects whose cell is sea but next to the coast are drawn on the nearest land cell at that level. This affects drawing only; the data keeps REPD's coordinates.
 - The map extent must include offshore wind areas as far out as Dogger Bank.
 - Capacity is shown in four tiers: under 10MW a 3px stage-coloured dot, 10 to 50MW a 5px dot, 50 to 300MW a 9px sprite tile, and 300MW or more the same tile at double size (single size on the national view, to limit clutter).
 - Rows with no coordinates, coordinates outside the map extent, or no published capacity are kept in the data but not shown on the map. Nothing is estimated to fill the gap, and the pipeline report lists each hidden reason.
 - Map extent: BNG x 0 to 760,000 and y 0 to 1,230,000 (Scilly to Shetland, east past Dogger Bank).
-- Land grid: cells of 4km, 2km and 1km. GB land and other land are sampled every 250m, and a cell counts as land when at least 40% of its samples are land. Only GB land is drawn in the main land colour.
+- Land grid: cells of 4km, 2km, 1km and 500m. GB land and other land are sampled every 250m, and a cell counts as land when at least 40% of its samples are land. Only GB land is drawn in the main land colour.
 
 ## Project card
 

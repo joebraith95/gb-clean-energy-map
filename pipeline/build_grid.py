@@ -43,7 +43,7 @@ GB_UNITS = {"England", "Scotland", "Wales"}
 SEA, GB_LAND, OTHER_LAND = 0, 1, 2
 
 # Keep in step with ZOOM_LEVELS in src/map/levels.ts.
-CELL_SIZES = [4000, 2000, 1000]
+CELL_SIZES = [4000, 2000, 1000, 500]
 # Each cell is sampled on a fine sub-grid; it is land if at least this share of samples is land.
 SAMPLES_PER_KM = 4
 LAND_SHARE = 0.4
@@ -243,7 +243,7 @@ def main() -> None:
     grid = build()
     GRID_FILE.write_text(json.dumps(grid, separators=(",", ":")), encoding="utf-8")
     for level in grid["levels"]:
-        print(f"{level['cellMetres'] // 1000}km: {level['cols']} x {level['rows']} cells, {len(level['runs']) // 2} runs")
+        print(f"{level['cellMetres']}m: {level['cols']} x {level['rows']} cells, {len(level['runs']) // 2} runs")
     print(f"Wrote {GRID_FILE.relative_to(ROOT)}")
 
 

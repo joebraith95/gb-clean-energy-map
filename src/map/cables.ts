@@ -1,7 +1,7 @@
 // Schematic interconnector cables: a straight pixel line from the GB landing point towards the
 // partner end, clipped to the map. Drawn in grid cells so it stays pixel-perfect at every level.
 
-import { EXTENT, type ZoomLevel } from './levels';
+import { EXTENT } from './levels';
 
 /** Every DASH_PERIOD cells, the first DASH_ON are drawn. */
 export const DASH_PERIOD = 4;
@@ -18,7 +18,7 @@ export interface CableCell {
 export function cableCells(
   from: { x: number; y: number },
   to: { x: number; y: number },
-  level: ZoomLevel,
+  level: { cellMetres: number },
   cols: number,
   rows: number,
 ): CableCell[] {
