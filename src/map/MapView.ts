@@ -9,6 +9,7 @@ import { palette, spriteInk, stageColours } from '../theme/tokens';
 import { GB_LAND, OTHER_LAND, SEA, decodeLevel, type GridFile } from './grid';
 import { gridTexture } from './gridTexture';
 import {
+  NO_INSETS,
   ZOOM_LEVELS,
   anchorOffset,
   clampAxis,
@@ -16,6 +17,7 @@ import {
   physicalScale,
   screenToBng,
   snap,
+  type Insets,
 } from './levels';
 import { cableCells, isDash, type CableCell } from './cables';
 import {
@@ -76,6 +78,7 @@ export class MapView {
   private national = 1;
   private dpr = 1;
   private offset: Point = { x: 0, y: 0 };
+  private insets: Insets = NO_INSETS;
   private markers: Marker[] = [];
   private cables: { cells: CableCell[]; stage: Marker['stage']; pulses: boolean }[] = [];
   private pulsePhase = 0;
@@ -207,17 +210,49 @@ export class MapView {
     if (sameSelection(selection, this.selected)) return;
     this.selected = selection;
     this.drawHighlight();
-    const marker = this.markers.find((m) => sameSelection(m, selection));
+    this.revealSelected();
+  }
+
+  /**
+   * Tells the map which parts of it are covered by the card or filter panel. The map can then
+   * pan far enough to show anything in the uncovered part, and keeps the selection in view.
+   */
+  setInsets(insets: Insets): void {
+    this.insets = insets;
+    this.applyOffset();
+    this.revealSelected();
+  }
+
+  /** Pans the selected marker into the uncovered part of the map if it is hidden or near an edge. */
+  private revealSelected(): void {
+    const marker = this.markers.find((m) => sameSelection(m, this.selected));
     if (!marker) return;
     const { left, top, size } = this.markerBox(marker);
     const x = this.world.position.x + left + size / 2;
     const y = this.world.position.y + top + size / 2;
     const margin = 32;
-    const { width, height } = this.view;
-    if (x < margin || y < margin || x > width - margin || y > height - margin) {
-      this.offset = { x: width / 2 - (left + size / 2), y: height / 2 - (top + size / 2) };
-      this.applyOffset();
-    }
+    const area = this.visibleArea;
+    const hidden =
+      x < area.left + margin ||
+      y < area.top + margin ||
+      x > area.right - margin ||
+      y > area.bottom - margin;
+    if (!hidden) return;
+    this.offset = {
+      x: (area.left + area.right) / 2 - (left + size / 2),
+      y: (area.top + area.bottom) / 2 - (top + size / 2),
+    };
+    this.applyOffset();
+  }
+
+  /** The part of the view not covered by panels, in CSS px. */
+  private get visibleArea(): { left: number; top: number; right: number; bottom: number } {
+    return {
+      left: this.insets.left,
+      top: this.insets.top,
+      right: this.view.width - this.insets.right,
+      bottom: this.view.height - this.insets.bottom,
+    };
   }
 
   select(selection: Selection | null): void {
@@ -237,7 +272,8 @@ export class MapView {
   private zoomTo(target: number, anchor?: Point): void {
     const next = Math.max(0, Math.min(ZOOM_LEVELS.length - 1, target));
     if (next === this.level) return;
-    const screen = anchor ?? { x: this.view.width / 2, y: this.view.height / 2 };
+    const area = this.visibleArea;
+    const screen = anchor ?? { x: (area.left + area.right) / 2, y: (area.top + area.bottom) / 2 };
     const bng = screenToBng(screen, this.offset, ZOOM_LEVELS[this.level], this.cssPerCell);
     this.level = next;
     this.offset = anchorOffset(screen, bng, ZOOM_LEVELS[next], this.cssPerCell);
@@ -272,8 +308,20 @@ export class MapView {
   private applyOffset(): void {
     const level = this.grid.levels[this.level];
     this.offset = {
-      x: clampAxis(this.offset.x, level.cols * this.cssPerCell, this.view.width),
-      y: clampAxis(this.offset.y, level.rows * this.cssPerCell, this.view.height),
+      x: clampAxis(
+        this.offset.x,
+        level.cols * this.cssPerCell,
+        this.view.width,
+        this.insets.left,
+        this.insets.right,
+      ),
+      y: clampAxis(
+        this.offset.y,
+        level.rows * this.cssPerCell,
+        this.view.height,
+        this.insets.top,
+        this.insets.bottom,
+      ),
     };
     this.world.position.set(snap(this.offset.x, this.dpr), snap(this.offset.y, this.dpr));
     this.requestRender();

@@ -62,4 +62,11 @@ describe('levels', () => {
     expect(clampAxis(-900, 1000, 400)).toBe(-600);
     expect(clampAxis(-300, 1000, 400)).toBe(-300);
   });
+
+  it('lets the map pan past a covering panel so its far edge can be uncovered', () => {
+    // 400px view with the bottom 250px covered: the map can rise until its end meets 150px.
+    expect(clampAxis(-2000, 1000, 400, 0, 250)).toBe(-850);
+    // A small map is centred in the uncovered 150px.
+    expect(clampAxis(0, 100, 400, 0, 250)).toBe(25);
+  });
 });

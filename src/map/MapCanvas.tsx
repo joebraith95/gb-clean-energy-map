@@ -7,6 +7,7 @@ import type { GridFile } from './grid';
 import { ZOOM_LEVELS } from './levels';
 import type { Selection } from './markers';
 import { MapView } from './MapView';
+import { useOverlayInsets } from './useOverlayInsets';
 
 // Pixel-perfect rendering: nearest-neighbour sampling for every texture.
 TextureStyle.defaultOptions.scaleMode = 'nearest';
@@ -32,14 +33,16 @@ export function MapCanvas({
   selected,
   onSelect,
 }: Props) {
+  const frameRef = useRef<HTMLDivElement>(null);
   const hostRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<MapView | null>(null);
-  const latest = useRef({ include, includeLink, selected, onSelect });
+  const insets = useOverlayInsets(frameRef);
+  const latest = useRef({ include, includeLink, selected, onSelect, insets });
   const [level, setLevel] = useState(0);
 
   useEffect(() => {
-    latest.current = { include, includeLink, selected, onSelect };
-  }, [include, includeLink, selected, onSelect]);
+    latest.current = { include, includeLink, selected, onSelect, insets };
+  }, [include, includeLink, selected, onSelect, insets]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -59,6 +62,7 @@ export function MapCanvas({
       viewRef.current = created;
       created.setFilter(latest.current.include, latest.current.includeLink);
       created.showSelection(latest.current.selected);
+      created.setInsets(latest.current.insets);
     });
 
     return () => {
@@ -76,8 +80,13 @@ export function MapCanvas({
     viewRef.current?.showSelection(selected);
   }, [selected]);
 
+  // Keep the selected project clear of the card or filter panel covering part of the map.
+  useEffect(() => {
+    viewRef.current?.setInsets(insets);
+  }, [insets]);
+
   return (
-    <div className="map-frame">
+    <div ref={frameRef} className="map-frame">
       <div
         ref={hostRef}
         className="map-host"

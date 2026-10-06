@@ -84,11 +84,29 @@ export function screenToBng(
   };
 }
 
+/** Parts of the view covered by panels (CSS px from each edge). */
+export interface Insets {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+export const NO_INSETS: Insets = { top: 0, right: 0, bottom: 0, left: 0 };
+
 /**
- * Keeps the map on screen along one axis. A map smaller than the view is centred; a larger
- * one can be panned until its edge meets the view's edge.
+ * Keeps the map in the visible part of one axis: the view minus the space covered at its
+ * start and end. A map smaller than that space is centred in it; a larger one can be panned
+ * until its edge meets the edge of the visible space, so every point can be brought into view.
  */
-export function clampAxis(offset: number, mapSize: number, viewSize: number): number {
-  if (mapSize <= viewSize) return (viewSize - mapSize) / 2;
-  return Math.min(0, Math.max(viewSize - mapSize, offset));
+export function clampAxis(
+  offset: number,
+  mapSize: number,
+  viewSize: number,
+  coveredStart = 0,
+  coveredEnd = 0,
+): number {
+  const visible = viewSize - coveredStart - coveredEnd;
+  if (mapSize <= visible) return coveredStart + (visible - mapSize) / 2;
+  return Math.min(coveredStart, Math.max(viewSize - coveredEnd - mapSize, offset));
 }
