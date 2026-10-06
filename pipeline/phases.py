@@ -14,14 +14,21 @@ from pathlib import Path
 LINKS_FILE = Path(__file__).resolve().parent / "phase_links.json"
 MAX_DISTANCE_M = 10_000
 
-_NUMBER = r"(?:\d+|[ivx]+|one|two|three|four|five|[a-e])"
+_NUMBER = r"(?:\d+[a-e]?|[ivx]+|one|two|three|four|five|[a-e])"
 PHASE_WORDS = re.compile(rf"\b(?:phase|extension|ext)\b\.?(?:\s*{_NUMBER}\b)?", re.IGNORECASE)
+# Generic words that vary between phases of one project ("Crystal Rig" and "Crystal Rig Wind
+# Farm"). Removed only for matching; technology and distance checks still apply.
+GENERIC_WORDS = re.compile(
+    r"\b(?:wind ?farm|wind ?park|wind energy|solar ?farm|solar ?park|solar pv|pv|"
+    r"battery energy storage system|battery storage|energy storage|bess)\b"
+)
 
 
 def base_name(name: str) -> str:
-    """Lower-case name with phase and extension wording and punctuation removed."""
+    """Lower-case name with phase, extension and generic wording and punctuation removed."""
     stripped = PHASE_WORDS.sub(" ", name.lower())
     stripped = re.sub(r"[^a-z0-9]+", " ", stripped)
+    stripped = GENERIC_WORDS.sub(" ", stripped)
     return re.sub(r"\s+", " ", stripped).strip()
 
 

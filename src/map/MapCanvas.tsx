@@ -12,19 +12,22 @@ TextureStyle.defaultOptions.scaleMode = 'nearest';
 interface Props {
   grid: GridFile;
   projects: ProjectIndex;
+  /** The filter predicate; a new function redraws the markers. */
+  include: (index: number) => boolean;
+  selected: number | null;
   onSelect: (index: number | null) => void;
 }
 
 /** Mounts the PixiJS map. React owns the UI around it; MapView owns the canvas. */
-export function MapCanvas({ grid, projects, onSelect }: Props) {
+export function MapCanvas({ grid, projects, include, selected, onSelect }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<MapView | null>(null);
-  const onSelectRef = useRef(onSelect);
+  const latest = useRef({ include, selected, onSelect });
   const [level, setLevel] = useState(0);
 
   useEffect(() => {
-    onSelectRef.current = onSelect;
-  }, [onSelect]);
+    latest.current = { include, selected, onSelect };
+  }, [include, selected, onSelect]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -33,7 +36,7 @@ export function MapCanvas({ grid, projects, onSelect }: Props) {
     let view: MapView | null = null;
 
     MapView.create(host, grid, projects, {
-      onSelect: (index) => onSelectRef.current(index),
+      onSelect: (index) => latest.current.onSelect(index),
       onLevelChange: setLevel,
     }).then((created) => {
       if (cancelled) {
@@ -42,6 +45,8 @@ export function MapCanvas({ grid, projects, onSelect }: Props) {
       }
       view = created;
       viewRef.current = created;
+      created.setFilter(latest.current.include);
+      created.showSelection(latest.current.selected);
     });
 
     return () => {
@@ -50,6 +55,14 @@ export function MapCanvas({ grid, projects, onSelect }: Props) {
       viewRef.current = null;
     };
   }, [grid, projects]);
+
+  useEffect(() => {
+    viewRef.current?.setFilter(include);
+  }, [include]);
+
+  useEffect(() => {
+    viewRef.current?.showSelection(selected);
+  }, [selected]);
 
   return (
     <div className="map-frame">

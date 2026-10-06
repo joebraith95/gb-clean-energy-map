@@ -18,6 +18,8 @@ export interface Marker {
   index: number;
   col: number;
   row: number;
+  /** Capacity in MW; the combined total when phases are clustered. */
+  mw: number;
   tier: number;
   stage: Stage;
   kind: SpriteKind;
@@ -31,8 +33,10 @@ export function capacityTier(mw: number): number {
 /**
  * Markers for one level, smallest first so larger projects draw on top.
  * `include` is the user's filter; projects hidden by the pipeline or below the level's
- * capacity floor are always left out. Onshore projects that fall on a sea cell next to the
- * coast are drawn on the nearest land cell; their data is unchanged.
+ * capacity floor are always left out. Where the level clusters phases, the phases of one
+ * project that pass the filter become a single marker at the largest phase, sized by their
+ * combined capacity. Onshore projects that fall on a sea cell next to the coast are drawn on
+ * the nearest land cell; their data is unchanged.
  */
 export function buildMarkers(
   projects: ProjectIndex,
@@ -40,14 +44,41 @@ export function buildMarkers(
   land: { cells: Uint8Array; cols: number; rows: number },
   include: (index: number) => boolean,
 ): Marker[] {
-  const markers: Marker[] = [];
+  // Candidates: drawable projects that pass the filter, with their phases combined if clustering.
+  const candidates = new Map<number, { index: number; mw: number }>();
+  const groupLead = new Map<number, number>();
   for (let i = 0; i < projects.id.length; i++) {
-    const x = projects.x[i];
-    const y = projects.y[i];
     const mw = projects.mw[i];
-    if (projects.hidden[i] >= 0 || x === null || y === null || mw === null) continue;
-    if (mw < level.minMw || !include(i)) continue;
+    if (projects.hidden[i] >= 0 || projects.x[i] === null || projects.y[i] === null) continue;
+    if (mw === null || !include(i)) continue;
+    const group = projects.group[i];
+    if (!level.clusterPhases || group < 0) {
+      candidates.set(i, { index: i, mw });
+      continue;
+    }
+    const lead = groupLead.get(group);
+    if (lead === undefined) {
+      groupLead.set(group, i);
+      candidates.set(i, { index: i, mw });
+      continue;
+    }
+    const combined = candidates.get(lead)!;
+    const total = combined.mw + mw;
+    if (mw > (projects.mw[combined.index] ?? 0)) {
+      // The largest phase leads, so the marker sits where most of the capacity is.
+      candidates.delete(lead);
+      groupLead.set(group, i);
+      candidates.set(i, { index: i, mw: total });
+    } else {
+      combined.mw = total;
+    }
+  }
 
+  const markers: Marker[] = [];
+  for (const { index: i, mw } of candidates.values()) {
+    if (mw < level.minMw) continue;
+    const x = projects.x[i]!;
+    const y = projects.y[i]!;
     let col = Math.floor((x - EXTENT.minX) / level.cellMetres);
     let row = Math.floor((EXTENT.maxY - y) / level.cellMetres);
     const technology = projects.technologies[projects.tech[i]];
@@ -58,12 +89,13 @@ export function buildMarkers(
       index: i,
       col,
       row,
+      mw,
       tier: capacityTier(mw),
       stage: projects.stages[projects.stage[i]] as Stage,
       kind: spriteKind(technology),
     });
   }
-  return markers.sort((a, b) => (projects.mw[a.index] ?? 0) - (projects.mw[b.index] ?? 0));
+  return markers.sort((a, b) => a.mw - b.mw);
 }
 
 function nearestLand(

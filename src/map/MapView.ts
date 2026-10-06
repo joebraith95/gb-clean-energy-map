@@ -168,6 +168,27 @@ export class MapView {
     this.drawMarkers();
   }
 
+  /**
+   * Shows a selection made outside the map (for example from a card link) without raising
+   * onSelect, and pans to the marker if it is drawn but off screen.
+   */
+  showSelection(index: number | null): void {
+    if (index === this.selected) return;
+    this.selected = index;
+    this.drawHighlight();
+    const marker = this.markers.find((m) => m.index === index);
+    if (!marker) return;
+    const { left, top, size } = this.markerBox(marker);
+    const x = this.world.position.x + left + size / 2;
+    const y = this.world.position.y + top + size / 2;
+    const margin = 32;
+    const { width, height } = this.view;
+    if (x < margin || y < margin || x > width - margin || y > height - margin) {
+      this.offset = { x: width / 2 - (left + size / 2), y: height / 2 - (top + size / 2) };
+      this.applyOffset();
+    }
+  }
+
   select(index: number | null): void {
     this.selected = index;
     this.drawHighlight();

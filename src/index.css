@@ -32,10 +32,24 @@ h3 {
   height: 100%;
 }
 
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 16px;
+  border-bottom: 2px solid var(--color-panelEdge);
+}
+
 .app-header h1 {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
   margin: 0;
-  padding: 12px 16px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .app-main {
@@ -113,8 +127,341 @@ h3 {
   padding: 16px;
 }
 
-.selection {
-  padding: 12px 16px;
+a {
+  color: var(--color-ink);
+}
+
+.muted {
+  color: var(--color-inkMuted);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  font: inherit;
+  font-weight: 700;
+  color: var(--color-ink);
+  background: var(--color-panel);
+  border: 2px solid var(--color-panelEdge);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.link {
+  padding: 0;
+  font: inherit;
+  color: var(--color-ink);
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+/* Card and filter panel: bottom sheets on phones, side panels on wider screens. */
+.card,
+.panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 65%;
+  overflow-y: auto;
+  padding: 16px;
   background: var(--color-panel);
   border-top: 2px solid var(--color-panelEdge);
+  z-index: 2;
+}
+
+@media (min-width: 768px) {
+  .card,
+  .panel {
+    top: 0;
+    max-height: none;
+    width: 380px;
+    border-top: 0;
+  }
+  .card {
+    left: auto;
+    border-left: 2px solid var(--color-panelEdge);
+  }
+  .panel {
+    right: auto;
+    width: 300px;
+    border-right: 2px solid var(--color-panelEdge);
+  }
+}
+
+.card-close {
+  float: right;
+  width: 44px;
+  height: 44px;
+  margin: -8px -8px 0 8px;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--color-ink);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.card-top {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.tech-icon {
+  flex: none;
+  image-rendering: pixelated;
+}
+
+/* Project names stay in the body font: long names in the pixel font are hard to read. */
+.card-name {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.card-sub {
+  margin: 4px 0 0;
+  color: var(--color-inkMuted);
+}
+
+.card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.chip {
+  padding: 4px 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-panel);
+}
+
+.chip-off-track {
+  color: var(--color-ink);
+  background: var(--color-panelEdge);
+}
+
+.chip-outline {
+  color: var(--color-ink);
+  border: 2px solid var(--color-panelEdge);
+}
+
+.progress {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.progress li {
+  padding-top: 8px;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: var(--color-inkMuted);
+  border-top: 6px solid var(--color-panelEdge);
+}
+
+.progress li.done {
+  color: var(--color-ink);
+  border-top-color: var(--color-ink);
+}
+
+.progress-label,
+.progress-date {
+  display: block;
+}
+
+.progress-date {
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-notes {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  list-style: none;
+  border-left: 4px solid var(--stage-under-construction);
+}
+
+.card-details {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: 6px 12px;
+  margin: 0;
+}
+
+.card-details dt {
+  color: var(--color-inkMuted);
+}
+
+.card-details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.card-phases h3,
+.panel h2,
+.about h3 {
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.card-phases ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.card-phases li {
+  margin: 4px 0;
+}
+
+.card-footer {
+  margin-top: 16px;
+  font-size: 0.875rem;
+  color: var(--color-inkMuted);
+}
+
+.card-footer a {
+  color: var(--color-inkMuted);
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-head h2 {
+  margin: 0;
+}
+
+.panel fieldset {
+  margin: 12px 0;
+  padding: 0;
+  border: 0;
+}
+
+.panel legend {
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  cursor: pointer;
+}
+
+.check input {
+  width: 20px;
+  height: 20px;
+}
+
+.indent {
+  padding-left: 28px;
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-panel);
+  outline: 1px solid var(--color-ink);
+}
+
+.slider {
+  display: grid;
+  gap: 8px;
+}
+
+.slider input {
+  width: 100%;
+}
+
+.credit {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  margin: 0;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  background: var(--color-panel);
+  z-index: 1;
+}
+
+.about {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  background: var(--color-panel);
+  z-index: 10;
+}
+
+.about-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px;
+  line-height: 1.5;
+}
+
+.about h2 {
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.about table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.about th,
+.about td {
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--color-panelEdge);
+}
+
+.attribution {
+  font-size: 0.875rem;
+  color: var(--color-inkMuted);
+}
+
+/* Keep zoom controls and the credit clear of the open card and filter panel. */
+.card-open .zoom-controls,
+.panel-open .zoom-controls {
+  top: 16px;
+  bottom: auto;
+}
+
+@media (min-width: 768px) {
+  .card-open .zoom-controls,
+  .panel-open .zoom-controls {
+    top: auto;
+    bottom: 16px;
+  }
+  .card-open .zoom-controls {
+    right: 396px;
+  }
+  .panel-open .credit {
+    left: 308px;
+  }
 }

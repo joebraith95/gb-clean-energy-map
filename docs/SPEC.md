@@ -104,10 +104,24 @@ The milestones themselves appear on the card.
 
 One dot per phase (one REPD row). The card links to sibling phases. Clustered at national zoom.
 
+REPD has no field linking phases, so the pipeline (`pipeline/phases.py`) groups records that:
+- share a technology,
+- have matching names once phase and extension wording ("Phase 2", "Extension II") and generic words ("wind farm", "solar park", "battery storage") are removed,
+- include at least one name that mentions a phase or extension,
+- each sit within 10km of another member.
+
+`pipeline/phase_links.json` adds or removes links by hand. The card labels the list "Other phases (matched by name)". At national zoom, phases that pass the filters become one marker at the largest phase, sized and thresholded by their combined capacity.
+
 ## Display rules
 
 - Default capacity filter: 1MW and above, adjustable with a slider. All REPD rows are ingested regardless.
 - Filters: technology, headline stage, flexibility layer toggle, capacity.
+  - Technology groups: onshore wind, offshore wind, solar, hydro, tidal and wave; with the flexibility layer on, also batteries, pumped storage, other storage and hydrogen.
+  - The flexibility layer is off when the map opens.
+  - Stage choices only list stages that have projects on the map (no empty options).
+  - Capacity slider stops: all sizes, 1, 5, 10, 50, 100, 300 and 1,000MW.
+- A project can be shared as `?project=<REPD ID>`, which opens its card.
+- On screens narrower than 768px the card and filters are bottom sheets and only one is open at a time; on wider screens they are side panels and can be open together.
 - Zoom: three fixed levels. National view shows larger projects only; smaller projects appear as you zoom in. Current draft values (in `src/map/levels.ts`): National is 4km cells and 50MW or more, Regional is 2km cells and 5MW or more, Local is 1km cells and every size. The national view uses the largest whole number of physical pixels per cell that fits the screen; Regional uses the same scale and Local 1.5 times it (rounded), so every cell is a whole number of physical pixels at any screen density.
 - Zoom controls: plus and minus buttons, mouse wheel, pinch, and the + and - keys, each moving one level and keeping the point under the cursor or fingers fixed. Drag or the arrow keys to pan.
 - Onshore projects whose cell is sea but next to the coast are drawn on the nearest land cell at that level. This affects drawing only; the data keeps REPD's coordinates.
@@ -128,7 +142,7 @@ One dot per phase (one REPD row). The card links to sibling phases. Clustered at
 - Local authority, region, onshore or offshore
 - Operator or developer
 - Dates: application submitted, consented, construction start, operational
-- Planning reference, linked to the planning portal where possible
+- Planning reference, linked to the planning portal where possible (phase 1 shows the reference as text: each of the hundreds of planning authorities has its own portal and REPD holds no links)
 - Connection site and contracted date (Gate 2 projects only)
 - Links to sibling phases
 
@@ -137,6 +151,8 @@ One dot per phase (one REPD row). The card links to sibling phases. Clustered at
 
 **Footer**
 - Source and last updated date
+
+The project name uses the body font rather than the pixel font, because long names in the pixel font are hard to read. "Onshore" or "Offshore" is shown for wind only, as REPD states it only through the technology. In phase 1 the connection badge always reads "Not published".
 
 ## Design
 

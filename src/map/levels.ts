@@ -10,13 +10,15 @@ export interface ZoomLevel {
   scaleFactor: number;
   /** Smallest capacity (MW) drawn at this level, so the national view shows larger projects only. */
   minMw: number;
+  /** Draw the phases of one project as a single marker. */
+  clusterPhases: boolean;
 }
 
 // Draft values: national, regional, local.
 export const ZOOM_LEVELS: readonly ZoomLevel[] = [
-  { cellMetres: 4000, scaleFactor: 1, minMw: 50 },
-  { cellMetres: 2000, scaleFactor: 1, minMw: 5 },
-  { cellMetres: 1000, scaleFactor: 1.5, minMw: 0 },
+  { cellMetres: 4000, scaleFactor: 1, minMw: 50, clusterPhases: true },
+  { cellMetres: 2000, scaleFactor: 1, minMw: 5, clusterPhases: false },
+  { cellMetres: 1000, scaleFactor: 1.5, minMw: 0, clusterPhases: false },
 ];
 
 export function gridSize(level: ZoomLevel): { cols: number; rows: number } {

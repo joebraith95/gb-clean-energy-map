@@ -7,7 +7,7 @@ import { buildMarkers, capacityTier } from './markers';
 const local = ZOOM_LEVELS[2];
 
 function index(
-  rows: { x: number; y: number; mw: number; tech?: number; hidden?: number }[],
+  rows: { x: number; y: number; mw: number; tech?: number; hidden?: number; group?: number }[],
 ): ProjectIndex {
   return {
     source: { name: '', page: '', file: '', updated: null },
@@ -24,6 +24,7 @@ function index(
     flex: rows.map(() => 0),
     stage: rows.map(() => 0),
     hidden: rows.map((r) => r.hidden ?? -1),
+    group: rows.map((r) => r.group ?? -1),
   };
 }
 
@@ -66,5 +67,28 @@ describe('markers', () => {
       { ...at(1, 0), mw: 2 },
     ]);
     expect(buildMarkers(projects, local, land, () => true).map((m) => m.index)).toEqual([1, 0]);
+  });
+
+  it('clusters phases into one marker at the largest phase on levels that cluster', () => {
+    const projects = index([
+      { ...at(1, 0), mw: 30, group: 0 },
+      { ...at(1, 1), mw: 40, group: 0 },
+      { ...at(1, 2), mw: 20 },
+    ]);
+    const national = { ...ZOOM_LEVELS[0], cellMetres: 1000, minMw: 50 };
+    const markers = buildMarkers(projects, national, land, () => true);
+    expect(markers).toHaveLength(1);
+    expect(markers[0].index).toBe(1);
+    expect(markers[0].mw).toBe(70);
+    expect(buildMarkers(projects, local, land, () => true)).toHaveLength(3);
+  });
+
+  it('only combines phases that pass the filter', () => {
+    const projects = index([
+      { ...at(1, 0), mw: 30, group: 0 },
+      { ...at(1, 1), mw: 40, group: 0 },
+    ]);
+    const national = { ...ZOOM_LEVELS[0], cellMetres: 1000, minMw: 50 };
+    expect(buildMarkers(projects, national, land, (i) => i === 1)).toEqual([]);
   });
 });

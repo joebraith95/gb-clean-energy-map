@@ -6,10 +6,15 @@ def rec(id, name, x=100_000, y=100_000, technology="Solar Photovoltaics"):
 
 
 def test_base_name_strips_phase_wording():
-    assert base_name("Caddington Solar Farm (Phase 1)") == "caddington solar farm"
+    assert base_name("Caddington Solar Farm (Phase 1)") == "caddington"
     assert base_name("Stowbridge Farm - Extension (Phase 2)") == "stowbridge farm"
-    assert base_name("Chittering Solar Farm - extension 2") == "chittering solar farm"
-    assert base_name("Whitelee Windfarm Extension Phase 3") == "whitelee windfarm"
+    assert base_name("Chittering Solar Farm - extension 2") == "chittering"
+    assert base_name("Whitelee Windfarm Extension Phase 3") == "whitelee"
+
+
+def test_base_name_ignores_generic_words_and_lettered_phases():
+    assert base_name("Crystal Rig Wind Farm Phase 2a") == base_name("Crystal Rig Phase 1")
+    assert base_name("Nevendon Battery Storage Extension") == "nevendon"
 
 
 def test_mentions_phase():
