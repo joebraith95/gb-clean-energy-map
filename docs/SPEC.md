@@ -215,9 +215,13 @@ The project name uses the body font rather than the pixel font, because long nam
 The site starts on Cloudflare Pages and will later move to a custom domain. To make that move a configuration change only:
 
 - All asset and data paths are relative to the site root. No hard-coded `*.pages.dev` addresses anywhere.
-- The site's public URL (canonical link, social share tags, About page) is set in one config value.
+- The site's public URL (canonical link, social share tags, About page) is set in one config value: `VITE_SITE_URL` in `.env.production`.
 - The front end reads the Worker's base URL from an environment variable. Once the domain is on Cloudflare, the Worker is served at `/api/*` on the same domain, so the browser only ever calls the site's own origin.
-- Moving to the domain means adding it as a Pages custom domain and adding a Worker route. No code changes.
+- Moving to the domain means adding it as a Pages custom domain, adding a Worker route, and changing `VITE_SITE_URL`. No other code changes.
+
+**Current setup (live since 6 October 2026)**
+- Site: https://gb-clean-energy-map.pages.dev, deployed by Cloudflare Pages from the `main` branch of https://github.com/joebraith95/gb-clean-energy-map (build `npm run build`, output `dist`, Node from `.node-version`).
+- GitHub Actions: CI on every push; the data refresh every Monday at 06:00 UTC commits changes to `data/`, which triggers a deploy.
 
 ## Phases
 
