@@ -16,7 +16,7 @@ The full product spec is in `docs/SPEC.md`. Read it before starting any new feat
 
 ```
 /pipeline      Python ingest, cleaning, stage mapping, change detection
-/data          Generated JSON (projects, changes, interconnectors) and snapshots
+/data          Generated JSON (projects, changes, interconnectors) and snapshots; served as Vite's public dir
 /worker        Cloudflare Worker for live data
 /src           Front end
   /map         PixiJS renderer, grid levels, sprites, animations
@@ -26,9 +26,22 @@ The full product spec is in `docs/SPEC.md`. Read it before starting any new feat
 /docs          SPEC.md and notes
 ```
 
+Sprites are defined in code (`src/map/sprites.ts`) as character grids coloured from theme tokens, not as image files.
+
 ## Commands
 
-To be filled in once the project is scaffolded (dev server, build, pipeline run, worker deploy, tests).
+Front end (repo root):
+- `npm run dev`: dev server at http://localhost:5173
+- `npm run build`: type-check and build to `dist/`
+- `npm test`: Vitest
+- `npm run lint` / `npm run format`: ESLint / Prettier
+
+Pipeline (repo root, using the venv at `pipeline/.venv`):
+- Set up once: `python -m venv pipeline/.venv` then `pipeline/.venv/Scripts/python -m pip install -r pipeline/requirements.txt`
+- Run: `pipeline/.venv/Scripts/python -m pipeline.run --report`
+- Tests: `pipeline/.venv/Scripts/python -m pytest pipeline`
+
+Worker deploy: added in phase 3.
 
 ## Rules
 
