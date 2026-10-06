@@ -43,6 +43,8 @@ Pipeline (repo root, using the venv at `pipeline/.venv`):
 - Land grid: `pipeline/.venv/Scripts/python -m pipeline.build_grid` (add `--fetch` to re-download the coastline sources into `assets/grid/`)
 - Tests: `pipeline/.venv/Scripts/python -m pytest pipeline`
 
+Deploy: pushing to `main` deploys the site through Cloudflare Pages (build `npm run build`, output `dist`, Node version from `.node-version`). GitHub Actions run CI on every push and refresh `data/` every Monday (`.github/workflows/`). Stop the dev server before `npm ci` on Windows, or locked files break the install.
+
 Worker deploy: added in phase 3.
 
 ## Rules
