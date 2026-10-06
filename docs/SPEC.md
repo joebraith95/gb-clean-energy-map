@@ -65,9 +65,12 @@ Early development is mainly populated from the TEC register in phase 4.
 
 ### REPD file handling
 
-- Latin-1 encoding. Numbers may contain thousands separators. Dates are dd/mm/yyyy.
-- Strip whitespace from every header and value, and match columns by their stripped names (some headers contain trailing or double spaces).
+- Windows-1252 encoding (it contains curly apostrophes and en dashes, so Latin-1 is not enough). Numbers may contain thousands separators. Dates are dd/mm/yyyy, and any other date format stops the pipeline.
+- Strip whitespace from every header and value and collapse repeated spaces, then match columns by their cleaned names (some headers contain trailing or double spaces).
+- "NA", "N/A" and "n/a" are treated as blank, which means "Not published".
 - `X-coordinate` and `Y-coordinate` are British National Grid for GB rows. Northern Ireland rows use Irish Grid and are excluded, as the map covers Great Britain only.
+- The consented date shown is the final grant: the latest of planning permission granted, appeal granted and Secretary of State granted.
+- The pipeline finds the latest CSV through the GOV.UK content API for the publication page.
 
 ### Connection badge (shown on the card, separate from the headline stage)
 
@@ -98,7 +101,7 @@ One dot per phase (one REPD row). The card links to sibling phases. Clustered at
 - Zoom: three fixed levels. National view shows larger projects only; smaller projects appear as you zoom in. Exact cell sizes and per-level capacity thresholds to be tuned in phase 1.
 - The map extent must include offshore wind areas as far out as Dogger Bank.
 - Capacity is shown by sprite size in three or four tiers.
-- Rows with no coordinates or no published capacity are kept in the data but not shown on the map. Nothing is estimated to fill the gap.
+- Rows with no coordinates, coordinates outside the map extent, or no published capacity are kept in the data but not shown on the map. Nothing is estimated to fill the gap, and the pipeline report lists each hidden reason.
 
 ## Project card
 

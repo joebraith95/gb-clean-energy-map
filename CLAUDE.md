@@ -38,7 +38,7 @@ Front end (repo root):
 
 Pipeline (repo root, using the venv at `pipeline/.venv`):
 - Set up once: `python -m venv pipeline/.venv` then `pipeline/.venv/Scripts/python -m pip install -r pipeline/requirements.txt`
-- Run: `pipeline/.venv/Scripts/python -m pipeline.run --report`
+- Run: `pipeline/.venv/Scripts/python -m pipeline.run --report` (downloads the latest REPD; add `--offline` to reuse the cached copy in `pipeline/raw/`)
 - Tests: `pipeline/.venv/Scripts/python -m pytest pipeline`
 
 Worker deploy: added in phase 3.
