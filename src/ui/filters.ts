@@ -1,5 +1,6 @@
 // Filter state and the predicate the map uses to decide which projects to draw.
 
+import { linkCapacity, type Interconnector } from '../data/interconnectors';
 import type { ProjectIndex } from '../data/projects';
 import type { Stage } from '../theme/tokens';
 
@@ -41,6 +42,8 @@ export const TECH_GROUPS: TechGroup[] = [
     flexibility: true,
   },
   { key: 'hydrogen', label: 'Hydrogen', technologies: ['Hydrogen'], flexibility: true },
+  // Not a REPD technology: interconnectors come from their own file.
+  { key: 'interconnectors', label: 'Interconnectors', technologies: [], flexibility: true },
 ];
 
 export const STAGE_ORDER: Stage[] = [
@@ -93,6 +96,30 @@ export function makeInclude(projects: ProjectIndex, filters: Filters): (index: n
     allowedTech.has(projects.tech[i]) &&
     allowedStage.has(projects.stage[i]) &&
     (projects.mw[i] ?? 0) >= filters.minMw;
+}
+
+export function makeIncludeLink(
+  links: Interconnector[],
+  filters: Filters,
+): (index: number) => boolean {
+  const on = filters.flexibility && filters.techGroups.includes('interconnectors');
+  return (i) => {
+    const link = links[i];
+    const mw = linkCapacity(link);
+    return (
+      on &&
+      link.stage !== null &&
+      filters.stages.includes(link.stage) &&
+      mw !== null &&
+      mw >= filters.minMw
+    );
+  };
+}
+
+/** Interconnectors that can be drawn (they have a GB landing point) and pass the filters. */
+export function countLinksShown(links: Interconnector[], filters: Filters): number {
+  const include = makeIncludeLink(links, filters);
+  return links.filter((link, i) => link.gbEnd !== null && include(i)).length;
 }
 
 /** Projects that can be drawn and pass the filters, at any zoom level. */

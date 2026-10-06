@@ -12,7 +12,9 @@ A public, personal project showing where clean energy projects in Great Britain 
 | Source | Used for | Refresh | Phase |
 |---|---|---|---|
 | REPD (DESNZ) | Projects, locations, planning status, stage dates | Quarterly | 1 |
-| Hand-curated interconnector file | Landing points, partner country, capacity, milestones | Manual | 1 |
+| Hand-curated interconnector file (`pipeline/interconnectors.json`) | Partner country, landing points, Ofgem milestones | Manual | 1 |
+| NESO Interconnector Register | Interconnector capacity, status, connection site, Gate | Twice weekly | 1 |
+| OpenStreetMap | Interconnector landing points (converter stations and substations) | Checked by hand when the curated file changes | 1 |
 | ONS Countries (December 2024) Boundaries UK BGC | GB coastline for the land grid (already in BNG) | When ONS republishes | 1 |
 | Natural Earth 1:10m admin 0 map units | Non-GB land drawn as muted scenery (Ireland, France, Isle of Man) | Rarely | 1 |
 | NESO TEC register | Transmission connection contracts and dates | Frequent | 4 |
@@ -99,6 +101,17 @@ Ofgem cap and floor milestones mapped onto the same headline stages:
 - Commissioned: Operational
 
 The milestones themselves appear on the card.
+
+How the data is put together:
+- **Register.** The NESO Interconnector Register supplies contracted import and export capacity, status, GB connection site, Gate and contracted date. "Built" in the register means Operational and "Under Construction/Commissioning" means Under construction, whatever the milestones say.
+- **Curated file.** `pipeline/interconnectors.json` adds what the register lacks: partner country, landing points (OpenStreetMap features, checked by hand), the year a link entered service, and Ofgem milestones with their decision pages. An `fpa` milestone is only recorded once main consents are also in place.
+- **Matching.** A curated interconnector missing from the register stops the pipeline.
+- **Scope.** Built links, links under construction, and links Ofgem has approved in principle. Other register entries (scoping only) belong to Early development and arrive with phase 4.
+- **Landing points.** Where no converter station exists yet, the GB landing point is the connection substation named in the register, and the card says so. Interconnectors with no published landing point are kept in the data but not drawn.
+- **Drawing.** Each interconnector is a straight dashed pixel line from the GB landing point towards the partner end, clipped to the map. The card calls it a schematic, not the real route. Operational cables pulse outwards; there is no animation under `prefers-reduced-motion`.
+- **Filtering.** Interconnectors are part of the flexibility layer, with their own "Interconnectors" filter. Their capacity for filtering and marker size is the larger of import and export.
+- **Connection badge.** "Energised" when the register says Built, "Gate 2 contracted" with the contracted date for Gate 2, otherwise "Not published".
+- **Sharing.** A link can be shared as `?interconnector=<id>`.
 
 ### Phased projects
 
@@ -193,6 +206,9 @@ The project name uses the body font rather than the pixel font, because long nam
 | Sheffield Solar PV_Live | CC BY 4.0 | "PV_Live by Sheffield Solar is licensed under CC BY 4.0" |
 | ONS country boundaries | Open Government Licence v3.0 | "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right 2024." |
 | Natural Earth | Public domain | None required; credited as "Made with Natural Earth" |
+| NESO Interconnector Register | NESO Open Data Licence v1.0 | "Supported by National Energy SO Open Data" |
+| OpenStreetMap | Open Database Licence (ODbL) | "© OpenStreetMap contributors", linked to openstreetmap.org/copyright. `data/interconnectors.json` is a derived database and is shared under the ODbL. |
+| Ofgem decisions | Open Government Licence v3.0 | Linked from each milestone on the card |
 
 ## Hosting and domain
 

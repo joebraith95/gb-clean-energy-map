@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
+import type { InterconnectorFile } from '../data/interconnectors';
 import type { ProjectIndex } from '../data/projects';
 import { formatDate } from './format';
 
 interface Props {
   projects: ProjectIndex;
+  links: InterconnectorFile;
   onClose: () => void;
 }
 
@@ -11,8 +13,10 @@ const REPD_ATTRIBUTION =
   'Contains public sector information licensed under the Open Government Licence v3.0.';
 const ONS_ATTRIBUTION =
   'Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right 2024.';
+const NESO_ATTRIBUTION = 'Supported by National Energy SO Open Data';
+const OSM_ATTRIBUTION = '© OpenStreetMap contributors';
 
-export function AboutPage({ projects, onClose }: Props) {
+export function AboutPage({ projects, links, onClose }: Props) {
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
@@ -63,6 +67,37 @@ export function AboutPage({ projects, onClose }: Props) {
                 <td>Quarterly. Current release published {formatDate(projects.source.updated)}.</td>
               </tr>
               <tr>
+                <td>
+                  <a href={links.source.page} target="_blank" rel="noreferrer">
+                    Interconnector Register
+                  </a>{' '}
+                  (NESO)
+                </td>
+                <td>Interconnector capacity, status and GB connection site</td>
+                <td>NESO Open Data Licence</td>
+                <td>Twice a week</td>
+              </tr>
+              <tr>
+                <td>
+                  <a
+                    href="https://www.openstreetmap.org/copyright"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    OpenStreetMap
+                  </a>
+                </td>
+                <td>Interconnector landing points, checked by hand</td>
+                <td>Open Database Licence (ODbL)</td>
+                <td>Checked when the interconnector list is updated</td>
+              </tr>
+              <tr>
+                <td>Ofgem decisions</td>
+                <td>Interconnector milestones under the cap and floor regime</td>
+                <td>Open Government Licence v3.0</td>
+                <td>As decisions are published</td>
+              </tr>
+              <tr>
                 <td>Countries boundaries, December 2024 (ONS)</td>
                 <td>The coastline of Great Britain</td>
                 <td>Open Government Licence v3.0</td>
@@ -79,6 +114,11 @@ export function AboutPage({ projects, onClose }: Props) {
         </div>
         <p className="attribution">{REPD_ATTRIBUTION}</p>
         <p className="attribution">{ONS_ATTRIBUTION}</p>
+        <p className="attribution">{NESO_ATTRIBUTION}.</p>
+        <p className="attribution">
+          Interconnector landing points {OSM_ATTRIBUTION}, available under the Open Database
+          Licence.
+        </p>
         <p className="attribution">Made with Natural Earth.</p>
 
         <h3>How stages are worked out</h3>
@@ -90,6 +130,17 @@ export function AboutPage({ projects, onClose }: Props) {
           permission expired are treated as stalled. Stalled and decommissioned projects are kept in
           the data but not shown on the map. <strong>Early development</strong> will be filled in
           once grid connection data is added.
+        </p>
+
+        <h3>Interconnectors</h3>
+        <p>
+          Interconnectors are part of the flexibility layer, so they appear when storage and
+          flexibility are switched on. The map shows those that are built, under construction, or
+          approved in principle by Ofgem. Each one is drawn from its GB landing point as a straight
+          dashed line towards the other country; this is a schematic, not the real cable route.
+          Where no converter station exists yet, the landing point is the grid connection site named
+          by NESO. Interconnectors with no published landing point are kept in the data but not
+          drawn.
         </p>
 
         <h3>What is not shown</h3>

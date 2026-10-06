@@ -1,3 +1,4 @@
+import type { Interconnector } from '../data/interconnectors';
 import type { ProjectIndex } from '../data/projects';
 import type { Stage } from '../theme/tokens';
 import {
@@ -5,6 +6,7 @@ import {
   DEFAULT_FILTERS,
   STAGE_LABELS,
   TECH_GROUPS,
+  countLinksShown,
   countShown,
   stagesPresent,
   type Filters,
@@ -12,6 +14,7 @@ import {
 
 interface Props {
   projects: ProjectIndex;
+  links: Interconnector[];
   filters: Filters;
   onChange: (filters: Filters) => void;
   onClose: () => void;
@@ -21,8 +24,9 @@ function toggle<T>(list: T[], item: T): T[] {
   return list.includes(item) ? list.filter((x) => x !== item) : [...list, item];
 }
 
-export function FilterPanel({ projects, filters, onChange, onClose }: Props) {
+export function FilterPanel({ projects, links, filters, onChange, onClose }: Props) {
   const shown = countShown(projects, filters);
+  const linksShown = countLinksShown(links, filters);
   const stepIndex = Math.max(0, CAPACITY_STEPS.indexOf(filters.minMw));
 
   const techList = (flexibility: boolean) =>
@@ -48,8 +52,9 @@ export function FilterPanel({ projects, filters, onChange, onClose }: Props) {
         </button>
       </div>
       <p className="muted" aria-live="polite">
-        {shown.toLocaleString('en-GB')} projects match. The national view shows those of 50 MW or
-        more.
+        {shown.toLocaleString('en-GB')} projects
+        {linksShown > 0 && ` and ${linksShown} interconnectors`} match. The national view shows
+        those of 50 MW or more.
       </p>
 
       <fieldset>

@@ -1,5 +1,6 @@
 // Which projects are drawn at a zoom level, in which cell, and how big.
 
+import { linkCapacity, type Interconnector } from '../data/interconnectors';
 import { MARINE_TECHNOLOGIES, type ProjectIndex } from '../data/projects';
 import type { Stage } from '../theme/tokens';
 import { SEA } from './grid';
@@ -13,8 +14,19 @@ export const DOT_SIZES = [3, 5];
 /** First tier drawn as a sprite tile rather than a dot. */
 export const FIRST_SPRITE_TIER = DOT_SIZES.length;
 
+/** What a marker or the card shows: a REPD project or an interconnector, by position in its list. */
+export interface Selection {
+  source: 'project' | 'interconnector';
+  index: number;
+}
+
+export function sameSelection(a: Selection | null, b: Selection | null): boolean {
+  return a === b || (a !== null && b !== null && a.source === b.source && a.index === b.index);
+}
+
 export interface Marker {
-  /** Position in the project index arrays. */
+  source: Selection['source'];
+  /** Position in the project index arrays, or in the interconnector list. */
   index: number;
   col: number;
   row: number;
@@ -86,6 +98,7 @@ export function buildMarkers(
       [col, row] = nearestLand(x, y, col, row, level, land);
     }
     markers.push({
+      source: 'project',
       index: i,
       col,
       row,
@@ -95,6 +108,30 @@ export function buildMarkers(
       kind: spriteKind(technology),
     });
   }
+  return markers.sort((a, b) => a.mw - b.mw);
+}
+
+/** Markers at the GB landing point of each interconnector that passes the filter. */
+export function buildLinkMarkers(
+  links: Interconnector[],
+  level: ZoomLevel,
+  include: (index: number) => boolean,
+): Marker[] {
+  const markers: Marker[] = [];
+  links.forEach((link, i) => {
+    const mw = linkCapacity(link);
+    if (!link.gbEnd || !link.stage || mw === null || mw < level.minMw || !include(i)) return;
+    markers.push({
+      source: 'interconnector',
+      index: i,
+      col: Math.floor((link.gbEnd.x - EXTENT.minX) / level.cellMetres),
+      row: Math.floor((EXTENT.maxY - link.gbEnd.y) / level.cellMetres),
+      mw,
+      tier: capacityTier(mw),
+      stage: link.stage,
+      kind: 'interconnector',
+    });
+  });
   return markers.sort((a, b) => a.mw - b.mw);
 }
 

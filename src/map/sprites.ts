@@ -4,7 +4,8 @@
 import { Texture } from 'pixi.js';
 import { spriteInk, stageColours, type Stage } from '../theme/tokens';
 
-export type SpriteKind = 'wind' | 'solar' | 'battery' | 'hydro' | 'tidal' | 'hydrogen';
+export type SpriteKind =
+  'wind' | 'solar' | 'battery' | 'hydro' | 'tidal' | 'hydrogen' | 'interconnector';
 
 /** Glyph grid size; the tile adds a one-pixel outline on each side. */
 export const GLYPH_SIZE = 7;
@@ -21,6 +22,8 @@ export const GLYPHS: Record<SpriteKind, string[][]> = {
   hydro: [['...k...', '..kkk..', '.kkkkk.', 'kkkkkkk', 'kkk.kkk', '.kk.kk.', '..kkk..']],
   tidal: [['.......', '.kk....', 'k..k..k', '....kk.', '.kk....', 'k..k..k', '....kk.']],
   hydrogen: [['.......', '.k...k.', '.k...k.', '.kkkkk.', '.k...k.', '.k...k.', '.......']],
+  // Two-way arrows: power flows both ways.
+  interconnector: [['..k....', '.kkkkkk', '..k....', '.......', '....k..', 'kkkkkk.', '....k..']],
 };
 
 const KIND_BY_TECHNOLOGY: Record<string, SpriteKind> = {

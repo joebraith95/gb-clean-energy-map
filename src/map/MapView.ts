@@ -3,6 +3,7 @@
 // Frames are drawn on demand (and for the turbine animation), not on a constant loop.
 
 import { Application, Container, Graphics, Sprite, Texture } from 'pixi.js';
+import type { Interconnector } from '../data/interconnectors';
 import type { ProjectIndex } from '../data/projects';
 import { palette, spriteInk, stageColours } from '../theme/tokens';
 import { GB_LAND, OTHER_LAND, SEA, decodeLevel, type GridFile } from './grid';
@@ -16,7 +17,16 @@ import {
   screenToBng,
   snap,
 } from './levels';
-import { DOT_SIZES, FIRST_SPRITE_TIER, buildMarkers, type Marker } from './markers';
+import { cableCells, isDash, type CableCell } from './cables';
+import {
+  DOT_SIZES,
+  FIRST_SPRITE_TIER,
+  buildLinkMarkers,
+  buildMarkers,
+  sameSelection,
+  type Marker,
+  type Selection,
+} from './markers';
 import { TILE_SIZE, tileTexture } from './sprites';
 
 const LAND_COLOURS = {
@@ -37,7 +47,7 @@ const WHEEL_COOLDOWN = 250;
 const SPIN_INTERVAL = 450;
 
 export interface MapViewEvents {
-  onSelect: (index: number | null) => void;
+  onSelect: (selection: Selection | null) => void;
   onLevelChange: (level: number) => void;
 }
 
@@ -50,6 +60,7 @@ export class MapView {
   private readonly app = new Application();
   private readonly world = new Container();
   private readonly land = new Sprite();
+  private readonly cableLayer = new Graphics();
   private readonly markerLayer = new Graphics();
   private readonly spriteLayer = new Container();
   private readonly highlight = new Graphics();
@@ -66,8 +77,11 @@ export class MapView {
   private dpr = 1;
   private offset: Point = { x: 0, y: 0 };
   private markers: Marker[] = [];
-  private selected: number | null = null;
+  private cables: { cells: CableCell[]; stage: Marker['stage']; pulses: boolean }[] = [];
+  private pulsePhase = 0;
+  private selected: Selection | null = null;
   private include: (index: number) => boolean = () => true;
+  private includeLink: (index: number) => boolean = () => true;
 
   private pointers = new Map<number, Point>();
   private dragStart: Point | null = null;
@@ -81,6 +95,7 @@ export class MapView {
     private readonly host: HTMLElement,
     private readonly grid: GridFile,
     private readonly projects: ProjectIndex,
+    private readonly links: Interconnector[],
     private readonly events: MapViewEvents,
   ) {}
 
@@ -88,9 +103,10 @@ export class MapView {
     host: HTMLElement,
     grid: GridFile,
     projects: ProjectIndex,
+    links: Interconnector[],
     events: MapViewEvents,
   ): Promise<MapView> {
-    const view = new MapView(host, grid, projects, events);
+    const view = new MapView(host, grid, projects, links, events);
     await view.init();
     return view;
   }
@@ -110,7 +126,13 @@ export class MapView {
     this.landTextures = this.grid.levels.map((level) => gridTexture(level, LAND_COLOURS));
     this.landCells = this.grid.levels.map(decodeLevel);
 
-    this.world.addChild(this.land, this.markerLayer, this.spriteLayer, this.highlight);
+    this.world.addChild(
+      this.land,
+      this.cableLayer,
+      this.markerLayer,
+      this.spriteLayer,
+      this.highlight,
+    );
     this.app.stage.addChild(this.world);
     this.host.appendChild(this.app.canvas);
     this.bindInput();
@@ -140,9 +162,17 @@ export class MapView {
     });
   }
 
-  /** Turns the blades of operational turbines, unless the viewer prefers reduced motion. */
+  /**
+   * Turns the blades of operational turbines and moves the pulse along operational cables,
+   * unless the viewer prefers reduced motion.
+   */
   private spin(): void {
-    if (this.motionQuery.matches || this.turbines.length === 0) return;
+    if (this.motionQuery.matches) return;
+    if (this.cables.some((c) => c.pulses)) {
+      this.pulsePhase += 1;
+      this.drawCables();
+    }
+    if (this.turbines.length === 0) return;
     this.spinFrame = 1 - this.spinFrame;
     for (const { sprite, marker, pixelSize } of this.turbines) {
       sprite.texture = tileTexture(marker.kind, this.spinFrame, marker.stage, pixelSize);
@@ -162,9 +192,10 @@ export class MapView {
     this.zoomTo(this.level - 1, anchor);
   }
 
-  /** Redraws markers with a new filter, for example from the filter panel. */
-  setFilter(include: (index: number) => boolean): void {
+  /** Redraws markers with new filters, for example from the filter panel. */
+  setFilter(include: (index: number) => boolean, includeLink: (index: number) => boolean): void {
     this.include = include;
+    this.includeLink = includeLink;
     this.drawMarkers();
   }
 
@@ -172,11 +203,11 @@ export class MapView {
    * Shows a selection made outside the map (for example from a card link) without raising
    * onSelect, and pans to the marker if it is drawn but off screen.
    */
-  showSelection(index: number | null): void {
-    if (index === this.selected) return;
-    this.selected = index;
+  showSelection(selection: Selection | null): void {
+    if (sameSelection(selection, this.selected)) return;
+    this.selected = selection;
     this.drawHighlight();
-    const marker = this.markers.find((m) => m.index === index);
+    const marker = this.markers.find((m) => sameSelection(m, selection));
     if (!marker) return;
     const { left, top, size } = this.markerBox(marker);
     const x = this.world.position.x + left + size / 2;
@@ -189,10 +220,10 @@ export class MapView {
     }
   }
 
-  select(index: number | null): void {
-    this.selected = index;
+  select(selection: Selection | null): void {
+    this.selected = selection;
     this.drawHighlight();
-    this.events.onSelect(index);
+    this.events.onSelect(selection);
   }
 
   private get cssPerCell(): number {
@@ -274,7 +305,19 @@ export class MapView {
       ZOOM_LEVELS[this.level],
       { cells: this.landCells[this.level], cols: gridLevel.cols, rows: gridLevel.rows },
       this.include,
-    );
+    ).concat(buildLinkMarkers(this.links, ZOOM_LEVELS[this.level], this.includeLink));
+    this.cables = this.links.flatMap((link, i) => {
+      if (!link.gbEnd || !link.partnerEnd || !link.stage || !this.includeLink(i)) return [];
+      const cells = cableCells(
+        link.gbEnd,
+        link.partnerEnd,
+        ZOOM_LEVELS[this.level],
+        gridLevel.cols,
+        gridLevel.rows,
+      );
+      return [{ cells, stage: link.stage, pulses: link.stage === 'operational' }];
+    });
+    this.drawCables();
     const outline = 1 / this.dpr;
     const g = this.markerLayer.clear();
     for (const child of this.spriteLayer.removeChildren()) child.destroy();
@@ -300,9 +343,23 @@ export class MapView {
     this.drawHighlight();
   }
 
+  /** Dashed pixel cables; operational ones pulse outwards from Britain. */
+  private drawCables(): void {
+    const g = this.cableLayer.clear();
+    const css = this.cssPerCell;
+    for (const cable of this.cables) {
+      const phase = cable.pulses ? this.pulsePhase : 0;
+      for (const { col, row, step } of cable.cells) {
+        if (step === 0 || !isDash(step, phase)) continue;
+        g.rect(col * css, row * css, css, css).fill(stageColours[cable.stage]);
+      }
+    }
+    this.requestRender();
+  }
+
   private drawHighlight(): void {
     const g = this.highlight.clear();
-    const marker = this.markers.find((m) => m.index === this.selected);
+    const marker = this.markers.find((m) => sameSelection(m, this.selected));
     if (!marker) {
       this.requestRender();
       return;
@@ -320,10 +377,10 @@ export class MapView {
   }
 
   /** Topmost marker within reach of a screen point. */
-  private markerAt(screen: Point): number | null {
+  private markerAt(screen: Point): Selection | null {
     const x = screen.x - this.world.position.x;
     const y = screen.y - this.world.position.y;
-    let best: number | null = null;
+    let best: Selection | null = null;
     let bestDistance = Infinity;
     for (let i = this.markers.length - 1; i >= 0; i--) {
       const { left, top, size } = this.markerBox(this.markers[i]);
@@ -334,7 +391,7 @@ export class MapView {
       const distance = dx * dx + dy * dy;
       if (distance < bestDistance) {
         bestDistance = distance;
-        best = this.markers[i].index;
+        best = { source: this.markers[i].source, index: this.markers[i].index };
       }
     }
     return best;

@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { TextureStyle } from 'pixi.js';
+import type { Interconnector } from '../data/interconnectors';
 import type { ProjectIndex } from '../data/projects';
 import { ZoomControls } from '../ui/ZoomControls';
 import type { GridFile } from './grid';
 import { ZOOM_LEVELS } from './levels';
+import type { Selection } from './markers';
 import { MapView } from './MapView';
 
 // Pixel-perfect rendering: nearest-neighbour sampling for every texture.
@@ -12,22 +14,32 @@ TextureStyle.defaultOptions.scaleMode = 'nearest';
 interface Props {
   grid: GridFile;
   projects: ProjectIndex;
-  /** The filter predicate; a new function redraws the markers. */
+  links: Interconnector[];
+  /** Filter predicates; new functions redraw the markers. */
   include: (index: number) => boolean;
-  selected: number | null;
-  onSelect: (index: number | null) => void;
+  includeLink: (index: number) => boolean;
+  selected: Selection | null;
+  onSelect: (selection: Selection | null) => void;
 }
 
 /** Mounts the PixiJS map. React owns the UI around it; MapView owns the canvas. */
-export function MapCanvas({ grid, projects, include, selected, onSelect }: Props) {
+export function MapCanvas({
+  grid,
+  projects,
+  links,
+  include,
+  includeLink,
+  selected,
+  onSelect,
+}: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<MapView | null>(null);
-  const latest = useRef({ include, selected, onSelect });
+  const latest = useRef({ include, includeLink, selected, onSelect });
   const [level, setLevel] = useState(0);
 
   useEffect(() => {
-    latest.current = { include, selected, onSelect };
-  }, [include, selected, onSelect]);
+    latest.current = { include, includeLink, selected, onSelect };
+  }, [include, includeLink, selected, onSelect]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -35,8 +47,8 @@ export function MapCanvas({ grid, projects, include, selected, onSelect }: Props
     let cancelled = false;
     let view: MapView | null = null;
 
-    MapView.create(host, grid, projects, {
-      onSelect: (index) => latest.current.onSelect(index),
+    MapView.create(host, grid, projects, links, {
+      onSelect: (selection) => latest.current.onSelect(selection),
       onLevelChange: setLevel,
     }).then((created) => {
       if (cancelled) {
@@ -45,7 +57,7 @@ export function MapCanvas({ grid, projects, include, selected, onSelect }: Props
       }
       view = created;
       viewRef.current = created;
-      created.setFilter(latest.current.include);
+      created.setFilter(latest.current.include, latest.current.includeLink);
       created.showSelection(latest.current.selected);
     });
 
@@ -54,11 +66,11 @@ export function MapCanvas({ grid, projects, include, selected, onSelect }: Props
       view?.destroy();
       viewRef.current = null;
     };
-  }, [grid, projects]);
+  }, [grid, projects, links]);
 
   useEffect(() => {
-    viewRef.current?.setFilter(include);
-  }, [include]);
+    viewRef.current?.setFilter(include, includeLink);
+  }, [include, includeLink]);
 
   useEffect(() => {
     viewRef.current?.showSelection(selected);
