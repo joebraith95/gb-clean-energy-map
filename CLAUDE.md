@@ -19,6 +19,7 @@ The full product spec is in `docs/SPEC.md`. Read it before starting any new feat
 /data          Generated JSON (projects, changes, interconnectors) and snapshots; served as Vite's public dir
 /worker        Cloudflare Worker for live data
 /src           Front end
+  /data        Loading and types for the generated JSON
   /map         PixiJS renderer, grid levels, sprites, animations
   /ui          Filters, project card, change feed, about page
   /theme       Palette tokens, fonts

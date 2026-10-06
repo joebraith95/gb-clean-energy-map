@@ -1,55 +1,71 @@
-import { useEffect, useRef } from 'react';
-import { Application, Sprite, TextureStyle } from 'pixi.js';
-import { palette } from '../theme/tokens';
-import { GB_LAND, OTHER_LAND, SEA, loadGrid } from './grid';
-import { gridTexture } from './gridTexture';
+import { useEffect, useRef, useState } from 'react';
+import { TextureStyle } from 'pixi.js';
+import type { ProjectIndex } from '../data/projects';
+import { ZoomControls } from '../ui/ZoomControls';
+import type { GridFile } from './grid';
 import { ZOOM_LEVELS } from './levels';
+import { MapView } from './MapView';
 
 // Pixel-perfect rendering: nearest-neighbour sampling for every texture.
 TextureStyle.defaultOptions.scaleMode = 'nearest';
 
-const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+interface Props {
+  grid: GridFile;
+  projects: ProjectIndex;
+  onSelect: (index: number | null) => void;
+}
 
-const LAND_COLOURS = {
-  [SEA]: palette.sea,
-  [GB_LAND]: palette.land,
-  [OTHER_LAND]: palette.otherLand,
-};
-
-/** Mounts the PixiJS map. React owns the UI around it; this component owns the canvas. */
-export function MapCanvas() {
+/** Mounts the PixiJS map. React owns the UI around it; MapView owns the canvas. */
+export function MapCanvas({ grid, projects, onSelect }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
+  const viewRef = useRef<MapView | null>(null);
+  const onSelectRef = useRef(onSelect);
+  const [level, setLevel] = useState(0);
+
+  useEffect(() => {
+    onSelectRef.current = onSelect;
+  }, [onSelect]);
 
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
-    const app = new Application();
     let cancelled = false;
+    let view: MapView | null = null;
 
-    Promise.all([
-      app.init({ antialias: false, resolution: 1, background: palette.sea, resizeTo: host }),
-      loadGrid(),
-    ]).then(([, grid]) => {
+    MapView.create(host, grid, projects, {
+      onSelect: (index) => onSelectRef.current(index),
+      onLevelChange: setLevel,
+    }).then((created) => {
       if (cancelled) {
-        app.destroy(true);
+        created.destroy();
         return;
       }
-      host.appendChild(app.canvas);
-      app.ticker.maxFPS = reducedMotion ? 1 : 30;
-
-      // National view only for now; zoom levels and panning arrive in phase 1 step 3.
-      const level = ZOOM_LEVELS[0];
-      const land = new Sprite(gridTexture(grid.levels[0], LAND_COLOURS));
-      land.scale.set(level.scale);
-      land.position.set(Math.max(0, Math.floor((app.screen.width - land.width) / 2)), 0);
-      app.stage.addChild(land);
+      view = created;
+      viewRef.current = created;
     });
 
     return () => {
       cancelled = true;
-      if (app.renderer) app.destroy(true);
+      view?.destroy();
+      viewRef.current = null;
     };
-  }, []);
+  }, [grid, projects]);
 
-  return <div ref={hostRef} className="map-host" />;
+  return (
+    <div className="map-frame">
+      <div
+        ref={hostRef}
+        className="map-host"
+        tabIndex={0}
+        role="application"
+        aria-label="Map of clean energy projects in Great Britain. Use plus and minus to zoom and the arrow keys to pan."
+      />
+      <ZoomControls
+        level={level}
+        levels={ZOOM_LEVELS.length}
+        onZoomIn={() => viewRef.current?.zoomIn()}
+        onZoomOut={() => viewRef.current?.zoomOut()}
+      />
+    </div>
+  );
 }
