@@ -32,6 +32,8 @@ def write(records: list[dict], source: dict, data_dir: Path) -> None:
         "flex": [1 if r["layer"] == "flexibility" else 0 for r in records],
         "stage": [stages.index(r["stage"]) if r["stage"] else -1 for r in records],
         "hidden": [hidden_reasons.index(r["hidden"]) if r["hidden"] else -1 for r in records],
+        # Phase group number shared by phases of one project, or -1.
+        "group": [r.get("group", -1) for r in records],
     }
     data_dir.mkdir(parents=True, exist_ok=True)
     _write_json(data_dir / "projects.json", index)

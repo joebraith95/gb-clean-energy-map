@@ -4,7 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
-from pipeline import corrections, output, repd
+from pipeline import corrections, output, phases, repd
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "pipeline" / "raw"
@@ -36,9 +36,16 @@ def main() -> None:
     for ref_id, reason in fixes.stale:
         print(f"WARNING: correction for REPD {ref_id} skipped ({reason}). Review pipeline/corrections.json.")
     records = repd.build_records(df, fixes.notes)
+    groups = phases.group_phases(records, phases.load_links())
+    by_id = {r["id"]: r for r in records}
+    for number, group in enumerate(groups):
+        for ref_id in group:
+            by_id[ref_id]["group"] = number
+            by_id[ref_id]["details"]["phases"] = [other for other in group if other != ref_id]
     output.write(records, source, DATA_DIR)
     print(f"Wrote {len(records)} projects to {DATA_DIR}")
     print(f"Corrections applied: {len(fixes.applied)}  Skipped for review: {len(fixes.stale)}")
+    print(f"Phase groups matched: {len(groups)} covering {sum(len(g) for g in groups)} records")
 
     if args.report:
         after = output.read_index(DATA_DIR)
