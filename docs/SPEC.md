@@ -13,6 +13,8 @@ A public, personal project showing where clean energy projects in Great Britain 
 |---|---|---|---|
 | REPD (DESNZ) | Projects, locations, planning status, stage dates | Quarterly | 1 |
 | Hand-curated interconnector file | Landing points, partner country, capacity, milestones | Manual | 1 |
+| ONS Countries (December 2024) Boundaries UK BGC | GB coastline for the land grid (already in BNG) | When ONS republishes | 1 |
+| Natural Earth 1:10m admin 0 map units | Non-GB land drawn as muted scenery (Ireland, France, Isle of Man) | Rarely | 1 |
 | NESO TEC register | Transmission connection contracts and dates | Frequent | 4 |
 | NESO TEC register, `Gate` column | Gate 1 or Gate 2 status (blank until the agreement is countersigned) | Twice weekly | 4 |
 | Elexon Insights API | Generation by fuel type, interconnector flows, large wind farm output | Near real time | 3 |
@@ -110,6 +112,8 @@ One dot per phase (one REPD row). The card links to sibling phases. Clustered at
 - The map extent must include offshore wind areas as far out as Dogger Bank.
 - Capacity is shown by sprite size in three or four tiers.
 - Rows with no coordinates, coordinates outside the map extent, or no published capacity are kept in the data but not shown on the map. Nothing is estimated to fill the gap, and the pipeline report lists each hidden reason.
+- Map extent: BNG x 0 to 760,000 and y 0 to 1,230,000 (Scilly to Shetland, east past Dogger Bank).
+- Land grid: cells of 4km, 2km and 1km. GB land and other land are sampled every 250m, and a cell counts as land when at least 40% of its samples are land. Only GB land is drawn in the main land colour.
 
 ## Project card
 
@@ -167,6 +171,8 @@ One dot per phase (one REPD row). The card links to sibling phases. Clustered at
 | NESO Carbon Intensity API | CC BY 4.0 | Credit "Carbon Intensity API (NESO)" with a link to the licence |
 | Elexon Insights / BMRS | BMRS data licence | "Contains BMRS data © Elexon Limited copyright and database right [year]", linked to the licence |
 | Sheffield Solar PV_Live | CC BY 4.0 | "PV_Live by Sheffield Solar is licensed under CC BY 4.0" |
+| ONS country boundaries | Open Government Licence v3.0 | "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right 2024." |
+| Natural Earth | Public domain | None required; credited as "Made with Natural Earth" |
 
 ## Hosting and domain
 

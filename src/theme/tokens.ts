@@ -6,6 +6,8 @@ export const palette = {
   seaDeep: '#14203f',
   land: '#3e7a3a',
   landEdge: '#2c5a2a',
+  // Land outside GB (Ireland, France, Isle of Man, Channel Islands): scenery only, kept muted.
+  otherLand: '#4a4f5c',
   ink: '#f4f1e8',
   inkMuted: '#b8b3a6',
   panel: '#101624',
