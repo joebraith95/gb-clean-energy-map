@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { loadChanges, type Change, type ChangeFile } from './data/changes';
 import { loadInterconnectors, type InterconnectorFile } from './data/interconnectors';
 import { loadProjects, type ProjectIndex } from './data/projects';
 import { loadGrid, type GridFile } from './map/grid';
 import { MapCanvas } from './map/MapCanvas';
 import type { Selection } from './map/markers';
 import { AboutPage } from './ui/AboutPage';
+import { FeedPanel } from './ui/FeedPanel';
 import { FilterPanel } from './ui/FilterPanel';
 import { DEFAULT_FILTERS, makeInclude, makeIncludeLink, type Filters } from './ui/filters';
 import { InterconnectorCard } from './ui/InterconnectorCard';
@@ -37,7 +39,10 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Selection | null>(null);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  /** The side panel (bottom sheet on phones): filters or the change feed, one at a time. */
+  const [panel, setPanel] = useState<'filters' | 'feed' | null>(null);
+  const [changes, setChanges] = useState<ChangeFile | null>(null);
+  const [changesError, setChangesError] = useState<string | null>(null);
   const [aboutOpen, setAboutOpen] = useState(() => window.location.hash === ABOUT_HASH);
 
   useEffect(() => {
@@ -49,6 +54,14 @@ export function App() {
       })
       .catch((e: Error) => setError(e.message));
   }, []);
+
+  // The change list is not needed for the first view, so it loads after the map data.
+  useEffect(() => {
+    if (!data) return;
+    loadChanges()
+      .then(setChanges)
+      .catch((e: Error) => setChangesError(e.message));
+  }, [data]);
 
   // Keep the address shareable: it names the open project or interconnector, if any.
   useEffect(() => {
@@ -81,21 +94,39 @@ export function App() {
   const indexById = useMemo(() => new Map(data?.projects.id.map((id, i) => [id, i]) ?? []), [data]);
 
   const closeCard = useCallback(() => setSelected(null), []);
-  // On narrow screens the card and filter panel share the bottom sheet, so one closes the other.
+  // On narrow screens the card and the side panel share the bottom sheet, so one closes the other.
   const select = useCallback((selection: Selection | null) => {
     setSelected(selection);
-    if (selection !== null && window.matchMedia(NARROW).matches) setFiltersOpen(false);
+    if (selection !== null && window.matchMedia(NARROW).matches) setPanel(null);
   }, []);
   const selectProject = useCallback(
     (index: number) => select({ source: 'project', index }),
     [select],
   );
-  const toggleFilters = useCallback(() => {
-    setFiltersOpen((open) => {
-      if (!open && window.matchMedia(NARROW).matches) setSelected(null);
-      return !open;
+  const togglePanel = useCallback((which: 'filters' | 'feed') => {
+    setPanel((open) => {
+      if (open !== which && window.matchMedia(NARROW).matches) setSelected(null);
+      return open === which ? null : which;
     });
   }, []);
+  const closePanel = useCallback(() => setPanel(null), []);
+
+  const selectionForChange = useCallback(
+    (change: Change): Selection | null => {
+      if (!data) return null;
+      if (change.source === 'project') {
+        const index = indexById.get(Number(change.id));
+        return index === undefined ? null : { source: 'project', index };
+      }
+      const index = data.links.interconnectors.findIndex((l) => l.id === change.id);
+      return index < 0 ? null : { source: 'interconnector', index };
+    },
+    [data, indexById],
+  );
+  const openChange = useCallback(
+    (change: Change) => select(selectionForChange(change)),
+    [select, selectionForChange],
+  );
   const closeAbout = useCallback(() => {
     history.replaceState(null, '', window.location.pathname + window.location.search);
     setAboutOpen(false);
@@ -109,10 +140,19 @@ export function App() {
           <button
             type="button"
             className="button"
-            aria-expanded={filtersOpen}
-            onClick={toggleFilters}
+            aria-expanded={panel === 'filters'}
+            onClick={() => togglePanel('filters')}
           >
             Filters
+          </button>
+          <button
+            type="button"
+            className="button"
+            aria-expanded={panel === 'feed'}
+            aria-label="What changed"
+            onClick={() => togglePanel('feed')}
+          >
+            Changes
           </button>
           <a className="button" href={ABOUT_HASH}>
             About
@@ -121,7 +161,7 @@ export function App() {
       </header>
 
       <main
-        className={`app-main${selected !== null ? ' card-open' : ''}${filtersOpen ? ' panel-open' : ''}`}
+        className={`app-main${selected !== null ? ' card-open' : ''}${panel ? ' panel-open' : ''}`}
       >
         {data && (
           <MapCanvas
@@ -137,13 +177,23 @@ export function App() {
         {!data && !error && <p className="status">Loading map data…</p>}
         {error && <p className="status">The map data could not be loaded. {error}</p>}
 
-        {data && filtersOpen && (
+        {data && panel === 'filters' && (
           <FilterPanel
             projects={data.projects}
             links={data.links.interconnectors}
             filters={filters}
             onChange={setFilters}
-            onClose={() => setFiltersOpen(false)}
+            onClose={closePanel}
+          />
+        )}
+        {data && panel === 'feed' && (
+          <FeedPanel
+            changes={changes}
+            error={changesError}
+            filters={filters}
+            canOpen={(change) => selectionForChange(change) !== null}
+            onOpen={openChange}
+            onClose={closePanel}
           />
         )}
         {data && selected?.source === 'project' && (

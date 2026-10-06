@@ -465,3 +465,72 @@ a {
     left: 308px;
   }
 }
+
+.feed-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.feed-type {
+  min-height: 36px;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--color-ink);
+  background: var(--color-panel);
+  border: 2px solid var(--color-panelEdge);
+  cursor: pointer;
+}
+
+.feed-type.active {
+  color: var(--color-panel);
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+}
+
+.feed-month h3 {
+  margin: 16px 0 6px;
+  font-size: 0.75rem;
+}
+
+.feed-month ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feed-item {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 8px 0;
+  font: inherit;
+  text-align: left;
+  color: var(--color-ink);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--color-panelEdge);
+}
+
+button.feed-item {
+  cursor: pointer;
+}
+
+button.feed-item:hover .feed-name,
+button.feed-item:focus-visible .feed-name {
+  text-decoration: underline;
+}
+
+.feed-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.feed-meta {
+  font-size: 0.875rem;
+  color: var(--color-inkMuted);
+}
