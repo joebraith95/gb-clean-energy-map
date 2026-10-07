@@ -6,7 +6,7 @@ import re
 from datetime import date
 from pathlib import Path
 
-from pipeline import bmu, changes, corrections, events, interconnectors, output, phases, repd
+from pipeline import bmu, changes, corrections, events, interconnectors, output, phases, repd, tec
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "pipeline" / "raw"
@@ -57,6 +57,7 @@ def main() -> None:
     print(f"Phase groups matched: {len(groups)} covering {sum(len(g) for g in groups)} records")
 
     links, link_source = build_interconnectors(args.offline)
+    tec_projects, tec_source = read_tec(args.offline)
 
     farms = bmu.validate(bmu.load(), records)
     bmu.write(farms, DATA_DIR)
@@ -101,6 +102,36 @@ def build_interconnectors(offline: bool) -> tuple[list[dict], dict]:
     for r in records:
         print(f"  {r['name']:26} {r['partner']:17} {r['stage'] or '-':19} {r['importMw']}/{r['exportMw']} MW")
     return records, source
+
+
+def read_tec(offline: bool) -> tuple[list[dict], dict]:
+    """Read the TEC register. Matching it to REPD comes in phase 4, step 2."""
+    register_csv = RAW_DIR / "tec-register.csv"
+    source_file = RAW_DIR / "tec-register-source.json"
+    if offline:
+        if not register_csv.exists() or not source_file.exists():
+            raise SystemExit("No cached TEC register. Run once without --offline.")
+        source = json.loads(source_file.read_text(encoding="utf-8"))
+    else:
+        url = tec.latest_register_url()
+        print("Downloading NESO TEC register")
+        repd.download(url, register_csv)
+        source = {"name": "TEC register (NESO)", "page": tec.SOURCE_PAGE, "file": url}
+        source_file.write_text(json.dumps(source), encoding="utf-8")
+
+    projects, left_out = tec.build_projects(tec.load(register_csv))
+    tranches = [t for p in projects for t in p["tranches"]]
+    print(
+        f"TEC register: {len(projects)} projects in scope ({len(tranches)} tranches); left out "
+        f"{left_out[tec.EXCLUDED_TECHNOLOGY]} with an excluded technology, {left_out[tec.NO_TECHNOLOGY]} with none"
+    )
+    by_status: dict[str, int] = {}
+    for t in tranches:
+        key = f"{t['status']}, Gate {t['gate'] or 'blank'}"
+        by_status[key] = by_status.get(key, 0) + 1
+    for key in sorted(by_status):
+        print(f"  {key:45} {by_status[key]:5}")
+    return projects, source
 
 
 def human_date(day: date) -> str:
