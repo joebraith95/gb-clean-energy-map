@@ -17,7 +17,7 @@ The full product spec is in `docs/SPEC.md`. Read it before starting any new feat
 ```
 /pipeline      Python ingest, cleaning, stage mapping, change detection
 /data          Generated JSON (projects, details, changes, interconnectors, grid) and snapshots/ (stage snapshots and the spotted-change log); served as Vite's public dir
-/worker        Cloudflare Worker for live data
+/functions     Cloudflare Pages Functions (the Worker) for live data, served at /api
 /src           Front end
   /data        Loading and types for the generated JSON
   /map         PixiJS renderer, grid levels, sprites, animations
@@ -36,6 +36,7 @@ Front end (repo root):
 - `npm run build`: type-check and build to `dist/`
 - `npm test`: Vitest
 - `npm run lint` / `npm run format`: ESLint / Prettier
+- `npm run dev:api`: build, then serve the site and live API with wrangler at http://localhost:8788; `npm run dev` proxies `/api` to it
 
 Pipeline (repo root, using the venv at `pipeline/.venv`):
 - Set up once: `python -m venv pipeline/.venv` then `pipeline/.venv/Scripts/python -m pip install -r pipeline/requirements.txt`
@@ -45,7 +46,7 @@ Pipeline (repo root, using the venv at `pipeline/.venv`):
 
 Deploy: pushing to `main` deploys the site through Cloudflare Pages (build `npm run build`, output `dist`, Node version from `.node-version`). GitHub Actions run CI on every push and refresh `data/` every Monday (`.github/workflows/`). Stop the dev server before `npm ci` on Windows, or locked files break the install.
 
-Worker deploy: added in phase 3.
+Worker deploy: the live API in `functions/` deploys with the site on every push to `main`; no separate step.
 
 ## Rules
 

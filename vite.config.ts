@@ -8,8 +8,10 @@ export default defineConfig({
   base: '/',
   // Generated pipeline output is served as static files.
   publicDir: 'data',
+  // In development, /api goes to the Pages Functions served by `npm run dev:api`.
+  server: { proxy: { '/api': 'http://localhost:8788' } },
   test: {
     environment: 'node',
-    include: ['src/**/*.test.ts'],
+    include: ['src/**/*.test.ts', 'functions/**/*.test.ts'],
   },
 });

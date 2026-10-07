@@ -232,6 +232,20 @@ When effects play:
 - Per-unit output comes from Elexon Final Physical Notifications (FPN) adjusted by Bid-Offer Acceptances (BOALF). Metered output (B1610) is published about five days late, so it is not used for the live layer. The card labels this figure "Scheduled output (Elexon)", never as metered output
 - National generation mix comes from Elexon's generation by fuel type data (FUELINST)
 
+**Server.** The Worker is a set of Cloudflare Pages Functions in `functions/`, deployed with the site and served at `/api` on its own address. Shared parsing logic in `functions/lib/` is unit-tested against recorded responses.
+
+| Endpoint | Sources | Fresh for |
+|---|---|---|
+| `/api/live/national` | Elexon FUELINST (latest 5-minute period, with signed interconnector flows) and PV_Live national solar | 5 min (solar 10 min) |
+| `/api/live/regions` | Carbon Intensity regional forecast (14 DNO regions) | 30 min |
+| `/api/live/unit?repd=<id>` | Elexon PN and BOALF for each mapped unit, last 24 hours | 10 min |
+
+**Interconnector flows.** FUELINST codes map to interconnectors as follows: INTFR is IFA, INTIFA2 is IFA2, INTELEC is ElecLink, INTNED is BritNed, INTNEM is Nemo, INTNSL is North Sea Link, INTVKL is Viking, INTIRL is Moyle, INTEW is East West and INTGRNL is Greenlink. A positive value means Great Britain is importing. FUELINST's wind figure covers transmission-metered wind only.
+
+**Scheduled output.** Sampled every 15 minutes. At each moment, a unit's level is the latest accepted bid or offer (BOALF) covering that time, otherwise its Physical Notification. Levels are summed across the farm's units. A sample is left empty, never shown as zero, unless every unit has a level. Only REPD IDs in `data/bmu-map.json` are served, so the endpoint cannot be used as an open proxy.
+
+**When a source is down.** Each source is fetched with an 8-second timeout and cached separately in Cloudflare's cache. If a fetch fails, the last good copy (kept for 6 hours) is served marked `stale`. With no copy available, that part is `null` with a reason, and the page hides it. One failing source never affects the others.
+
 ## Attribution and disclaimer
 
 - "About the data" page: each source, its licence, its refresh frequency

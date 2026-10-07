@@ -1,0 +1,4 @@
+{
+  "meta": ["pes_id", "datetime_gmt", "generation_mw", "installedcapacity_mwp"],
+  "data": [[0, "2026-10-06T22:30:00Z", 0.0, 23963.209]]
+}
