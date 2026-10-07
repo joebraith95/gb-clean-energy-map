@@ -1,12 +1,13 @@
 """Pipeline entry point. Run from the repo root: python -m pipeline.run [--report] [--offline]"""
 
 import argparse
+import csv
 import json
 import re
 from datetime import date
 from pathlib import Path
 
-from pipeline import bmu, changes, corrections, events, interconnectors, output, phases, repd, tec
+from pipeline import bmu, changes, corrections, events, interconnectors, output, phases, repd, tec, tec_match
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "pipeline" / "raw"
@@ -58,6 +59,7 @@ def main() -> None:
 
     links, link_source = build_interconnectors(args.offline)
     tec_projects, tec_source = read_tec(args.offline)
+    tec_result = match_tec(tec_projects, records)
 
     farms = bmu.validate(bmu.load(), records)
     bmu.write(farms, DATA_DIR)
@@ -132,6 +134,53 @@ def read_tec(offline: bool) -> tuple[list[dict], dict]:
     for key in sorted(by_status):
         print(f"  {key:45} {by_status[key]:5}")
     return projects, source
+
+
+def match_tec(projects: list[dict], records: list[dict]) -> tec_match.Result:
+    """Match TEC projects to REPD and write a review list. Badges come in phase 4, step 3."""
+    result = tec_match.match(projects, records, tec_match.load_overrides())
+    for tec_id, reason in result.stale_overrides:
+        print(f"WARNING: TEC override for {tec_id} skipped ({reason}). Review pipeline/tec_matches.json.")
+    projects_by_id = {p["id"]: p for p in projects}
+    counts: dict[tuple[str, str], int] = {}
+    for m in result.matches:
+        status = _furthest_status(projects_by_id[m.tec_id])
+        counts[(status, m.method)] = counts.get((status, m.method), 0) + 1
+    methods = ["name", "name_capacity", "name_contained", "name_hybrid", "override", "override_none", "unmatched"]
+    print("TEC matching by furthest tranche status")
+    print(f"  {'':34}" + "".join(f"{m:>15}" for m in methods))
+    for status in tec_match.STATUS_STEP:
+        print(f"  {status:34}" + "".join(f"{counts.get((status, m), 0):>15}" for m in methods))
+    shared = {repd_id: ids for repd_id, ids in result.by_repd().items() if len(ids) > 1}
+    print(f"  REPD records matched by more than one TEC project: {len(shared)}")
+    write_match_review(result, projects_by_id, {r["id"]: r for r in records}, RAW_DIR / "tec-match-review.csv")
+    return result
+
+
+def write_match_review(result: tec_match.Result, projects: dict, records: dict, path: Path) -> None:
+    """Every TEC project with its match or best candidates, for checking by hand."""
+    with path.open("w", newline="", encoding="utf-8-sig") as f:
+        writer = csv.writer(f)
+        writer.writerow([
+            "TEC Project ID", "TEC name", "TEC MW", "TEC status", "Gate", "Connection site", "Method",
+            "REPD ID", "REPD name", "REPD MW", "REPD stage", "Name score", "Capacity ratio", "Blocked",
+        ])
+        for m in result.matches:
+            p = projects[m.tec_id]
+            gates = "/".join(sorted({t["gate"] for t in p["tranches"] if t["gate"]}))
+            head = [m.tec_id, p["name"], p["capacityMw"], _furthest_status(p), gates, p["connectionSite"], m.method]
+            rows = [c for c in m.candidates if c.repd_id in m.repd_ids] if m.repd_ids else m.candidates[:3]
+            if m.repd_ids and not rows:  # an override, so no candidate list
+                rows = [tec_match.Candidate(i, None, None, records[i]["technology"], records[i]["mw"], records[i]["stage"], False) for i in m.repd_ids]
+            if not rows:
+                writer.writerow(head)
+            for c in rows:
+                r = records[c.repd_id]
+                writer.writerow(head + [c.repd_id, r["name"], r["mw"], r["stage"], c.name, c.capacity, c.blocked or ""])
+
+
+def _furthest_status(project: dict) -> str:
+    return max((t["status"] for t in project["tranches"]), key=tec_match.STATUS_STEP.__getitem__)
 
 
 def human_date(day: date) -> str:
