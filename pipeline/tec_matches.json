@@ -1,5 +1,43 @@
 {
   "_about": "Hand-maintained fixes to TEC register matching (pipeline/tec_match.py). 'match' forces a TEC project (its Project ID) onto a list of REPD IDs; an empty list confirms it is not in REPD. 'noMatch' stops a TEC project being matched to one REPD ID. Each entry gives a reason. An entry whose TEC project or REPD record has gone is skipped and flagged in the pipeline report.",
-  "match": [],
-  "noMatch": []
+  "match": [
+    {
+      "tec": "a0l4L0000005iWqQAI",
+      "repd": [11473],
+      "reason": "Well Street Paisley (49.9MW battery, Gate 2) is REPD 'Well Street - Battery Storage' (49.5MW). Same street name and capacity; the name score fell just short only because of 'Paisley'.",
+      "checked": "2026-10-07"
+    },
+    {
+      "tec": "a0l4L0000005icgQAA",
+      "repd": [17496],
+      "reason": "Monets Garden (57MW, Gate 2) is REPD 'Monets Garden Battery, Osbaldwick' (50MW). Distinctive name; capacity 88% of TEC.",
+      "checked": "2026-10-07"
+    },
+    {
+      "tec": "a0l4L0000005inuQAA",
+      "repd": [6607],
+      "reason": "North Kyle New Cumnock (212MW wind, Gate 2, built) is REPD 'North Kyle Energy Project' (205.8MW), near New Cumnock.",
+      "checked": "2026-10-07"
+    },
+    {
+      "tec": "a0l4L0000005it3QAA",
+      "repd": [2527],
+      "reason": "Inch Cape offshore platform (540MW) is one of two connections for REPD 'Inch Cape' (1,080MW).",
+      "checked": "2026-10-07"
+    },
+    {
+      "tec": "a0l4L0000005it4QAA",
+      "repd": [2527],
+      "reason": "Inch Cape offshore platform (540MW) is one of two connections for REPD 'Inch Cape' (1,080MW).",
+      "checked": "2026-10-07"
+    }
+  ],
+  "noMatch": [
+    {
+      "tec": "a0l4L0000005iwSQAQ",
+      "repd": 15176,
+      "reason": "Kilmarnock BESS (350MW) was matched to REPD 'Kilmarnock Battery Energy Storage System' (500MW), but TEC's 'Kilmarnock South Battery Storage' (500MW) fits that record exactly.",
+      "checked": "2026-10-07"
+    }
+  ]
 }
