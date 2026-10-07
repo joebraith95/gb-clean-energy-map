@@ -19,13 +19,14 @@ export const TECH_GROUPS: TechGroup[] = [
   {
     key: 'hydro',
     label: 'Hydro',
-    technologies: ['Small Hydro', 'Large Hydro'],
+    // "Hydro" is a TEC-only project; the register does not say small or large.
+    technologies: ['Small Hydro', 'Large Hydro', 'Hydro'],
     flexibility: false,
   },
   {
     key: 'marine',
     label: 'Tidal and wave',
-    technologies: ['Tidal Stream', 'Tidal Lagoon', 'Shoreline Wave'],
+    technologies: ['Tidal Stream', 'Tidal Lagoon', 'Shoreline Wave', 'Tidal'],
     flexibility: false,
   },
   { key: 'battery', label: 'Batteries', technologies: ['Battery'], flexibility: true },
@@ -38,7 +39,12 @@ export const TECH_GROUPS: TechGroup[] = [
   {
     key: 'otherStorage',
     label: 'Other storage',
-    technologies: ['Liquid Air Energy Storage', 'Compressed Air Energy Storage', 'Flywheels'],
+    technologies: [
+      'Liquid Air Energy Storage',
+      'Compressed Air Energy Storage',
+      'Flywheels',
+      'Storage (type not published)',
+    ],
     flexibility: true,
   },
   { key: 'hydrogen', label: 'Hydrogen', technologies: ['Hydrogen'], flexibility: true },

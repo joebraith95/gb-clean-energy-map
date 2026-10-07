@@ -4,8 +4,10 @@ from datetime import date
 from pipeline import changes
 
 
-def project(id: int, stage: str | None) -> dict:
-    return {"id": id, "name": f"Site {id}", "technology": "Wind Onshore", "mw": 20, "stage": stage}
+def project(id: int | str, stage: str | None, badge: str | None = None) -> dict:
+    connection = {"badge": badge} if badge else None
+    return {"id": id, "name": f"Site {id}", "technology": "Wind Onshore", "mw": 20, "stage": stage,
+            "details": {"connection": connection}}
 
 
 def link(id: str, stage: str) -> dict:
@@ -79,3 +81,39 @@ def test_spotted_changes_older_than_the_window_drop_out(tmp_path):
     assert len(read_changes(tmp_path)) == 1
     run(tmp_path, date(2027, 3, 1), [project(1, "operational")], [])
     assert read_changes(tmp_path) == []
+
+
+def test_tec_only_records_are_baselined_when_they_first_appear(tmp_path):
+    run(tmp_path, date(2026, 10, 6), [project(1, "consented")], [])
+    summary = run(tmp_path, date(2026, 10, 13), [project(1, "consented"), project("tec-a", "early_development")], [])
+    assert summary["spotted"] == 0
+    # Once baselined, a new TEC-only record is a change.
+    run(tmp_path, date(2026, 10, 20), [project(1, "consented"), project("tec-a", "early_development"),
+                                       project("tec-b", "in_planning")], [])
+    (entry,) = read_changes(tmp_path)
+    assert (entry["id"], entry["type"], entry["spottedIn"]) == ("tec-b", "added", "the NESO TEC register")
+
+
+def test_tec_only_record_matched_to_repd_is_not_a_removal(tmp_path):
+    run(tmp_path, date(2026, 10, 6), [project(1, "consented"), project("tec-a", "early_development"),
+                                      project("tec-b", "early_development")], [])
+    changes.update(tmp_path, date(2026, 10, 13), [project(1, "consented")], [], [], "r", "i", "t",
+                   frozenset({"tec-a"}))
+    assert [(e["id"], e["type"]) for e in read_changes(tmp_path)] == [("tec-b", "removed")]
+
+
+def test_badge_changes_are_logged_for_records_in_both_snapshots(tmp_path):
+    run(tmp_path, date(2026, 10, 6), [project(1, "consented"), project(2, "operational", "gate2")], [])
+    run(tmp_path, date(2026, 10, 13), [project(1, "consented", "gate2"), project(2, "operational", "energised"),
+                                       project(3, "consented", "gate2")], [])
+    found = {(e["id"], e["type"], e.get("fromConnection"), e.get("connection")) for e in read_changes(tmp_path)}
+    assert found == {(1, "connection_changed", None, "gate2"), (2, "connection_changed", "gate2", "energised"),
+                     (3, "added", None, None)}
+
+
+def test_snapshots_from_before_badges_baseline_them(tmp_path):
+    (tmp_path / "snapshots").mkdir()
+    (tmp_path / "snapshots" / "2026-10-06.json").write_text(
+        json.dumps({"date": "2026-10-06", "projects": {"1": "consented"}, "interconnectors": {}}), encoding="utf-8")
+    summary = run(tmp_path, date(2026, 10, 13), [project(1, "consented", "gate2")], [])
+    assert summary["spotted"] == 0 and summary["wrote_snapshot"]

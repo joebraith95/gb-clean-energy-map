@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { isAnimated, loadChanges, type Change, type ChangeFile } from './data/changes';
 import { loadInterconnectors, type InterconnectorFile } from './data/interconnectors';
 import { isFresh, loadBmuMap, loadNational, type NationalLive } from './data/live';
-import { loadProjects, type ProjectIndex } from './data/projects';
+import { loadProjects, parseProjectId, type ProjectId, type ProjectIndex } from './data/projects';
 import { loadGrid, type GridFile } from './map/grid';
 import type { EffectKind, EventCandidate } from './map/animations';
 import { MapCanvas } from './map/MapCanvas';
@@ -26,7 +26,7 @@ interface MapData {
 const ABOUT_HASH = '#about';
 
 type Panel = 'filters' | 'feed' | 'live';
-/** Shareable links: ?project=<REPD ID> or ?interconnector=<id>. */
+/** Shareable links: ?project=<REPD ID or tec-...> or ?interconnector=<id>. */
 const PROJECT_PARAM = 'project';
 const LINK_PARAM = 'interconnector';
 /** Matches the CSS breakpoint below which panels are bottom sheets. */
@@ -34,7 +34,8 @@ const NARROW = '(max-width: 767px)';
 
 function selectionFromUrl(data: MapData): Selection | null {
   const params = new URLSearchParams(window.location.search);
-  const project = data.projects.id.indexOf(Number(params.get(PROJECT_PARAM)));
+  const id = parseProjectId(params.get(PROJECT_PARAM));
+  const project = id === null ? -1 : data.projects.id.indexOf(id);
   if (project >= 0) return { source: 'project', index: project };
   const link = data.links.interconnectors.findIndex((l) => l.id === params.get(LINK_PARAM));
   if (link >= 0) return { source: 'interconnector', index: link };
@@ -53,7 +54,7 @@ export function App() {
   const [changes, setChanges] = useState<ChangeFile | null>(null);
   const [changesError, setChangesError] = useState<string | null>(null);
   /** REPD IDs of wind farms with live output (data/bmu-map.json). */
-  const [liveFarms, setLiveFarms] = useState<Set<number>>(() => new Set());
+  const [liveFarms, setLiveFarms] = useState<Set<ProjectId>>(() => new Set());
   const [play, setPlay] = useState<{
     selection: Selection;
     kind: EffectKind | null;
@@ -163,7 +164,7 @@ export function App() {
     (change: Change): Selection | null => {
       if (!data) return null;
       if (change.source === 'project') {
-        const index = indexById.get(Number(change.id));
+        const index = indexById.get(change.id);
         return index === undefined ? null : { source: 'project', index };
       }
       const index = data.links.interconnectors.findIndex((l) => l.id === change.id);

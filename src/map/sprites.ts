@@ -38,6 +38,10 @@ const KIND_BY_TECHNOLOGY: Record<string, SpriteKind> = {
   'Small Hydro': 'hydro',
   'Large Hydro': 'hydro',
   'Pumped Storage Hydroelectricity': 'hydro',
+  // TEC-only projects, where the register gives less detail than REPD.
+  Hydro: 'hydro',
+  Tidal: 'tidal',
+  'Storage (type not published)': 'battery',
   'Tidal Stream': 'tidal',
   'Tidal Lagoon': 'tidal',
   'Shoreline Wave': 'tidal',

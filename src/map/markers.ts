@@ -35,6 +35,12 @@ export interface Marker {
   tier: number;
   stage: Stage;
   kind: SpriteKind;
+  /**
+   * For projects sharing a connection substation: this marker's place in the spiral around it,
+   * in steps of the largest marker in the group (`tier`). The renderer turns it into pixels, so
+   * the group fans out just enough at any zoom level. The cell stays the substation's.
+   */
+  spread?: { dx: number; dy: number; tier: number };
 }
 
 export function capacityTier(mw: number): number {
@@ -48,7 +54,9 @@ export function capacityTier(mw: number): number {
  * capacity floor are always left out. Where the level clusters phases, the phases of one
  * project that pass the filter become a single marker at the largest phase, sized by their
  * combined capacity. Onshore projects that fall on a sea cell next to the coast are drawn on
- * the nearest land cell; their data is unchanged.
+ * the nearest land cell; their data is unchanged. Projects placed at the same connection
+ * substation (TEC-only projects) would share one cell, so the largest sits on the substation and
+ * the rest fan out around it, nearest first (see `spread`).
  */
 export function buildMarkers(
   projects: ProjectIndex,
@@ -108,7 +116,46 @@ export function buildMarkers(
       kind: spriteKind(technology),
     });
   }
+  spreadSharedSites(markers, projects);
   return markers.sort((a, b) => a.mw - b.mw);
+}
+
+/** Gives the markers at each shared substation their places in a spiral around it. */
+function spreadSharedSites(markers: Marker[], projects: ProjectIndex): void {
+  const bySite = new Map<number, Marker[]>();
+  for (const marker of markers) {
+    const site = projects.site[marker.index];
+    if (site < 0) continue;
+    const group = bySite.get(site);
+    if (group) group.push(marker);
+    else bySite.set(site, [marker]);
+  }
+  for (const group of bySite.values()) {
+    if (group.length < 2) continue;
+    group.sort((a, b) => b.mw - a.mw || a.index - b.index);
+    const offsets = spiralOffsets(group.length);
+    const tier = group[0].tier;
+    group.forEach((marker, k) => {
+      marker.spread = { dx: offsets[k][0], dy: offsets[k][1], tier };
+    });
+  }
+}
+
+/** The first `n` cell offsets around a centre: the centre, then each surrounding ring in turn. */
+export function spiralOffsets(n: number): [number, number][] {
+  const offsets: [number, number][] = [[0, 0]];
+  for (let ring = 1; offsets.length < n; ring++) {
+    const cells: [number, number][] = [];
+    for (let dy = -ring; dy <= ring; dy++) {
+      for (let dx = -ring; dx <= ring; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) === ring) cells.push([dx, dy]);
+      }
+    }
+    // Within a ring, the cells closest to the centre come first.
+    cells.sort((a, b) => a[0] ** 2 + a[1] ** 2 - (b[0] ** 2 + b[1] ** 2));
+    offsets.push(...cells);
+  }
+  return offsets.slice(0, n);
 }
 
 /** Markers at the GB landing point of each interconnector that passes the filter. */

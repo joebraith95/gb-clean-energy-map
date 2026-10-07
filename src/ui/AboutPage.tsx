@@ -100,7 +100,7 @@ export function AboutPage({ projects, links, onClose }: Props) {
                     OpenStreetMap
                   </a>
                 </td>
-                <td>Interconnector landing points, checked by hand</td>
+                <td>Interconnector landing points and grid connection substations</td>
                 <td>Open Database Licence (ODbL)</td>
                 <td>Checked when the interconnector list is updated</td>
               </tr>
@@ -129,8 +129,8 @@ export function AboutPage({ projects, links, onClose }: Props) {
         <p className="attribution">{ONS_ATTRIBUTION}</p>
         <p className="attribution">{NESO_ATTRIBUTION}.</p>
         <p className="attribution">
-          Interconnector landing points {OSM_ATTRIBUTION}, available under the Open Database
-          Licence.
+          Interconnector landing points and connection substations {OSM_ATTRIBUTION}, available
+          under the Open Database Licence.
         </p>
         <p className="attribution">Made with Natural Earth.</p>
 
@@ -141,15 +141,17 @@ export function AboutPage({ projects, links, onClose }: Props) {
           <strong>Consented</strong>. Then come <strong>Under construction</strong> and{' '}
           <strong>Operational</strong>. Projects that were refused, withdrawn, abandoned or whose
           permission expired are treated as stalled. Stalled and decommissioned projects are kept in
-          the data but not shown on the map. <strong>Early development</strong> will be filled in
-          once grid connection data is added.
+          the data but not shown on the map. <strong>Early development</strong> means a project has
+          a grid connection agreement but has not yet applied for planning permission; these come
+          from the NESO TEC register (see below).
         </p>
 
         <h3>Grid connections</h3>
         <p>
           The connection badge on a project card comes from the NESO Transmission Entry Capacity
           (TEC) register, which lists agreements to connect to the transmission network.{' '}
-          <strong>Energised</strong> means the register shows the connection as built.{' '}
+          <strong>Energised</strong> means the register shows the connection as built and REPD shows
+          the project as operational; where they disagree, REPD wins.{' '}
           <strong>Gate 2 contracted</strong> means the project holds a Gate 2 agreement under the
           reformed connections process; the card then shows the connection site and the contracted
           date. A contracted date is the date in the agreement, not a forecast, and it never moves a
@@ -162,6 +164,17 @@ export function AboutPage({ projects, links, onClose }: Props) {
           REPD record by its name, technology and capacity, and only where one record clearly fits.
           Some matches are checked by hand. A match can still be wrong, and a project with no clear
           match reads Not published.
+        </p>
+        <p>
+          Projects in the TEC register that are not in REPD are added to the map too. Their stage
+          comes from the register: a project still scoping its connection is{' '}
+          <strong>Early development</strong>, and later ones take the same stages as REPD projects.
+          The register does not say where a project is, so it is drawn at its grid connection
+          substation, located from OpenStreetMap, and the card says so. Projects that share a
+          substation are spread around it. A project is left off the map when its substation is not
+          built yet or cannot be found, or when a REPD record looks like the same project, so
+          nothing is shown twice. Storage is only called a battery when the project name says so;
+          otherwise it is “Storage (type not published)”.
         </p>
 
         <h3>Interconnectors</h3>

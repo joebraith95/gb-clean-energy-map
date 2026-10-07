@@ -29,6 +29,19 @@ describe('feed', () => {
     expect(changeLabel(change({ type: 'added', source: 'interconnector' }))).toBe(
       'New in the NESO register',
     );
+    expect(changeLabel(change({ type: 'added', id: 'tec-a0l4' }))).toBe('New in the TEC register');
+  });
+
+  it('labels connection badge changes and filters them under Connections', () => {
+    const gate2 = change({ type: 'connection_changed', connection: 'gate2', fromConnection: null });
+    const lost = change({ type: 'connection_changed', connection: null, fromConnection: 'gate2' });
+    expect(changeLabel(gate2)).toBe('Gate 2 contracted');
+    expect(changeLabel(change({ type: 'connection_changed', connection: 'energised' }))).toBe(
+      'Connection energised',
+    );
+    expect(changeLabel(lost)).toBe('Connection no longer published');
+    const all = [gate2, change({})];
+    expect(filterChanges(all, DEFAULT_FILTERS, 'connections')).toEqual([gate2]);
   });
 
   it('applies the map filters except stage, and the feed type filter', () => {

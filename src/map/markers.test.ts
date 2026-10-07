@@ -2,12 +2,20 @@ import { describe, expect, it } from 'vitest';
 import type { ProjectIndex } from '../data/projects';
 import { GB_LAND, SEA } from './grid';
 import { ZOOM_LEVELS } from './levels';
-import { buildMarkers, capacityTier } from './markers';
+import { buildMarkers, capacityTier, spiralOffsets } from './markers';
 
 const local = ZOOM_LEVELS[2];
 
 function index(
-  rows: { x: number; y: number; mw: number; tech?: number; hidden?: number; group?: number }[],
+  rows: {
+    x: number;
+    y: number;
+    mw: number;
+    tech?: number;
+    hidden?: number;
+    group?: number;
+    site?: number;
+  }[],
 ): ProjectIndex {
   return {
     source: { name: '', page: '', file: '', updated: null },
@@ -28,6 +36,7 @@ function index(
     connectionSource: null,
     connectionBadges: ['not_published', 'gate2', 'energised'],
     conn: rows.map(() => 0),
+    site: rows.map((r) => r.site ?? -1),
   };
 }
 
@@ -41,6 +50,36 @@ const land = {
 const at = (col: number, row: number) => ({ x: col * 1000 + 500, y: 1_230_000 - row * 1000 - 500 });
 
 describe('markers', () => {
+  it('lists spiral offsets nearest first', () => {
+    expect(spiralOffsets(5)).toEqual([
+      [0, 0],
+      [0, -1],
+      [-1, 0],
+      [1, 0],
+      [0, 1],
+    ]);
+    expect(spiralOffsets(10)).toHaveLength(10);
+  });
+
+  it('fans out projects sharing a substation around it, largest in the centre', () => {
+    const projects = index([
+      { ...at(1, 1), mw: 10, site: 0 },
+      { ...at(1, 1), mw: 300, site: 0 },
+      { ...at(1, 1), mw: 20, site: 0 },
+      { ...at(1, 1), mw: 15 },
+    ]);
+    const markers = new Map(
+      buildMarkers(projects, local, land, () => true).map((m) => [m.index, m]),
+    );
+    // Everyone keeps the substation's cell; the spread says where to draw around it.
+    expect([...markers.values()].every((m) => m.col === 1 && m.row === 1)).toBe(true);
+    expect(markers.get(1)?.spread).toEqual({ dx: 0, dy: 0, tier: 3 });
+    expect(markers.get(2)?.spread).toEqual({ dx: 0, dy: -1, tier: 3 });
+    expect(markers.get(0)?.spread).toEqual({ dx: -1, dy: 0, tier: 3 });
+    // A REPD project at the same point is not part of the group.
+    expect(markers.get(3)?.spread).toBeUndefined();
+  });
+
   it('assigns capacity tiers', () => {
     expect([1, 10, 49.9, 50, 300, 1200].map(capacityTier)).toEqual([0, 1, 1, 2, 3, 3]);
   });

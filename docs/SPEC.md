@@ -65,7 +65,19 @@ Mapped from the `Development Status (short)` column. The long `Development Statu
 | No Application Required | Use the latest stage date present. If none, keep in the data but hide from the map |
 | Revised | Superseded record, exclude |
 
-Early development is mainly populated from the TEC register in phase 4.
+Early development is populated from the TEC register (see "TEC-only projects").
+
+### TEC status mapping (for TEC projects with no REPD record)
+
+Mapped from `Project Status` of the furthest tranche, onto the same stages REPD uses:
+
+| TEC status | Headline stage |
+|---|---|
+| Scoping | Early development |
+| Awaiting Consents | In planning |
+| Consents Approved | Consented |
+| Under Construction/Commissioning | Under construction |
+| Built | Operational |
 
 ### REPD file handling
 
@@ -105,6 +117,17 @@ How the badge is worked out (`pipeline/connection.py`), from the TEC register ma
 - **Matching** (`pipeline/tec_match.py`). A TEC project matches a REPD record of a compatible technology on the distinctive words of the name (rarer words count for more) and on capacity, and only when one record clearly fits: an exact name with at least half the capacity, a close name with capacity within 10%, a TEC name found inside an address-style REPD name with capacity within 10%, or, for a multi-technology project, one exact-name record per technology whose capacities add up. A candidate is never accepted automatically when extension or repowering wording differs, when its REPD stage is more than one step ahead of the TEC status, or when its capacity is not published. Several TEC projects can match one REPD record (offshore wind farms are often split into A, B and C connections).
 - **Overrides.** `pipeline/tec_matches.json` forces a TEC project onto a list of REPD IDs (an empty list confirms it is not in REPD) or stops it matching one REPD ID. Each entry gives a reason. An entry whose TEC project or REPD record has gone is skipped and flagged in the report.
 - **Review.** Every run writes `pipeline/raw/tec-match-review.csv` with each project's match or best candidates.
+
+### TEC-only projects
+
+TEC projects that match no REPD record become map records of their own (`pipeline/tec_records.py`), with the ID `tec-<Project ID>`, shareable as `?project=tec-<Project ID>`.
+- **Stage** from the TEC status mapping above.
+- **Technology.** One record per project, even when it lists several technologies: generation comes before storage (offshore wind, onshore wind, solar, hydro, tidal, then pumped storage, liquid air, hydrogen, other storage). "Energy Storage System" is a Battery only when the project name says battery or BESS; otherwise it is "Storage (type not published)", in the Other storage group. TEC "Hydro" and "Tidal" do not say small or large, stream or lagoon, so they keep those names and join the Hydro and Tidal and wave groups.
+- **Capacity** is the final cumulative TEC capacity.
+- **Location** is the located connection substation (below). Projects sharing a substation fan out around it when drawn, largest in the centre, spaced by the largest marker's size so they separate at every zoom level.
+- **Badge.** Energised when a tranche is Built, otherwise Gate 2 contracted when a tranche has Gate 2, otherwise Not published.
+- **Not drawn, but kept in the data** when the connection site is not located, when capacity is not published, or when a REPD record looks like the same project but was not matched (name score of 0.6 or more, or the name found inside the REPD name, with at least half the capacity). Drawing both would show one project twice. A `tec_matches.json` entry confirming the project is not in REPD lifts this.
+- **Card.** Says the project is not in REPD and is drawn at its connection substation, not at the project site. Shows the developer, technologies, connection site, connection type, TEC status and Gate (or each tranche), the contracted date for Gate 2 only, and credits NESO and OpenStreetMap.
 
 ### Locating connection sites
 
@@ -152,7 +175,7 @@ REPD has no field linking phases, so the pipeline (`pipeline/phases.py`) groups 
 
 - Default capacity filter: 1MW and above, adjustable with a slider. All REPD rows are ingested regardless.
 - Filters: technology, headline stage, flexibility layer toggle, capacity.
-  - Technology groups: onshore wind, offshore wind, solar, hydro, tidal and wave; with the flexibility layer on, also batteries, pumped storage, other storage and hydrogen.
+  - Technology groups: onshore wind, offshore wind, solar, hydro, tidal and wave; with the flexibility layer on, also batteries, pumped storage, other storage and hydrogen. TEC-only "Hydro", "Tidal" and "Storage (type not published)" join hydro, tidal and wave, and other storage.
   - The flexibility layer is off when the map opens.
   - Stage choices only list stages that have projects on the map (no empty options).
   - Capacity slider stops: all sizes, 1, 5, 10, 50, 100, 300 and 1,000MW.
@@ -230,6 +253,11 @@ Rules for dated events:
 - "Planning Permission Expired" is a deadline. It only counts as an event once the date has passed and the status is "Planning Permission Expired".
 
 **Spotted changes.** Each run writes a snapshot (`data/snapshots/<date>.json`, the headline stage of every project and interconnector), but only when a stage differs from the latest snapshot. Each difference that no dated event explains goes into `data/snapshots/spotted.json`, dated with the run and labelled with its source (for example "the July 2026 REPD release"). This covers records added or removed, abandoned and decommissioned projects, and interconnector stage changes.
+
+**TEC-only records and connection badges.** Snapshots also record each record's connection badge.
+- The first snapshot that contains TEC-only records sets their baseline: they are not all logged as new.
+- A TEC-only record that disappears because its project is now matched to a REPD record is not a change.
+- Badge changes on records present in both snapshots are logged as "connection_changed", spotted in the TEC register. The feed's type filter has a Connections option for them. A snapshot written before badges were recorded sets the badges' baseline.
 
 **The change list.** `data/changes.json` is rebuilt every run: the dated events plus spotted changes from the last 12 months, newest first. Two runs on unchanged sources produce byte-identical output.
 

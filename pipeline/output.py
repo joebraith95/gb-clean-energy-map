@@ -40,17 +40,39 @@ def write(records: list[dict], source: dict, data_dir: Path, connection_source: 
         "group": [r.get("group", -1) for r in records],
         # Index into connectionBadges; 0 means not published.
         "conn": [BADGES.index(_badge(r)) for r in records],
+        # Projects placed at the same connection substation share a number, or -1.
+        "site": _site_groups(records),
     }
     data_dir.mkdir(parents=True, exist_ok=True)
     write_json(data_dir / "projects.json", index)
 
     shards: dict[int, dict] = {n: {} for n in range(DETAIL_SHARDS)}
     for r in records:
-        shards[r["id"] % DETAIL_SHARDS][str(r["id"])] = r["details"]
+        shards[shard_for(r["id"])][str(r["id"])] = r["details"]
     details_dir = data_dir / "details"
     details_dir.mkdir(exist_ok=True)
     for n, shard in shards.items():
         write_json(details_dir / f"{n:02d}.json", shard)
+
+
+def shard_for(project_id: int | str) -> int:
+    """Detail shard for a REPD ID (a number) or a TEC-only ID (text). Kept in step with
+    loadDetails in src/data/projects.ts."""
+    if isinstance(project_id, int):
+        return project_id % DETAIL_SHARDS
+    return sum(ord(c) for c in project_id) % DETAIL_SHARDS
+
+
+def _site_groups(records: list[dict]) -> list[int]:
+    numbers: dict[str, int] = {}
+    groups = []
+    for r in records:
+        site = r.get("site")
+        if site is None:
+            groups.append(-1)
+        else:
+            groups.append(numbers.setdefault(site, len(numbers)))
+    return groups
 
 
 def _badge(record: dict) -> str:

@@ -41,9 +41,10 @@ export function FeedPanel({ changes, error, filters, canOpen, onOpen, onClose }:
       {changes && (
         <>
           <p className="muted">
-            Stage changes in the last {changes.windowMonths} months, for projects that match your
-            filters. Dates come from the Renewable Energy Planning Database; changes it does not
-            date are marked with the release they were spotted in.
+            Stage and grid connection changes in the last {changes.windowMonths} months, for
+            projects that match your filters. Dates come from the Renewable Energy Planning
+            Database; changes it does not date are marked with the release or register they were
+            spotted in.
           </p>
 
           <div className="feed-types" role="group" aria-label="Type of change">

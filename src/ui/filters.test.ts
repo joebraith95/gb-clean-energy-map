@@ -28,6 +28,7 @@ const projects: ProjectIndex = {
   connectionSource: null,
   connectionBadges: ['not_published', 'gate2', 'energised'],
   conn: [0, 0, 1, 2, 1],
+  site: [-1, -1, -1, -1, -1],
 };
 
 describe('filters', () => {

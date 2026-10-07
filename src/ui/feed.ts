@@ -12,6 +12,7 @@ export const FEED_TYPES = {
     label: 'Planning',
     types: ['application_submitted', 'appeal_lodged', 'refused', 'withdrawn', 'permission_expired'],
   },
+  connections: { label: 'Connections', types: ['connection_changed'] },
 } satisfies Record<string, { label: string; types: ChangeType[] | null }>;
 
 export type FeedType = keyof typeof FEED_TYPES;
@@ -28,6 +29,12 @@ const TYPE_LABELS: Record<ChangeType, string> = {
   added: 'New',
   removed: 'Removed',
   stage_changed: 'Stage changed',
+  connection_changed: 'Connection changed',
+};
+
+const CONNECTION_LABELS: Record<string, string> = {
+  gate2: 'Gate 2 contracted',
+  energised: 'Connection energised',
 };
 
 const OFF_TRACK_LABELS: Record<string, string> = {
@@ -37,13 +44,18 @@ const OFF_TRACK_LABELS: Record<string, string> = {
 
 /** Plain-English label for a change, for example "Consent granted" or "Now stalled". */
 export function changeLabel(change: Change): string {
-  if (change.type === 'added') {
-    return change.source === 'interconnector' ? 'New in the NESO register' : 'New in REPD';
-  }
-  if (change.type === 'removed') {
-    return change.source === 'interconnector'
-      ? 'Removed from the NESO register'
-      : 'Removed from REPD';
+  const register =
+    change.source === 'interconnector'
+      ? 'the NESO register'
+      : isTecOnly(change)
+        ? 'the TEC register'
+        : 'REPD';
+  if (change.type === 'added') return `New in ${register}`;
+  if (change.type === 'removed') return `Removed from ${register}`;
+  if (change.type === 'connection_changed') {
+    return change.connection
+      ? CONNECTION_LABELS[change.connection]
+      : 'Connection no longer published';
   }
   if (change.type === 'stage_changed' && change.stage) {
     const stage =
@@ -53,6 +65,11 @@ export function changeLabel(change: Change): string {
     return `Now ${stage}`;
   }
   return TYPE_LABELS[change.type];
+}
+
+/** A project from the TEC register that is not in REPD. */
+function isTecOnly(change: Change): boolean {
+  return typeof change.id === 'string' && change.id.startsWith('tec-');
 }
 
 /** Technologies the feed shows, from the map's technology and flexibility filters. */

@@ -5,6 +5,9 @@ import type { Stage } from '../theme/tokens';
 
 export type AnyStage = Stage | 'stalled' | 'decommissioned';
 
+/** A REPD Ref ID, or "tec-" and a TEC register Project ID for a project not in REPD. */
+export type ProjectId = number | string;
+
 export type ConnectionBadge = 'not_published' | 'gate2' | 'energised';
 
 /** Connection details from the NESO TEC register, for records matched to it. */
@@ -18,7 +21,7 @@ export interface Connection {
   tec: { name: string; projectId: string; matchedBy: string }[];
 }
 
-/** Columnar arrays, one entry per kept REPD record. */
+/** Columnar arrays, one entry per kept record: REPD records, then TEC-only projects. */
 export interface ProjectIndex {
   source: { name: string; page: string; file: string; updated: string | null };
   /** The TEC register the connection badges come from. */
@@ -28,7 +31,7 @@ export interface ProjectIndex {
   stages: AnyStage[];
   hiddenReasons: string[];
   detailShards: number;
-  id: number[];
+  id: ProjectId[];
   name: string[];
   x: (number | null)[];
   y: (number | null)[];
@@ -45,10 +48,13 @@ export interface ProjectIndex {
   group: number[];
   /** Index into `connectionBadges`; 0 means not published. */
   conn: number[];
+  /** Projects placed at the same connection substation share a number, or -1. */
+  site: number[];
 }
 
-/** Card fields for one project. Null means not published in the source. */
-export interface ProjectDetails {
+/** Card fields for one REPD record. Null means not published in the source. */
+export interface RepdDetails {
+  kind: 'repd';
   operator: string | null;
   storageType: string | null;
   repdStatus: string;
@@ -76,6 +82,46 @@ export interface ProjectDetails {
   connection: Connection | null;
 }
 
+/** Card fields for a TEC register project with no REPD record. */
+export interface TecDetails {
+  kind: 'tec';
+  tecProjectId: string;
+  customer: string | null;
+  connectionSite: string | null;
+  hostTo: string | null;
+  agreementType: string | null;
+  /** Technology tags from the register, for example "solar" and "storage". */
+  technologies: string[];
+  /** The OpenStreetMap substation the project is drawn at, if located. */
+  substation: { name: string; osm: string } | null;
+  tranches: {
+    stage: number | null;
+    status: string;
+    gate: string | null;
+    changeMw: number | null;
+    cumulativeMw: number | null;
+    /** Gate 2 tranches only. */
+    contractedDate: string | null;
+  }[];
+  connection: Connection | null;
+}
+
+export type ProjectDetails = RepdDetails | TecDetails;
+
+/** Detail shard for an ID. Kept in step with shard_for in pipeline/output.py. */
+export function shardFor(id: ProjectId, shards: number): number {
+  if (typeof id === 'number') return id % shards;
+  let sum = 0;
+  for (const c of id) sum += c.charCodeAt(0);
+  return sum % shards;
+}
+
+/** Reads a project ID from a share link: digits are a REPD ID, anything else a TEC-only ID. */
+export function parseProjectId(value: string | null): ProjectId | null {
+  if (!value) return null;
+  return /^\d+$/.test(value) ? Number(value) : value;
+}
+
 export async function loadProjects(): Promise<ProjectIndex> {
   const response = await fetch(dataUrl('projects.json'));
   if (!response.ok) throw new Error(`Could not load projects.json (${response.status})`);
@@ -84,9 +130,9 @@ export async function loadProjects(): Promise<ProjectIndex> {
 
 const shardCache = new Map<number, Promise<Record<string, ProjectDetails>>>();
 
-/** Card details for one REPD ID, loading only the shard that holds it. */
-export async function loadDetails(id: number, shards: number): Promise<ProjectDetails> {
-  const shard = id % shards;
+/** Card details for one project, loading only the shard that holds it. */
+export async function loadDetails(id: ProjectId, shards: number): Promise<ProjectDetails> {
+  const shard = shardFor(id, shards);
   let request = shardCache.get(shard);
   if (!request) {
     request = fetch(dataUrl(`details/${String(shard).padStart(2, '0')}.json`)).then((r) => {
@@ -97,7 +143,7 @@ export async function loadDetails(id: number, shards: number): Promise<ProjectDe
     shardCache.set(shard, request);
   }
   const details = (await request)[String(id)];
-  if (!details) throw new Error(`No details for REPD ${id}`);
+  if (!details) throw new Error(`No details for project ${id}`);
   return details;
 }
 
@@ -107,4 +153,5 @@ export const MARINE_TECHNOLOGIES = new Set([
   'Tidal Stream',
   'Tidal Lagoon',
   'Shoreline Wave',
+  'Tidal',
 ]);

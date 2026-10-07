@@ -4,7 +4,9 @@ import {
   type Connection,
   type ConnectionBadge,
   type ProjectDetails,
+  type ProjectId,
   type ProjectIndex,
+  type TecDetails,
 } from '../data/projects';
 import { spriteKind } from '../map/sprites';
 import type { Stage } from '../theme/tokens';
@@ -16,8 +18,8 @@ import { TechIcon } from './TechIcon';
 interface Props {
   projects: ProjectIndex;
   index: number;
-  /** Position in the index arrays for each REPD ID. */
-  indexById: Map<number, number>;
+  /** Position in the index arrays for each project ID. */
+  indexById: Map<ProjectId, number>;
   onSelect: (index: number) => void;
   onClose: () => void;
   /** Whether this project has mapped BM units, so a live section can be shown. */
@@ -44,8 +46,27 @@ function matchNote(connection: Connection): string {
     : `Connection data from the NESO TEC register (${names}), matched to this record by name and capacity. The match may be wrong.`;
 }
 
-/** The date that evidences each step of the progress bar. Early development has none in REPD. */
+const TECHNOLOGY_LABELS: Record<string, string> = {
+  wind_onshore: 'onshore wind',
+  wind_offshore: 'offshore wind',
+  solar: 'solar',
+  hydro: 'hydro',
+  tidal: 'tidal',
+  storage: 'storage',
+  pumped_storage: 'pumped storage',
+  liquid_air: 'liquid air storage',
+  hydrogen: 'hydrogen',
+};
+
+const AGREEMENT_LABELS: Record<string, string> = {
+  'Direct Connection': 'Direct to the transmission network',
+  Embedded: 'Through the local distribution network',
+};
+
+/** The date that evidences each step of the progress bar. Early development has none in REPD,
+ * and TEC-only projects have no stage dates at all. */
 function stepDate(stage: Stage, details: ProjectDetails): string | null {
+  if (details.kind !== 'repd') return null;
   switch (stage) {
     case 'in_planning':
       return details.dates.submitted;
@@ -140,7 +161,9 @@ export function ProjectCard({ projects, index, indexById, onSelect, onClose, has
       {error && <p className="card-error">Details could not be loaded. {error}</p>}
       {!details && !error && <p className="card-loading">Loading details…</p>}
 
-      {details && (
+      {details?.kind === 'tec' && <TecBody projects={projects} details={details} />}
+
+      {details?.kind === 'repd' && (
         <>
           {details.corrections.length > 0 && (
             <ul className="card-notes">
@@ -191,7 +214,7 @@ export function ProjectCard({ projects, index, indexById, onSelect, onClose, has
 
           {connection && <p className="card-note muted small">{matchNote(connection)}</p>}
 
-          {hasLive && <LiveOutput repdId={id} />}
+          {hasLive && typeof id === 'number' && <LiveOutput repdId={id} />}
 
           {details.phases && details.phases.length > 0 && (
             <section className="card-phases">
@@ -234,5 +257,90 @@ export function ProjectCard({ projects, index, indexById, onSelect, onClose, has
         </>
       )}
     </aside>
+  );
+}
+
+/** Card body for a TEC register project that is not in REPD. */
+function TecBody({ projects, details }: { projects: ProjectIndex; details: TecDetails }) {
+  const tranches = details.tranches;
+  const single = tranches.length === 1 ? tranches[0] : null;
+  return (
+    <>
+      <p className="card-note muted small">
+        Not in the Renewable Energy Planning Database. The TEC register does not publish where the
+        project is, so the map shows it at its grid connection substation
+        {details.substation && <> ({details.substation.name})</>}, not at the project site.
+      </p>
+
+      <dl className="card-details">
+        <dt>Developer</dt>
+        <dd>{orNotPublished(details.customer)}</dd>
+        <dt>Technology</dt>
+        <dd>{details.technologies.map((t) => TECHNOLOGY_LABELS[t] ?? t).join(' and ')}</dd>
+        <dt>Connection site</dt>
+        <dd>{orNotPublished(details.connectionSite)}</dd>
+        <dt>Connection</dt>
+        <dd>
+          {details.agreementType
+            ? (AGREEMENT_LABELS[details.agreementType] ?? details.agreementType)
+            : NOT_PUBLISHED}
+        </dd>
+        {single && (
+          <>
+            <dt>Status in the TEC register</dt>
+            <dd>{single.status}</dd>
+            <dt>Gate</dt>
+            <dd>{single.gate ? `Gate ${single.gate}` : NOT_PUBLISHED}</dd>
+            {single.contractedDate && (
+              <>
+                <dt>Contracted date</dt>
+                <dd>{formatDate(single.contractedDate)}</dd>
+              </>
+            )}
+          </>
+        )}
+      </dl>
+
+      {!single && (
+        <section className="card-phases">
+          <h3>Connection stages</h3>
+          <ul>
+            {tranches.map((t, i) => (
+              <li key={i}>
+                Stage {t.stage ?? i + 1}: {t.status}, {formatMw(t.cumulativeMw)} in total
+                {t.gate && <>, Gate {t.gate}</>}
+                {t.contractedDate && <>, contracted date {formatDate(t.contractedDate)}</>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <footer className="card-footer">
+        Source:{' '}
+        {projects.connectionSource ? (
+          <a href={projects.connectionSource.page} target="_blank" rel="noreferrer">
+            TEC register (NESO)
+          </a>
+        ) : (
+          'TEC register (NESO)'
+        )}
+        . Supported by National Energy SO Open Data. TEC project ID {details.tecProjectId}.
+        {details.substation && (
+          <>
+            {' '}
+            Substation location from{' '}
+            <a
+              href={`https://www.openstreetmap.org/${details.substation.osm}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              OpenStreetMap
+            </a>{' '}
+            © OpenStreetMap contributors.
+          </>
+        )}
+      </footer>
+    </>
   );
 }

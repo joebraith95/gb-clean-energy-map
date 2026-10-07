@@ -118,6 +118,8 @@ export class MapView {
   private lastWheel = 0;
   private resizeObserver: ResizeObserver | null = null;
   private destroyed = false;
+  /** Removes listeners on the host element, which outlives this view. */
+  private readonly hostListeners = new AbortController();
 
   private constructor(
     private readonly host: HTMLElement,
@@ -180,6 +182,7 @@ export class MapView {
 
   destroy(): void {
     this.destroyed = true;
+    this.hostListeners.abort();
     window.clearInterval(this.spinTimer);
     window.clearInterval(this.effectTimer);
     this.resizeObserver?.disconnect();
@@ -321,7 +324,7 @@ export class MapView {
       const unit =
         (marker.tier < FIRST_SPRITE_TIER
           ? Math.max(1, Math.round(this.dpr))
-          : this.spritePixelSize(marker)) / this.dpr;
+          : this.spritePixelSize(marker.tier)) / this.dpr;
       const cx = left + size / 2;
       const cy = top + size / 2;
       const frame = Math.floor((now - effect.startAt) / FRAME_MS);
@@ -453,20 +456,26 @@ export class MapView {
   }
 
   /** Physical pixels per sprite art pixel. The largest tier doubles, except on the national view. */
-  private spritePixelSize(marker: Marker): number {
-    const doubled = marker.tier > FIRST_SPRITE_TIER && this.level > 0;
+  private spritePixelSize(tier: number): number {
+    const doubled = tier > FIRST_SPRITE_TIER && this.level > 0;
     return Math.max(1, Math.round(this.dpr)) * (doubled ? 2 : 1);
   }
 
+  /** Drawn size of a marker of this tier, in CSS pixels. */
+  private markerSize(tier: number): number {
+    return tier < FIRST_SPRITE_TIER
+      ? Math.max(2, Math.round(DOT_SIZES[tier] * this.dpr)) / this.dpr
+      : (TILE_SIZE * this.spritePixelSize(tier)) / this.dpr;
+  }
+
   private markerBox(marker: Marker): { left: number; top: number; size: number } {
-    const size =
-      marker.tier < FIRST_SPRITE_TIER
-        ? Math.max(2, Math.round(DOT_SIZES[marker.tier] * this.dpr)) / this.dpr
-        : (TILE_SIZE * this.spritePixelSize(marker)) / this.dpr;
+    const size = this.markerSize(marker.tier);
     const css = this.cssPerCell;
+    // Markers sharing a substation fan out by the largest one's size plus a pixel's gap.
+    const step = marker.spread ? this.markerSize(marker.spread.tier) + 1 : 0;
     return {
-      left: snap((marker.col + 0.5) * css - size / 2, this.dpr),
-      top: snap((marker.row + 0.5) * css - size / 2, this.dpr),
+      left: snap((marker.col + 0.5) * css - size / 2 + (marker.spread?.dx ?? 0) * step, this.dpr),
+      top: snap((marker.row + 0.5) * css - size / 2 + (marker.spread?.dy ?? 0) * step, this.dpr),
       size,
     };
   }
@@ -507,7 +516,7 @@ export class MapView {
         g.rect(left, top, size, size).fill(stageColours[marker.stage]);
         continue;
       }
-      const pixelSize = this.spritePixelSize(marker);
+      const pixelSize = this.spritePixelSize(marker.tier);
       const sprite = new Sprite(tileTexture(marker.kind, this.spinFrame, marker.stage, pixelSize));
       sprite.scale.set(1 / this.dpr);
       sprite.position.set(left, top);
@@ -644,40 +653,44 @@ export class MapView {
       { passive: false },
     );
 
-    this.host.addEventListener('keydown', (event) => {
-      const step = 0.25;
-      const pan = (dx: number, dy: number) => {
-        this.offset = { x: this.offset.x + dx, y: this.offset.y + dy };
-        this.applyOffset();
-      };
-      switch (event.key) {
-        case '+':
-        case '=':
-          this.zoomIn();
-          break;
-        case '-':
-          this.zoomOut();
-          break;
-        case 'ArrowLeft':
-          pan(this.view.width * step, 0);
-          break;
-        case 'ArrowRight':
-          pan(-this.view.width * step, 0);
-          break;
-        case 'ArrowUp':
-          pan(0, this.view.height * step);
-          break;
-        case 'ArrowDown':
-          pan(0, -this.view.height * step);
-          break;
-        case 'Escape':
-          this.select(null);
-          break;
-        default:
-          return;
-      }
-      event.preventDefault();
-    });
+    this.host.addEventListener(
+      'keydown',
+      (event) => {
+        const step = 0.25;
+        const pan = (dx: number, dy: number) => {
+          this.offset = { x: this.offset.x + dx, y: this.offset.y + dy };
+          this.applyOffset();
+        };
+        switch (event.key) {
+          case '+':
+          case '=':
+            this.zoomIn();
+            break;
+          case '-':
+            this.zoomOut();
+            break;
+          case 'ArrowLeft':
+            pan(this.view.width * step, 0);
+            break;
+          case 'ArrowRight':
+            pan(-this.view.width * step, 0);
+            break;
+          case 'ArrowUp':
+            pan(0, this.view.height * step);
+            break;
+          case 'ArrowDown':
+            pan(0, -this.view.height * step);
+            break;
+          case 'Escape':
+            this.select(null);
+            break;
+          default:
+            return;
+        }
+        event.preventDefault();
+      },
+      { signal: this.hostListeners.signal },
+    );
   }
 
   private pointerSpread(): number {

@@ -7,7 +7,7 @@ import re
 from datetime import date
 from pathlib import Path
 
-from pipeline import bmu, changes, connection, corrections, events, interconnectors, output, phases, repd, substations, tec, tec_match
+from pipeline import bmu, changes, connection, corrections, events, interconnectors, output, phases, repd, substations, tec, tec_match, tec_records
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "pipeline" / "raw"
@@ -59,7 +59,9 @@ def main() -> None:
     for r in records:
         r["details"]["connection"] = connections.get(r["id"])
     print_connections(connections, connection.stage_mismatches(tec_result, tec_projects, records), records)
-    print_site_coverage(tec_result, tec_projects)
+    tec_only = tec_records.build(tec_result, tec_projects, substations.load_sites())
+    print_tec_records(tec_only)
+    records = records + tec_only
 
     output.write(records, source, DATA_DIR, tec_source)
     print(f"Wrote {len(records)} projects to {DATA_DIR}")
@@ -82,6 +84,8 @@ def main() -> None:
         dated,
         source.get("release") or release_label("", source["updated"]),
         f"the NESO Interconnector Register ({human_date(args.run_date)})",
+        f"the NESO TEC register ({human_date(args.run_date)})",
+        frozenset(tec_records.ID_PREFIX + m.tec_id for m in tec_result.matches if m.repd_ids),
     )
     print_changes(dated, ignored, summary)
 
@@ -154,13 +158,19 @@ def print_connections(connections: dict[int, dict], mismatched: list[int], recor
         print(f"    REPD {repd_id}: {stages[repd_id]}")
 
 
-def print_site_coverage(result: tec_match.Result, projects: list[dict]) -> None:
-    """How many TEC projects with no REPD record have a located connection site (phase 4, step 5)."""
-    sites = substations.load_sites()
-    by_id = {p["id"]: p for p in projects}
-    unmatched = [by_id[m.tec_id] for m in result.matches if not m.repd_ids]
-    located = sum(1 for p in unmatched if p["connectionSite"] in sites)
-    print(f"TEC projects not in REPD: {len(unmatched)}, connection site located for {located}")
+def print_tec_records(records: list[dict]) -> None:
+    """TEC projects with no REPD record, by stage and why any are not drawn."""
+    shown = [r for r in records if r["hidden"] is None]
+    hidden: dict[str, int] = {}
+    for r in records:
+        if r["hidden"]:
+            hidden[r["hidden"]] = hidden.get(r["hidden"], 0) + 1
+    by_stage: dict[str, int] = {}
+    for r in shown:
+        by_stage[r["stage"]] = by_stage.get(r["stage"], 0) + 1
+    print(f"TEC projects not in REPD: {len(records)}, drawn at their connection substation: {len(shown)}")
+    print("  Drawn by stage: " + ", ".join(f"{k} {v}" for k, v in sorted(by_stage.items())))
+    print("  Not drawn: " + ", ".join(f"{k} {v}" for k, v in sorted(hidden.items())))
 
 
 def match_tec(projects: list[dict], records: list[dict]) -> tec_match.Result:

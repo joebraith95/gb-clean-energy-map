@@ -3,6 +3,8 @@
 Goal (from SPEC.md): TEC register and Gate 2 matching, the Early development stage, and a "Gate 2 contracted only" filter.
 *Done when:* matched projects show a correct connection badge, and unmatched projects show "Not published".
 
+Progress (7 October 2026): steps 1 to 5 are built. The "done when" line is met: matched projects show their badge and unmatched ones read "Not published". TEC-only projects are on the map at their connection substations. Changes from this plan made along the way are recorded in SPEC.md: tranches are kept rather than collapsed, REPD wins over TEC on whether a project is energised, and only five hand-checked match fixes were applied after the review page proved too hard to use. Step 6 (locating more substations) is ongoing.
+
 Decisions made on 7 October 2026:
 - TEC-only projects are drawn at their **connection substation**, located from OpenStreetMap and kept in a hand-checked file, as interconnectors already are. The card says the dot marks the substation, not the site.
 - **Every unmatched "Scoping" row** in an included technology becomes Early development, whatever its Gate.

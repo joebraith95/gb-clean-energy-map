@@ -26,23 +26,34 @@ def badges(result: tec_match.Result, projects: list[dict], records: list[dict]) 
     out = {}
     for repd_id, tec_ids in result.by_repd().items():
         matched = [by_id[t] for t in sorted(tec_ids)]
-        tranches = [(p, t) for p in matched for t in p["tranches"]]
-        tec = [{"name": p["name"], "projectId": p["id"], "matchedBy": methods[p["id"]]} for p in matched]
-        if stage[repd_id] == "operational" and any(t["status"] == "Built" for _, t in tranches):
-            out[repd_id] = {"badge": ENERGISED, "contractedDate": None, "site": None, "tec": tec}
-            continue
-        gate_2 = [(p, t) for p, t in tranches if t["gate"] == "2"]
-        if gate_2:
-            # Tranches with no date sort last; the date shown is the earliest published one.
-            project, tranche = min(gate_2, key=lambda pt: pt[1]["effectiveFrom"] or "9999")
-            out[repd_id] = {
-                "badge": GATE_2,
-                # Always shown as "Contracted date", never "expected" (docs/SPEC.md).
-                "contractedDate": tranche["effectiveFrom"],
-                "site": project["connectionSite"],
-                "tec": tec,
-            }
+        found = badge_for(matched, stage[repd_id] == "operational", methods)
+        if found:
+            out[repd_id] = found
     return out
+
+
+def badge_for(matched: list[dict], operational: bool, methods: dict[str, str] | None = None) -> dict | None:
+    """The badge from some TEC projects' tranches, or None for not published.
+
+    `operational` says whether the record's own stage is Operational: Energised needs both a
+    Built tranche and that, so REPD wins where the two disagree.
+    """
+    tranches = [(p, t) for p in matched for t in p["tranches"]]
+    tec = [{"name": p["name"], "projectId": p["id"], "matchedBy": (methods or {}).get(p["id"])} for p in matched]
+    if operational and any(t["status"] == "Built" for _, t in tranches):
+        return {"badge": ENERGISED, "contractedDate": None, "site": None, "tec": tec}
+    gate_2 = [(p, t) for p, t in tranches if t["gate"] == "2"]
+    if not gate_2:
+        return None
+    # Tranches with no date sort last; the date shown is the earliest published one.
+    project, tranche = min(gate_2, key=lambda pt: pt[1]["effectiveFrom"] or "9999")
+    return {
+        "badge": GATE_2,
+        # Always shown as "Contracted date", never "expected" (docs/SPEC.md).
+        "contractedDate": tranche["effectiveFrom"],
+        "site": project["connectionSite"],
+        "tec": tec,
+    }
 
 
 def stage_mismatches(result: tec_match.Result, projects: list[dict], records: list[dict]) -> list[int]:

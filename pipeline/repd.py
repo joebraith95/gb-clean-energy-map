@@ -129,6 +129,7 @@ def _details(row: dict, stage_dates: dict[str, date | None]) -> dict:
     granted = [d for d in granted if d]
     technology = row["Technology Type"]
     return {
+        "kind": "repd",
         "operator": row["Operator (or Applicant)"] or None,
         "storageType": row["Storage Type"] or None,
         "repdStatus": row["Development Status (short)"],

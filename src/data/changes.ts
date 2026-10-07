@@ -1,7 +1,7 @@
 // The "what changed" list written by pipeline/changes.py.
 
 import { dataUrl } from '../config';
-import type { AnyStage } from './projects';
+import type { AnyStage, ConnectionBadge } from './projects';
 
 export type ChangeType =
   | 'application_submitted'
@@ -14,7 +14,8 @@ export type ChangeType =
   | 'permission_expired'
   | 'added'
   | 'removed'
-  | 'stage_changed';
+  | 'stage_changed'
+  | 'connection_changed';
 
 export interface Change {
   /** ISO date: the event date from REPD, or the run that spotted the change. */
@@ -23,7 +24,7 @@ export interface Change {
   /** Where a spotted change was seen, for example "the July 2026 REPD release". */
   spottedIn?: string;
   source: 'project' | 'interconnector';
-  /** REPD ID for projects, interconnector id for interconnectors. */
+  /** REPD ID or TEC-only ID ("tec-...") for projects, interconnector id for interconnectors. */
   id: number | string;
   type: ChangeType;
   from?: AnyStage | null;
@@ -32,6 +33,9 @@ export interface Change {
   name: string | null;
   technology: string | null;
   mw: number | null;
+  /** For connection_changed: the badge before and after; absent means not published. */
+  fromConnection?: Exclude<ConnectionBadge, 'not_published'> | null;
+  connection?: Exclude<ConnectionBadge, 'not_published'> | null;
 }
 
 export interface ChangeFile {
