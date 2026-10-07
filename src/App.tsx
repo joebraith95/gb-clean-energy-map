@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { isAnimated, loadChanges, type Change, type ChangeFile } from './data/changes';
 import { loadInterconnectors, type InterconnectorFile } from './data/interconnectors';
-import { loadNational, type NationalLive } from './data/live';
+import { isFresh, loadBmuMap, loadNational, type NationalLive } from './data/live';
 import { loadProjects, type ProjectIndex } from './data/projects';
 import { loadGrid, type GridFile } from './map/grid';
 import type { EffectKind, EventCandidate } from './map/animations';
@@ -52,6 +52,8 @@ export function App() {
   const [nationalError, setNationalError] = useState<string | null>(null);
   const [changes, setChanges] = useState<ChangeFile | null>(null);
   const [changesError, setChangesError] = useState<string | null>(null);
+  /** REPD IDs of wind farms with live output (data/bmu-map.json). */
+  const [liveFarms, setLiveFarms] = useState<Set<number>>(() => new Set());
   const [play, setPlay] = useState<{
     selection: Selection;
     kind: EffectKind | null;
@@ -91,6 +93,9 @@ export function App() {
         })
         .catch((e: Error) => current && setNationalError(e.message));
     load();
+    loadBmuMap()
+      .then((ids) => current && setLiveFarms(ids))
+      .catch(() => undefined);
     const timer = window.setInterval(
       () => document.visibilityState === 'visible' && load(),
       300_000,
@@ -100,6 +105,11 @@ export function App() {
       window.clearInterval(timer);
     };
   }, [data]);
+
+  const flows = useMemo(
+    () => (national && isFresh(national.mix) ? national.mix.data.interconnectors : null),
+    [national],
+  );
 
   // Keep the address shareable: it names the open project or interconnector, if any.
   useEffect(() => {
@@ -250,6 +260,7 @@ export function App() {
             onSelect={select}
             openingEvents={openingEvents}
             play={play}
+            flows={flows}
           />
         )}
         {!data && !error && <p className="status">Loading map data…</p>}
@@ -290,6 +301,7 @@ export function App() {
             indexById={indexById}
             onSelect={selectProject}
             onClose={closeCard}
+            hasLive={liveFarms.has(data.projects.id[selected.index])}
           />
         )}
         {data && selected?.source === 'interconnector' && (
@@ -297,6 +309,12 @@ export function App() {
             link={data.links.interconnectors[selected.index]}
             source={data.links.source}
             onClose={closeCard}
+            flow={(() => {
+              const id = data.links.interconnectors[selected.index].id;
+              return flows && flows[id] !== undefined && national && isFresh(national.mix)
+                ? { mw: flows[id], time: national.mix.data.time }
+                : null;
+            })()}
           />
         )}
 

@@ -2,12 +2,16 @@ import { useEffect } from 'react';
 import type { Interconnector, InterconnectorFile } from '../data/interconnectors';
 import { STAGE_LABELS, STAGE_ORDER } from './filters';
 import { NOT_PUBLISHED, formatDate, formatMw, orNotPublished } from './format';
+import { formatTime } from '../data/live';
+import { flowLabel } from './LivePanel';
 import { TechIcon } from './TechIcon';
 
 interface Props {
   link: Interconnector;
   source: InterconnectorFile['source'];
   onClose: () => void;
+  /** Live flow in MW (positive means importing) and its time, when known. */
+  flow: { mw: number; time: string } | null;
 }
 
 const END_NOTES: Record<string, string> = {
@@ -36,7 +40,7 @@ function connectionBadge(link: Interconnector): string {
   return NOT_PUBLISHED;
 }
 
-export function InterconnectorCard({ link, source, onClose }: Props) {
+export function InterconnectorCard({ link, source, onClose, flow }: Props) {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => event.key === 'Escape' && onClose();
     window.addEventListener('keydown', onKey);
@@ -79,6 +83,13 @@ export function InterconnectorCard({ link, source, onClose }: Props) {
         )}
         <span className="chip chip-outline">Connection: {connectionBadge(link)}</span>
       </div>
+
+      {flow && (
+        <p>
+          Now: <strong>{flowLabel(flow.mw)}</strong>{' '}
+          <span className="muted">(Elexon, {formatTime(flow.time)} UK time)</span>
+        </p>
+      )}
 
       <ol className="progress" aria-label="Progress">
         {STAGE_ORDER.map((stage, i) => {

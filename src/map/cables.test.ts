@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cableCells, isDash } from './cables';
+import { cableCells, isDash, pulseDirection } from './cables';
 import { ZOOM_LEVELS } from './levels';
 
 const level = { ...ZOOM_LEVELS[2], cellMetres: 1000 };
@@ -25,6 +25,16 @@ describe('cableCells', () => {
   it('stops at the edge of the map', () => {
     const cells = cableCells(at(7, 1), at(30, 1), level, 10, 10);
     expect(cells.at(-1)?.col).toBe(9);
+  });
+});
+
+describe('pulseDirection', () => {
+  it('follows live flows, and falls back to outwards for operational links', () => {
+    expect(pulseDirection('operational', 800)).toBe(-1);
+    expect(pulseDirection('operational', -200)).toBe(1);
+    expect(pulseDirection('operational', 0)).toBe(0);
+    expect(pulseDirection('operational', undefined)).toBe(1);
+    expect(pulseDirection('under_construction', undefined)).toBe(0);
   });
 });
 

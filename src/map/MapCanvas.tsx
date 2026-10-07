@@ -26,6 +26,8 @@ interface Props {
   openingEvents: EventCandidate<EffectTarget>[] | null;
   /** An event picked in the feed; a new object plays it. */
   play: { selection: Selection; kind: EffectKind | null; colour: string } | null;
+  /** Live interconnector flows in MW (positive means importing), or null when unknown. */
+  flows: Record<string, number> | null;
 }
 
 /** Mounts the PixiJS map. React owns the UI around it; MapView owns the canvas. */
@@ -39,6 +41,7 @@ export function MapCanvas({
   onSelect,
   openingEvents,
   play,
+  flows,
 }: Props) {
   const frameRef = useRef<HTMLDivElement>(null);
   const hostRef = useRef<HTMLDivElement>(null);
@@ -101,6 +104,10 @@ export function MapCanvas({
   useEffect(() => {
     if (ready && play) viewRef.current?.playEvent(play.selection, play.kind, play.colour);
   }, [ready, play]);
+
+  useEffect(() => {
+    if (ready) viewRef.current?.setFlows(flows);
+  }, [ready, flows]);
 
   // Keep the selected project clear of the card or filter panel covering part of the map.
   useEffect(() => {

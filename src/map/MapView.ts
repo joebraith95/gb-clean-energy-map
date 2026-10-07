@@ -30,7 +30,7 @@ import {
   type EffectKind,
   type EventCandidate,
 } from './animations';
-import { cableCells, isDash, type CableCell } from './cables';
+import { cableCells, isDash, pulseDirection, type CableCell } from './cables';
 import {
   DOT_SIZES,
   FIRST_SPRITE_TIER,
@@ -103,7 +103,9 @@ export class MapView {
   private offset: Point = { x: 0, y: 0 };
   private insets: Insets = NO_INSETS;
   private markers: Marker[] = [];
-  private cables: { cells: CableCell[]; stage: Marker['stage']; pulses: boolean }[] = [];
+  private cables: { cells: CableCell[]; stage: Marker['stage']; direction: -1 | 0 | 1 }[] = [];
+  /** Live interconnector flows in MW (positive means importing), or null when unknown. */
+  private flows: Record<string, number> | null = null;
   private pulsePhase = 0;
   private selected: Selection | null = null;
   private include: (index: number) => boolean = () => true;
@@ -201,7 +203,7 @@ export class MapView {
    */
   private spin(): void {
     if (this.motionQuery.matches) return;
-    if (this.cables.some((c) => c.pulses)) {
+    if (this.cables.some((c) => c.direction !== 0)) {
       this.pulsePhase += 1;
       this.drawCables();
     }
@@ -223,6 +225,12 @@ export class MapView {
 
   zoomOut(anchor?: Point): void {
     this.zoomTo(this.level - 1, anchor);
+  }
+
+  /** Live interconnector flows; cables pulse inwards for imports and outwards for exports. */
+  setFlows(flows: Record<string, number> | null): void {
+    this.flows = flows;
+    this.drawMarkers();
   }
 
   /** Redraws markers with new filters, for example from the filter panel. */
@@ -481,7 +489,9 @@ export class MapView {
         gridLevel.cols,
         gridLevel.rows,
       );
-      return [{ cells, stage: link.stage, pulses: link.stage === 'operational' }];
+      return [
+        { cells, stage: link.stage, direction: pulseDirection(link.stage, this.flows?.[link.id]) },
+      ];
     });
     this.drawCables();
     const outline = 1 / this.dpr;
@@ -509,13 +519,13 @@ export class MapView {
     this.drawHighlight();
   }
 
-  /** Dashed pixel cables; operational ones pulse outwards from Britain. */
+  /** Dashed pixel cables, pulsing in the direction power is flowing. */
   private drawCables(): void {
     const g = this.cableLayer.clear();
     // Cables are drawn on the land grid, so they stay a sensible number of cells long.
     const css = this.cssPerLandCell;
     for (const cable of this.cables) {
-      const phase = cable.pulses ? this.pulsePhase : 0;
+      const phase = this.pulsePhase * cable.direction;
       for (const { col, row, step } of cable.cells) {
         if (step === 0 || !isDash(step, phase)) continue;
         g.rect(col * css, row * css, css, css).fill(stageColours[cable.stage]);

@@ -53,6 +53,17 @@ export function cableCells(
   return cells;
 }
 
+/**
+ * Which way a cable's dashes move: 1 outwards (Great Britain exporting), -1 inwards (importing),
+ * 0 still. With no live flow, operational cables pulse outwards as a sign of activity.
+ */
+export function pulseDirection(stage: string, flowMw: number | undefined): -1 | 0 | 1 {
+  if (flowMw === undefined) return stage === 'operational' ? 1 : 0;
+  if (flowMw > 0) return -1;
+  if (flowMw < 0) return 1;
+  return 0;
+}
+
 /** Whether a cable cell is part of a dash, given the pulse phase. */
 export function isDash(step: number, phase: number): boolean {
   return (((step - phase) % DASH_PERIOD) + DASH_PERIOD) % DASH_PERIOD < DASH_ON;

@@ -4,6 +4,7 @@ import { spriteKind } from '../map/sprites';
 import type { Stage } from '../theme/tokens';
 import { STAGE_LABELS, STAGE_ORDER } from './filters';
 import { NOT_PUBLISHED, formatDate, formatMw, orNotPublished } from './format';
+import { LiveOutput } from './LiveOutput';
 import { TechIcon } from './TechIcon';
 
 interface Props {
@@ -13,6 +14,8 @@ interface Props {
   indexById: Map<number, number>;
   onSelect: (index: number) => void;
   onClose: () => void;
+  /** Whether this project has mapped BM units, so a live section can be shown. */
+  hasLive: boolean;
 }
 
 const OFF_TRACK_LABELS: Record<string, string> = {
@@ -36,7 +39,7 @@ function stepDate(stage: Stage, details: ProjectDetails): string | null {
   }
 }
 
-export function ProjectCard({ projects, index, indexById, onSelect, onClose }: Props) {
+export function ProjectCard({ projects, index, indexById, onSelect, onClose, hasLive }: Props) {
   const id = projects.id[index];
   const [details, setDetails] = useState<ProjectDetails | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -154,6 +157,8 @@ export function ProjectCard({ projects, index, indexById, onSelect, onClose }: P
               </>
             )}
           </dl>
+
+          {hasLive && <LiveOutput repdId={id} />}
 
           {details.phases && details.phases.length > 0 && (
             <section className="card-phases">

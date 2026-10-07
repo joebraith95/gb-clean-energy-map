@@ -244,6 +244,11 @@ When effects play:
 
 **Scheduled output.** Sampled every 15 minutes. At each moment, a unit's level is the latest accepted bid or offer (BOALF) covering that time, otherwise its Physical Notification. Levels are summed across the farm's units. A sample is left empty, never shown as zero, unless every unit has a level. Only REPD IDs in `data/bmu-map.json` are served, so the endpoint cannot be used as an open proxy.
 
+**In the interface.**
+- **Live panel** (header button): generation now as a pixel bar and table, each interconnector's import or export with the net flow, and the 14 regions with forecast intensity and main sources. Times are in UK time and each source is credited. National figures refresh every 5 minutes while the page is visible.
+- **Cables:** while live flows are known, cables pulse inwards when Great Britain is importing, outwards when exporting, and stay still with no flow. Without live data they keep the Phase 2 behaviour. The interconnector card shows "Now: importing (or exporting) X MW".
+- **Wind farm cards:** a Live section appears only for mapped farms, with the latest scheduled output, a 24-hour pixel sparkline, and the note that live output is only available for large transmission-connected wind farms.
+
 **When a source is down.** Each source is fetched with an 8-second timeout and cached separately in Cloudflare's cache. If a fetch fails, the last good copy (kept for 6 hours) is served marked `stale`. With no copy available, that part is `null` with a reason, and the page hides it. One failing source never affects the others.
 
 ## Attribution and disclaimer
