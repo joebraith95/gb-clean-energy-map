@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { isAnimated, loadChanges, type Change, type ChangeFile } from './data/changes';
 import { loadInterconnectors, type InterconnectorFile } from './data/interconnectors';
+import { loadNational, type NationalLive } from './data/live';
 import { loadProjects, type ProjectIndex } from './data/projects';
 import { loadGrid, type GridFile } from './map/grid';
 import type { EffectKind, EventCandidate } from './map/animations';
@@ -10,6 +11,7 @@ import type { Selection } from './map/markers';
 import { AboutPage } from './ui/AboutPage';
 import { FeedPanel } from './ui/FeedPanel';
 import { FilterPanel } from './ui/FilterPanel';
+import { LivePanel } from './ui/LivePanel';
 import { DEFAULT_FILTERS, makeInclude, makeIncludeLink, type Filters } from './ui/filters';
 import { InterconnectorCard } from './ui/InterconnectorCard';
 import { ProjectCard } from './ui/ProjectCard';
@@ -22,6 +24,8 @@ interface MapData {
 }
 
 const ABOUT_HASH = '#about';
+
+type Panel = 'filters' | 'feed' | 'live';
 /** Shareable links: ?project=<REPD ID> or ?interconnector=<id>. */
 const PROJECT_PARAM = 'project';
 const LINK_PARAM = 'interconnector';
@@ -43,7 +47,9 @@ export function App() {
   const [selected, setSelected] = useState<Selection | null>(null);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   /** The side panel (bottom sheet on phones): filters or the change feed, one at a time. */
-  const [panel, setPanel] = useState<'filters' | 'feed' | null>(null);
+  const [panel, setPanel] = useState<Panel | null>(null);
+  const [national, setNational] = useState<NationalLive | null>(null);
+  const [nationalError, setNationalError] = useState<string | null>(null);
   const [changes, setChanges] = useState<ChangeFile | null>(null);
   const [changesError, setChangesError] = useState<string | null>(null);
   const [play, setPlay] = useState<{
@@ -69,6 +75,30 @@ export function App() {
     loadChanges()
       .then(setChanges)
       .catch((e: Error) => setChangesError(e.message));
+  }, [data]);
+
+  // National live figures (mix and interconnector flows), refreshed every 5 minutes while the
+  // page is visible. A failure leaves the rest of the site untouched.
+  useEffect(() => {
+    if (!data) return;
+    let current = true;
+    const load = () =>
+      loadNational()
+        .then((n) => {
+          if (!current) return;
+          setNational(n);
+          setNationalError(null);
+        })
+        .catch((e: Error) => current && setNationalError(e.message));
+    load();
+    const timer = window.setInterval(
+      () => document.visibilityState === 'visible' && load(),
+      300_000,
+    );
+    return () => {
+      current = false;
+      window.clearInterval(timer);
+    };
   }, [data]);
 
   // Keep the address shareable: it names the open project or interconnector, if any.
@@ -111,7 +141,7 @@ export function App() {
     (index: number) => select({ source: 'project', index }),
     [select],
   );
-  const togglePanel = useCallback((which: 'filters' | 'feed') => {
+  const togglePanel = useCallback((which: Panel) => {
     setPanel((open) => {
       if (open !== which && window.matchMedia(NARROW).matches) setSelected(null);
       return open === which ? null : which;
@@ -192,6 +222,14 @@ export function App() {
           >
             Changes
           </button>
+          <button
+            type="button"
+            className="button"
+            aria-expanded={panel === 'live'}
+            onClick={() => togglePanel('live')}
+          >
+            Live
+          </button>
           <a className="button" href={ABOUT_HASH}>
             About
           </a>
@@ -223,6 +261,14 @@ export function App() {
             links={data.links.interconnectors}
             filters={filters}
             onChange={setFilters}
+            onClose={closePanel}
+          />
+        )}
+        {data && panel === 'live' && (
+          <LivePanel
+            national={national}
+            nationalError={nationalError}
+            links={data.links.interconnectors}
             onClose={closePanel}
           />
         )}

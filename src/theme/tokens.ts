@@ -28,6 +28,21 @@ export const spriteInk = '#101624';
 
 export type Stage = keyof typeof stageColours;
 
+/** Fuel colours for the live mix bar. Each row is also labelled, so colour is never the only cue. */
+export const fuelColours: Record<string, string> = {
+  wind: '#5bd9ff',
+  solar: '#ede668',
+  nuclear: '#bc82b1',
+  gas: '#d38326',
+  biomass: '#8a6d3b',
+  hydro: '#2f7fd1',
+  pumped: '#1f5aa0',
+  imports: '#b8b3a6',
+  coal: '#4a4f5c',
+  oil: '#6b4a3a',
+  other: '#7a7f8c',
+};
+
 /** Exposes the tokens as CSS custom properties (for example --color-panel) so CSS never hard-codes colours. */
 export function applyCssTokens(root: HTMLElement): void {
   for (const [name, value] of Object.entries(palette))
