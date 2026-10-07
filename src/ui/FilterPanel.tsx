@@ -116,6 +116,22 @@ export function FilterPanel({ projects, links, filters, onChange, onClose }: Pro
         </label>
       </fieldset>
 
+      <fieldset>
+        <legend>Connection</legend>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={filters.gate2Only}
+            onChange={() => onChange({ ...filters, gate2Only: !filters.gate2Only })}
+          />
+          Gate 2 contracted only
+        </label>
+        <p className="muted small">
+          Projects with a Gate 2 grid connection agreement in the NESO TEC register that are not yet
+          energised.
+        </p>
+      </fieldset>
+
       <button type="button" className="button" onClick={() => onChange(DEFAULT_FILTERS)}>
         Reset filters
       </button>

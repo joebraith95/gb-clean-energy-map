@@ -7,7 +7,7 @@ import re
 from datetime import date
 from pathlib import Path
 
-from pipeline import bmu, changes, corrections, events, interconnectors, output, phases, repd, tec, tec_match
+from pipeline import bmu, changes, connection, corrections, events, interconnectors, output, phases, repd, tec, tec_match
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "pipeline" / "raw"
@@ -52,14 +52,20 @@ def main() -> None:
         for ref_id in group:
             by_id[ref_id]["group"] = number
             by_id[ref_id]["details"]["phases"] = [other for other in group if other != ref_id]
-    output.write(records, source, DATA_DIR)
+
+    tec_projects, tec_source = read_tec(args.offline)
+    tec_result = match_tec(tec_projects, records)
+    connections = connection.badges(tec_result, tec_projects, records)
+    for r in records:
+        r["details"]["connection"] = connections.get(r["id"])
+    print_connections(connections, connection.stage_mismatches(tec_result, tec_projects, records), records)
+
+    output.write(records, source, DATA_DIR, tec_source)
     print(f"Wrote {len(records)} projects to {DATA_DIR}")
     print(f"Corrections applied: {len(fixes.applied)}  Skipped for review: {len(fixes.stale)}")
     print(f"Phase groups matched: {len(groups)} covering {sum(len(g) for g in groups)} records")
 
     links, link_source = build_interconnectors(args.offline)
-    tec_projects, tec_source = read_tec(args.offline)
-    tec_result = match_tec(tec_projects, records)
 
     farms = bmu.validate(bmu.load(), records)
     bmu.write(farms, DATA_DIR)
@@ -134,6 +140,17 @@ def read_tec(offline: bool) -> tuple[list[dict], dict]:
     for key in sorted(by_status):
         print(f"  {key:45} {by_status[key]:5}")
     return projects, source
+
+
+def print_connections(connections: dict[int, dict], mismatched: list[int], records: list[dict]) -> None:
+    counts = {b: 0 for b in connection.BADGES[1:]}
+    for c in connections.values():
+        counts[c["badge"]] += 1
+    print(f"Connection badges: {counts[connection.ENERGISED]} energised, {counts[connection.GATE_2]} Gate 2 contracted")
+    stages = {r["id"]: r["stage"] for r in records}
+    print(f"  Built in TEC but not Operational in REPD (REPD wins, not shown as energised): {len(mismatched)}")
+    for repd_id in mismatched:
+        print(f"    REPD {repd_id}: {stages[repd_id]}")
 
 
 def match_tec(projects: list[dict], records: list[dict]) -> tec_match.Result:
@@ -228,6 +245,7 @@ def print_report(before: dict | None, after: dict) -> None:
     table("All kept records by technology", "by_technology")
     table("On map by technology", "on_map_by_technology")
     table("Hidden by reason", "hidden_by_reason")
+    table("All kept records by connection badge", "by_connection")
 
 
 if __name__ == "__main__":

@@ -5,9 +5,25 @@ import type { Stage } from '../theme/tokens';
 
 export type AnyStage = Stage | 'stalled' | 'decommissioned';
 
+export type ConnectionBadge = 'not_published' | 'gate2' | 'energised';
+
+/** Connection details from the NESO TEC register, for records matched to it. */
+export interface Connection {
+  badge: 'gate2' | 'energised';
+  /** Gate 2 only. Always labelled "Contracted date". */
+  contractedDate: string | null;
+  /** Gate 2 only. */
+  site: string | null;
+  /** The TEC register projects matched to this record, and how each was matched. */
+  tec: { name: string; projectId: string; matchedBy: string }[];
+}
+
 /** Columnar arrays, one entry per kept REPD record. */
 export interface ProjectIndex {
   source: { name: string; page: string; file: string; updated: string | null };
+  /** The TEC register the connection badges come from. */
+  connectionSource: { name: string; page: string; file: string } | null;
+  connectionBadges: ConnectionBadge[];
   technologies: string[];
   stages: AnyStage[];
   hiddenReasons: string[];
@@ -27,6 +43,8 @@ export interface ProjectIndex {
   hidden: number[];
   /** Phase group shared by phases of one project, or -1. */
   group: number[];
+  /** Index into `connectionBadges`; 0 means not published. */
+  conn: number[];
 }
 
 /** Card fields for one project. Null means not published in the source. */
@@ -54,6 +72,8 @@ export interface ProjectDetails {
   corrections: string[];
   /** REPD IDs of other phases of the same project. */
   phases?: number[];
+  /** Null when no connection data is published for the project. */
+  connection: Connection | null;
 }
 
 export async function loadProjects(): Promise<ProjectIndex> {

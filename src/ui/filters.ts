@@ -70,6 +70,8 @@ export interface Filters {
   stages: Stage[];
   flexibility: boolean;
   minMw: number;
+  /** Only projects with a Gate 2 connection agreement that is not yet energised. */
+  gate2Only: boolean;
 }
 
 export const DEFAULT_FILTERS: Filters = {
@@ -77,7 +79,13 @@ export const DEFAULT_FILTERS: Filters = {
   stages: [...STAGE_ORDER],
   flexibility: false,
   minMw: 1,
+  gate2Only: false,
 };
+
+/** Same rule as the interconnector card's badge: Built means energised, which comes first. */
+export function linkIsGate2(link: Interconnector): boolean {
+  return link.gate === '2' && link.registerStatus !== 'Built';
+}
 
 export function makeInclude(projects: ProjectIndex, filters: Filters): (index: number) => boolean {
   const allowedTech = new Set<number>();
@@ -92,10 +100,12 @@ export function makeInclude(projects: ProjectIndex, filters: Filters): (index: n
   const allowedStage = new Set(
     filters.stages.map((s) => projects.stages.indexOf(s)).filter((s) => s >= 0),
   );
+  const gate2 = projects.connectionBadges.indexOf('gate2');
   return (i) =>
     allowedTech.has(projects.tech[i]) &&
     allowedStage.has(projects.stage[i]) &&
-    (projects.mw[i] ?? 0) >= filters.minMw;
+    (projects.mw[i] ?? 0) >= filters.minMw &&
+    (!filters.gate2Only || projects.conn[i] === gate2);
 }
 
 export function makeIncludeLink(
@@ -111,7 +121,8 @@ export function makeIncludeLink(
       link.stage !== null &&
       filters.stages.includes(link.stage) &&
       mw !== null &&
-      mw >= filters.minMw
+      mw >= filters.minMw &&
+      (!filters.gate2Only || linkIsGate2(link))
     );
   };
 }

@@ -92,6 +92,20 @@ Clear errors in source data (for example X and Y swapped) can be fixed in a hand
 
 "Contracted" means Gate 2 only.
 
+How the badge is worked out (`pipeline/connection.py`), from the TEC register matches below:
+- **Energised** when any matched TEC tranche is Built and REPD says Operational. Most Built rows have a blank Gate, so this comes from Project Status, not Gate. Where TEC says Built but REPD does not say Operational, REPD wins: the record is not shown as energised, and the rules below apply.
+- **Gate 2 contracted** otherwise, when any matched tranche has Gate 2. The card shows that tranche's connection site and the earliest contracted date among the Gate 2 tranches.
+- **Not published** for everything else, including Gate 1, a blank Gate and unmatched records.
+- The badge never changes the headline stage. Records built in TEC but not Operational in REPD are listed in the pipeline report.
+
+### TEC register
+
+- **Tranches.** Projects with staged capacity have one row per tranche, and tranches can differ in status and Gate (a built wind farm with a scoping extension), so each row is kept as a tranche under its Project ID (`pipeline/tec.py`).
+- **Scope.** Plant Type can list several parts. Demand, Reactive Compensation and Substation are ignored. A project with any fossil, nuclear or thermal part is out of scope, as is one with nothing left. Interconnector rows come from the Interconnector Register instead.
+- **Matching** (`pipeline/tec_match.py`). A TEC project matches a REPD record of a compatible technology on the distinctive words of the name (rarer words count for more) and on capacity, and only when one record clearly fits: an exact name with at least half the capacity, a close name with capacity within 10%, a TEC name found inside an address-style REPD name with capacity within 10%, or, for a multi-technology project, one exact-name record per technology whose capacities add up. A candidate is never accepted automatically when extension or repowering wording differs, when its REPD stage is more than one step ahead of the TEC status, or when its capacity is not published. Several TEC projects can match one REPD record (offshore wind farms are often split into A, B and C connections).
+- **Overrides.** `pipeline/tec_matches.json` forces a TEC project onto a list of REPD IDs (an empty list confirms it is not in REPD) or stops it matching one REPD ID. Each entry gives a reason. An entry whose TEC project or REPD record has gone is skipped and flagged in the report.
+- **Review.** Every run writes `pipeline/raw/tec-match-review.csv` with each project's match or best candidates.
+
 ### Interconnectors
 
 Ofgem cap and floor milestones mapped onto the same headline stages:
@@ -133,6 +147,7 @@ REPD has no field linking phases, so the pipeline (`pipeline/phases.py`) groups 
   - The flexibility layer is off when the map opens.
   - Stage choices only list stages that have projects on the map (no empty options).
   - Capacity slider stops: all sizes, 1, 5, 10, 50, 100, 300 and 1,000MW.
+  - "Gate 2 contracted only" shows only projects and interconnectors whose badge is Gate 2 contracted, so it also hides energised projects and Early development. The feed panel does not apply it.
 - A project can be shared as `?project=<REPD ID>`, which opens its card.
 - On screens narrower than 768px the card and filters are bottom sheets and only one is open at a time; on wider screens they are side panels and can be open together.
 - Zoom: seven fixed levels (National, Regional, Local, District, Town, Village, Site), each roughly doubling the detail of the one before; values in `src/map/levels.ts`.
@@ -169,7 +184,7 @@ REPD has no field linking phases, so the pipeline (`pipeline/phases.py`) groups 
 **Footer**
 - Source and last updated date
 
-The project name uses the body font rather than the pixel font, because long names in the pixel font are hard to read. "Onshore" or "Offshore" is shown for wind only, as REPD states it only through the technology. In phase 1 the connection badge always reads "Not published".
+The project name uses the body font rather than the pixel font, because long names in the pixel font are hard to read. "Onshore" or "Offshore" is shown for wind only, as REPD states it only through the technology. The card notes when connection data was matched by name, and that the match may be wrong.
 
 ## Design
 

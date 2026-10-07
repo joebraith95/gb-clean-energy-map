@@ -77,6 +77,19 @@ export function AboutPage({ projects, links, onClose }: Props) {
                 <td>NESO Open Data Licence</td>
                 <td>Twice a week</td>
               </tr>
+              {projects.connectionSource && (
+                <tr>
+                  <td>
+                    <a href={projects.connectionSource.page} target="_blank" rel="noreferrer">
+                      TEC register
+                    </a>{' '}
+                    (NESO)
+                  </td>
+                  <td>Grid connection agreements, Gate 2 status and contracted dates</td>
+                  <td>NESO Open Data Licence</td>
+                  <td>Several times a week. The map refreshes weekly.</td>
+                </tr>
+              )}
               <tr>
                 <td>
                   <a
@@ -130,6 +143,25 @@ export function AboutPage({ projects, links, onClose }: Props) {
           permission expired are treated as stalled. Stalled and decommissioned projects are kept in
           the data but not shown on the map. <strong>Early development</strong> will be filled in
           once grid connection data is added.
+        </p>
+
+        <h3>Grid connections</h3>
+        <p>
+          The connection badge on a project card comes from the NESO Transmission Entry Capacity
+          (TEC) register, which lists agreements to connect to the transmission network.{' '}
+          <strong>Energised</strong> means the register shows the connection as built.{' '}
+          <strong>Gate 2 contracted</strong> means the project holds a Gate 2 agreement under the
+          reformed connections process; the card then shows the connection site and the contracted
+          date. A contracted date is the date in the agreement, not a forecast, and it never moves a
+          project to a different stage. Everything else reads <strong>Not published</strong>,
+          including projects with a Gate 1 agreement and most smaller projects, which connect to the
+          local distribution network instead.
+        </p>
+        <p>
+          The TEC register has no locations or REPD references, so each agreement is matched to a
+          REPD record by its name, technology and capacity, and only where one record clearly fits.
+          Some matches are checked by hand. A match can still be wrong, and a project with no clear
+          match reads Not published.
         </p>
 
         <h3>Interconnectors</h3>

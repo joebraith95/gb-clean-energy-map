@@ -4,12 +4,13 @@ import json
 from collections import Counter
 from pathlib import Path
 
+from pipeline.connection import BADGES
 from pipeline.stages import Stage
 
 DETAIL_SHARDS = 64
 
 
-def write(records: list[dict], source: dict, data_dir: Path) -> None:
+def write(records: list[dict], source: dict, data_dir: Path, connection_source: dict | None = None) -> None:
     """Write data/projects.json (compact map index) and data/details/NN.json (card details)."""
     technologies = sorted({r["technology"] for r in records})
     stages = [s.value for s in Stage]
@@ -17,6 +18,9 @@ def write(records: list[dict], source: dict, data_dir: Path) -> None:
 
     index = {
         "source": source,
+        # The TEC register, when connection badges come from it.
+        "connectionSource": connection_source,
+        "connectionBadges": BADGES,
         "technologies": technologies,
         "stages": stages,
         "hiddenReasons": hidden_reasons,
@@ -34,6 +38,8 @@ def write(records: list[dict], source: dict, data_dir: Path) -> None:
         "hidden": [hidden_reasons.index(r["hidden"]) if r["hidden"] else -1 for r in records],
         # Phase group number shared by phases of one project, or -1.
         "group": [r.get("group", -1) for r in records],
+        # Index into connectionBadges; 0 means not published.
+        "conn": [BADGES.index(_badge(r)) for r in records],
     }
     data_dir.mkdir(parents=True, exist_ok=True)
     write_json(data_dir / "projects.json", index)
@@ -45,6 +51,11 @@ def write(records: list[dict], source: dict, data_dir: Path) -> None:
     details_dir.mkdir(exist_ok=True)
     for n, shard in shards.items():
         write_json(details_dir / f"{n:02d}.json", shard)
+
+
+def _badge(record: dict) -> str:
+    connection = record["details"].get("connection")
+    return connection["badge"] if connection else BADGES[0]
 
 
 def summarise(index: dict) -> dict:
@@ -62,6 +73,9 @@ def summarise(index: dict) -> dict:
         "on_map_by_stage": Counter(s for s, shown in zip(stage_names, on_map) if shown),
         "on_map_by_technology": Counter(t for t, shown in zip(tech_names, on_map) if shown),
         "hidden_by_reason": Counter(reasons[h] for h in index["hidden"] if h >= 0),
+        "by_connection": Counter(
+            index["connectionBadges"][c] for c in index.get("conn", [0] * len(index["id"]))
+        ) if "connectionBadges" in index else Counter({BADGES[0]: len(index["id"])}),
     }
 
 

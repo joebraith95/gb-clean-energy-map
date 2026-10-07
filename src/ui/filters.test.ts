@@ -25,6 +25,9 @@ const projects: ProjectIndex = {
   stage: [4, 4, 1, 5, 2],
   hidden: [-1, -1, -1, 0, -1],
   group: [-1, -1, -1, -1, -1],
+  connectionSource: null,
+  connectionBadges: ['not_published', 'gate2', 'energised'],
+  conn: [0, 0, 1, 2, 1],
 };
 
 describe('filters', () => {
@@ -41,6 +44,11 @@ describe('filters', () => {
     expect(makeInclude(projects, { ...DEFAULT_FILTERS, techGroups: ['solar'] })(2)).toBe(false);
     expect(makeInclude(projects, { ...DEFAULT_FILTERS, stages: ['consented'] })(4)).toBe(true);
     expect(makeInclude(projects, { ...DEFAULT_FILTERS, stages: ['consented'] })(2)).toBe(false);
+  });
+
+  it('shows only Gate 2 contracted projects when asked', () => {
+    const include = makeInclude(projects, { ...DEFAULT_FILTERS, minMw: 0, gate2Only: true });
+    expect([1, 2, 4].map(include)).toEqual([false, true, true]);
   });
 
   it('counts only drawable projects', () => {

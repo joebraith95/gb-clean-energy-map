@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
-import { loadDetails, type ProjectDetails, type ProjectIndex } from '../data/projects';
+import {
+  loadDetails,
+  type Connection,
+  type ConnectionBadge,
+  type ProjectDetails,
+  type ProjectIndex,
+} from '../data/projects';
 import { spriteKind } from '../map/sprites';
 import type { Stage } from '../theme/tokens';
 import { STAGE_LABELS, STAGE_ORDER } from './filters';
@@ -22,6 +28,21 @@ const OFF_TRACK_LABELS: Record<string, string> = {
   stalled: 'Stalled',
   decommissioned: 'Decommissioned',
 };
+
+const BADGE_LABELS: Record<ConnectionBadge, string> = {
+  not_published: NOT_PUBLISHED,
+  gate2: 'Gate 2 contracted',
+  energised: 'Energised',
+};
+
+/** How the TEC register projects were linked to this record, in plain words. */
+function matchNote(connection: Connection): string {
+  const names = connection.tec.map((t) => t.name).join(', ');
+  const byHand = connection.tec.every((t) => t.matchedBy === 'override');
+  return byHand
+    ? `Connection data from the NESO TEC register (${names}), linked to this record by hand.`
+    : `Connection data from the NESO TEC register (${names}), matched to this record by name and capacity. The match may be wrong.`;
+}
 
 /** The date that evidences each step of the progress bar. Early development has none in REPD. */
 function stepDate(stage: Stage, details: ProjectDetails): string | null {
@@ -70,6 +91,8 @@ export function ProjectCard({ projects, index, indexById, onSelect, onClose, has
       ? OFF_TRACK_LABELS[anyStage]
       : 'Stage not published';
   const reached = onTrack ? STAGE_ORDER.indexOf(onTrack) : -1;
+  const badge = projects.connectionBadges[projects.conn[index]] ?? 'not_published';
+  const connection = details?.connection ?? null;
 
   return (
     <aside className="card" aria-labelledby="card-title">
@@ -96,7 +119,7 @@ export function ProjectCard({ projects, index, indexById, onSelect, onClose, has
         >
           {stageLabel}
         </span>
-        <span className="chip chip-outline">Connection: {NOT_PUBLISHED}</span>
+        <span className="chip chip-outline">Connection: {BADGE_LABELS[badge]}</span>
       </div>
 
       {details && (
@@ -156,7 +179,17 @@ export function ProjectCard({ projects, index, indexById, onSelect, onClose, has
                 <dd>{details.storageType}</dd>
               </>
             )}
+            {connection?.badge === 'gate2' && (
+              <>
+                <dt>Connection site</dt>
+                <dd>{orNotPublished(connection.site)}</dd>
+                <dt>Contracted date</dt>
+                <dd>{formatDate(connection.contractedDate)}</dd>
+              </>
+            )}
           </dl>
+
+          {connection && <p className="card-note muted small">{matchNote(connection)}</p>}
 
           {hasLive && <LiveOutput repdId={id} />}
 
@@ -187,6 +220,16 @@ export function ProjectCard({ projects, index, indexById, onSelect, onClose, has
             </a>
             {projects.source.updated && <>, published {formatDate(projects.source.updated)}</>}.
             REPD ID {id}. Record last updated {formatDate(details.recordUpdated)}.
+            {connection && projects.connectionSource && (
+              <>
+                {' '}
+                Connection:{' '}
+                <a href={projects.connectionSource.page} target="_blank" rel="noreferrer">
+                  TEC register (NESO)
+                </a>
+                . Supported by National Energy SO Open Data.
+              </>
+            )}
           </footer>
         </>
       )}

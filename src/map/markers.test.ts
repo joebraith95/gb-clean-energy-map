@@ -25,6 +25,9 @@ function index(
     stage: rows.map(() => 0),
     hidden: rows.map((r) => r.hidden ?? -1),
     group: rows.map((r) => r.group ?? -1),
+    connectionSource: null,
+    connectionBadges: ['not_published', 'gate2', 'energised'],
+    conn: rows.map(() => 0),
   };
 }
 
