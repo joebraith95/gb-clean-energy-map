@@ -7,7 +7,7 @@ import re
 from datetime import date
 from pathlib import Path
 
-from pipeline import bmu, changes, connection, corrections, events, interconnectors, output, phases, repd, tec, tec_match
+from pipeline import bmu, changes, connection, corrections, events, interconnectors, output, phases, repd, substations, tec, tec_match
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "pipeline" / "raw"
@@ -59,6 +59,7 @@ def main() -> None:
     for r in records:
         r["details"]["connection"] = connections.get(r["id"])
     print_connections(connections, connection.stage_mismatches(tec_result, tec_projects, records), records)
+    print_site_coverage(tec_result, tec_projects)
 
     output.write(records, source, DATA_DIR, tec_source)
     print(f"Wrote {len(records)} projects to {DATA_DIR}")
@@ -151,6 +152,15 @@ def print_connections(connections: dict[int, dict], mismatched: list[int], recor
     print(f"  Built in TEC but not Operational in REPD (REPD wins, not shown as energised): {len(mismatched)}")
     for repd_id in mismatched:
         print(f"    REPD {repd_id}: {stages[repd_id]}")
+
+
+def print_site_coverage(result: tec_match.Result, projects: list[dict]) -> None:
+    """How many TEC projects with no REPD record have a located connection site (phase 4, step 5)."""
+    sites = substations.load_sites()
+    by_id = {p["id"]: p for p in projects}
+    unmatched = [by_id[m.tec_id] for m in result.matches if not m.repd_ids]
+    located = sum(1 for p in unmatched if p["connectionSite"] in sites)
+    print(f"TEC projects not in REPD: {len(unmatched)}, connection site located for {located}")
 
 
 def match_tec(projects: list[dict], records: list[dict]) -> tec_match.Result:

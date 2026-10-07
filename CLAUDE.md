@@ -42,6 +42,7 @@ Pipeline (repo root, using the venv at `pipeline/.venv`):
 - Set up once: `python -m venv pipeline/.venv` then `pipeline/.venv/Scripts/python -m pip install -r pipeline/requirements.txt`
 - Run: `pipeline/.venv/Scripts/python -m pipeline.run --report` (downloads the latest REPD, Interconnector Register and TEC register; add `--offline` to reuse the cached copies in `pipeline/raw/`)
 - TEC matching: fixes go in `pipeline/tec_matches.json`; each run writes `pipeline/raw/tec-match-review.csv` for checking matches by hand
+- Connection sites: `pipeline/.venv/Scripts/python -m pipeline.substation_candidates` (add `--fetch` to re-download OpenStreetMap substations) rewrites `pipeline/substations.json`; check it before committing
 - Land grid: `pipeline/.venv/Scripts/python -m pipeline.build_grid` (add `--fetch` to re-download the coastline sources into `assets/grid/`)
 - Tests: `pipeline/.venv/Scripts/python -m pytest pipeline`
 

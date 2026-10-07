@@ -1,0 +1,4103 @@
+{
+  "_about": "TEC register connection sites located at OpenStreetMap substations (ODbL), written by python -m pipeline.substation_candidates and checked by hand. Coordinates are British National Grid metres. Entries with method 'hand' were added or corrected by hand and are kept on later runs. Sites not listed could not be located.",
+  "osmTimestamp": "2026-10-07T21:46:51Z",
+  "sites": {
+    "Abernethy GSP": {
+      "osm": "way/253091443",
+      "name": "Abernethy Substation",
+      "x": 320055,
+      "y": 717188,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Aberthaw 132kV Substation": {
+      "osm": "way/1480879377",
+      "name": "Aberthaw Substation",
+      "x": 302464,
+      "y": 166416,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Aberthaw 275kV Substation": {
+      "osm": "way/1480879377",
+      "name": "Aberthaw Substation",
+      "x": 302464,
+      "y": 166416,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Abham 132kV Substation": {
+      "osm": "way/26938722",
+      "name": "Abham Substation",
+      "x": 277304,
+      "y": 64970,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Abham GSP": {
+      "osm": "way/26938722",
+      "name": "Abham Substation",
+      "x": 277304,
+      "y": 64970,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Alness GSP": {
+      "osm": "way/305627323",
+      "name": "Alness Substation",
+      "x": 264574,
+      "y": 870992,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Alverdiscott 400kV Substation": {
+      "osm": "way/100009331",
+      "name": "Alverdiscott Substation",
+      "x": 250170,
+      "y": 125118,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Alverdiscott GSP": {
+      "osm": "way/100009331",
+      "name": "Alverdiscott Substation",
+      "x": 250170,
+      "y": 125118,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Alyth 400kV Substation": {
+      "osm": "way/1252341626",
+      "name": "Alyth Substation",
+      "x": 328776,
+      "y": 747034,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Amersham Main 132kV Substation": {
+      "osm": "way/41710456",
+      "name": "Amersham Main",
+      "x": 493059,
+      "y": 197094,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Amersham Main 400kV Substation": {
+      "osm": "way/41710456",
+      "name": "Amersham Main",
+      "x": 493059,
+      "y": 197094,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "An Suidhe 275/33kV": {
+      "osm": "way/307717802",
+      "name": "An Suidhe Substation",
+      "x": 204988,
+      "y": 705040,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Arbroath GSP": {
+      "osm": "way/306451403",
+      "name": "Arbroath Grid",
+      "x": 362019,
+      "y": 741507,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Ardkinglas GSP": {
+      "osm": "way/307717805",
+      "name": "Ardkinglas Substation",
+      "x": 219174,
+      "y": 713244,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Axminster 132kV Substation": {
+      "osm": "way/34205588",
+      "name": "Axminster Substation",
+      "x": 334930,
+      "y": 98992,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Axminster 400kV Substation": {
+      "osm": "way/34205588",
+      "name": "Axminster Substation",
+      "x": 334930,
+      "y": 98992,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Ayr 275/33kV": {
+      "osm": "way/125860302",
+      "name": "Ayr Substation",
+      "x": 236454,
+      "y": 621212,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Ayr 275/33kV Substation": {
+      "osm": "way/125860302",
+      "name": "Ayr Substation",
+      "x": 236454,
+      "y": 621212,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Ayr GSP": {
+      "osm": "way/125860302",
+      "name": "Ayr Substation",
+      "x": 236454,
+      "y": 621212,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "BRORA 132/33KV GRID SUPPLY POINT SUBSTATION": {
+      "osm": "way/102268474",
+      "name": "Brora Substation",
+      "x": 289341,
+      "y": 904961,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bainsford 132/33kV": {
+      "osm": "way/76092766",
+      "name": "Bainsford",
+      "x": 289888,
+      "y": 681507,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Beauly 132/33 kV GSP Substation": {
+      "osm": "way/68515955",
+      "name": "Beauly Substation",
+      "x": 250632,
+      "y": 844681,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Beauly GSP": {
+      "osm": "way/68515955",
+      "name": "Beauly Substation",
+      "x": 250632,
+      "y": 844681,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Beauly substation 275KV": {
+      "osm": "way/68515955",
+      "name": "Beauly Substation",
+      "x": 250632,
+      "y": 844681,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Beinneun 132kV Substation": {
+      "osm": "way/306046719",
+      "name": "Beinneun Substation",
+      "x": 226510,
+      "y": 810670,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Berkswell 275kV Substation": {
+      "osm": "way/92260628",
+      "name": "Berkswell Substation",
+      "x": 426398,
+      "y": 276560,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Berkswell GSP": {
+      "osm": "way/92260628",
+      "name": "Berkswell Substation",
+      "x": 426398,
+      "y": 276560,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Berry Burn GSP": {
+      "osm": "way/778717371",
+      "name": "Berry Burn",
+      "x": 304264,
+      "y": 847114,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Berwick 132/33kV": {
+      "osm": "way/266591872",
+      "name": "Berwick",
+      "x": 395166,
+      "y": 653790,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bhlaraidh 132/33kV Substation": {
+      "osm": "way/840252662",
+      "name": "Bhlaraidh Substation",
+      "x": 236974,
+      "y": 820303,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bicker Fen 400kV Substation": {
+      "osm": "way/190511290",
+      "name": "Bicker Fen Substation",
+      "x": 519678,
+      "y": 338592,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bicker Fen GSP": {
+      "osm": "way/190511290",
+      "name": "Bicker Fen Substation",
+      "x": 519678,
+      "y": 338592,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Birkenhead 275kV Substation": {
+      "osm": "way/153884024",
+      "name": "Birkenhead Substation",
+      "x": 329442,
+      "y": 385964,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bishops Wood 132kV Substation": {
+      "osm": "way/96067520",
+      "name": "Bishops Wood Substation",
+      "x": 383579,
+      "y": 268289,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bishops Wood GSP": {
+      "osm": "way/96067520",
+      "name": "Bishops Wood Substation",
+      "x": 383579,
+      "y": 268289,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Blackcraig 132/33kV": {
+      "osm": "way/839963278",
+      "name": "Blackcraig Substation",
+      "x": 268954,
+      "y": 583531,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Blackhill 132/33kV": {
+      "osm": "way/820195439",
+      "name": "Blackhill Substation",
+      "x": 261238,
+      "y": 604828,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Blackhillock 275kV Substation": {
+      "osm": "way/166703766",
+      "name": "Blackhillock Substation",
+      "x": 343288,
+      "y": 848515,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Blackhillock 400kV Substation": {
+      "osm": "way/166703766",
+      "name": "Blackhillock Substation",
+      "x": 343288,
+      "y": 848515,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Blackhillock substation": {
+      "osm": "way/166703766",
+      "name": "Blackhillock Substation",
+      "x": 343288,
+      "y": 848515,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Blyth 275kV Substation": {
+      "osm": "way/310502642",
+      "name": "Blyth Substation",
+      "x": 429971,
+      "y": 583080,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Blyth 400kV Substation": {
+      "osm": "way/310502642",
+      "name": "Blyth Substation",
+      "x": 429971,
+      "y": 583080,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Blyth GSP": {
+      "osm": "way/310502642",
+      "name": "Blyth Substation",
+      "x": 429971,
+      "y": 583080,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bodelwyddan 400kV Substation": {
+      "osm": "way/280317944",
+      "name": "Bodelwyddan Substation",
+      "x": 301741,
+      "y": 373566,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bolney 132kV Substation": {
+      "osm": "way/91082448",
+      "name": "Bolney Substation",
+      "x": 524029,
+      "y": 121021,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bolney 400kV Substation": {
+      "osm": "way/91082448",
+      "name": "Bolney Substation",
+      "x": 524029,
+      "y": 121021,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bolney GSP": {
+      "osm": "way/91082448",
+      "name": "Bolney Substation",
+      "x": 524029,
+      "y": 121021,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bonnybridge 132/33kV": {
+      "osm": "relation/2452471",
+      "name": "Bonnybridge Substation",
+      "x": 284077,
+      "y": 680970,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Braco West GSP": {
+      "osm": "way/495512689",
+      "name": "Braco West Substation",
+      "x": 279474,
+      "y": 709420,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bradford West 275kV Substation": {
+      "osm": "way/142841192",
+      "name": "Bradford West Substation",
+      "x": 408922,
+      "y": 434906,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Braehead Park 132/33kV": {
+      "osm": "way/118271051",
+      "name": "Braehead Park Substation",
+      "x": 251144,
+      "y": 667860,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Braintree 400kV Substation": {
+      "osm": "relation/7872518",
+      "name": "Braintree Substation",
+      "x": 577461,
+      "y": 221714,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Braintree GSP": {
+      "osm": "relation/7872518",
+      "name": "Braintree Substation",
+      "x": 577461,
+      "y": 221714,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bramford 132kV": {
+      "osm": "way/1386143667",
+      "name": "Bramford Substation",
+      "x": 609881,
+      "y": 245852,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bramford 400kV Substation": {
+      "osm": "way/1386143667",
+      "name": "Bramford Substation",
+      "x": 609881,
+      "y": 245852,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bramley": {
+      "osm": "way/32796576",
+      "name": "Bramley Substation",
+      "x": 464365,
+      "y": 160110,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bramley 400kV Substation": {
+      "osm": "way/32796576",
+      "name": "Bramley Substation",
+      "x": 464365,
+      "y": 160110,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bramley GSP": {
+      "osm": "way/32796576",
+      "name": "Bramley Substation",
+      "x": 464365,
+      "y": 160110,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Branxton 400/132kV": {
+      "osm": "way/97551523",
+      "name": "Branxton Substation",
+      "x": 374072,
+      "y": 672944,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Branxton 400kV Substation": {
+      "osm": "way/97551523",
+      "name": "Branxton Substation",
+      "x": 374072,
+      "y": 672944,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Brechin 400/275 kV Substation": {
+      "osm": "way/306451402",
+      "name": "Brechin Grid",
+      "x": 361672,
+      "y": 761125,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bredbury 275kV Substation": {
+      "osm": "way/93878867",
+      "name": "Bredbury Substation",
+      "x": 391480,
+      "y": 390888,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bridge of Dun GSP": {
+      "osm": "way/306451401",
+      "name": "Bridge of Dun",
+      "x": 366017,
+      "y": 758883,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bridgwater 400/132kV Substation": {
+      "osm": "way/48876729",
+      "name": "Bridgwater Substation (BSP)",
+      "x": 332505,
+      "y": 135869,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bridgwater GSP": {
+      "osm": "way/48876729",
+      "name": "Bridgwater Substation (BSP)",
+      "x": 332505,
+      "y": 135869,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Brimsdown 132kV Substation": {
+      "osm": "way/23228569",
+      "name": "Brimsdown Substation",
+      "x": 536728,
+      "y": 197950,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Brinsworth 400kV Substation": {
+      "osm": "way/159736514",
+      "name": "Brinsworth Substation",
+      "x": 443231,
+      "y": 389594,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Broadford 132kV Substation": {
+      "osm": "way/51338029",
+      "name": "Broadford Substation",
+      "x": 162658,
+      "y": 824345,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Broadford GSP": {
+      "osm": "way/51338029",
+      "name": "Broadford Substation",
+      "x": 162658,
+      "y": 824345,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Brora GSP": {
+      "osm": "way/102268474",
+      "name": "Brora Substation",
+      "x": 289341,
+      "y": 904961,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Broxburn 132/33kV": {
+      "osm": "way/105174483",
+      "name": "Broxburn 132kV Substation",
+      "x": 309250,
+      "y": 670549,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Bulls Lodge 400kV Substation": {
+      "osm": "way/925179651",
+      "name": "Bull's Lodge Substation",
+      "x": 575163,
+      "y": 210486,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Burwell 132kV Substation": {
+      "osm": "way/25935453",
+      "name": "Burwell Substation",
+      "x": 557857,
+      "y": 267263,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Burwell 400kV Substation": {
+      "osm": "way/25935453",
+      "name": "Burwell Substation",
+      "x": 557857,
+      "y": 267263,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Burwell GSP": {
+      "osm": "way/25935453",
+      "name": "Burwell Substation",
+      "x": 557857,
+      "y": 267263,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Busby 275kV": {
+      "osm": "way/166703758",
+      "name": "Busby Substation",
+      "x": 258193,
+      "y": 655762,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Cairnford GSP": {
+      "osm": "way/842685465",
+      "name": "Cairnford Substation",
+      "x": 349098,
+      "y": 840507,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Canterbury North 400kV Substation": {
+      "osm": "way/87953830",
+      "name": "Canterbury North Substation",
+      "x": 615968,
+      "y": 159515,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Capenhurst 275kV Substation": {
+      "osm": "way/23164132",
+      "name": "Capenhurst Substation",
+      "x": 336926,
+      "y": 374916,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Capenhurst 400kV Substation": {
+      "osm": "way/23164132",
+      "name": "Capenhurst Substation",
+      "x": 336926,
+      "y": 374916,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Capenhurst GSP": {
+      "osm": "way/23164132",
+      "name": "Capenhurst Substation",
+      "x": 336926,
+      "y": 374916,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Carntyne (SPD) GSP": {
+      "osm": "way/162248752",
+      "name": "Carntyne Substation",
+      "x": 262569,
+      "y": 664861,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Carrington 275kV Substation": {
+      "osm": "relation/7894457",
+      "name": "Carrington AIS Substation",
+      "x": 373380,
+      "y": 393159,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Carrington 400KV Substation": {
+      "osm": "relation/7894457",
+      "name": "Carrington AIS Substation",
+      "x": 373380,
+      "y": 393159,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Carrington GSP (SP Manweb)": {
+      "osm": "relation/7894457",
+      "name": "Carrington AIS Substation",
+      "x": 373380,
+      "y": 393159,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Cassley GSP": {
+      "osm": "way/305627318",
+      "name": "Cassley Substation",
+      "x": 239643,
+      "y": 925335,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Cellarhead 132kV Substation": {
+      "osm": "way/87207123",
+      "name": "Cellarhead Substation",
+      "x": 394483,
+      "y": 349273,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Cellarhead 400kV Substation": {
+      "osm": "way/87207123",
+      "name": "Cellarhead Substation",
+      "x": 394483,
+      "y": 349273,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Chapelcross 132/33kV": {
+      "osm": "way/310436909",
+      "name": "Chapelcross Substation",
+      "x": 321472,
+      "y": 569793,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Chapelcross GSP": {
+      "osm": "way/310436909",
+      "name": "Chapelcross Substation",
+      "x": 321472,
+      "y": 569793,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Charleston GSP 132/33kV": {
+      "osm": "way/306595699",
+      "name": "Charleston",
+      "x": 335734,
+      "y": 731819,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Chessington 132kV": {
+      "osm": "way/23390317",
+      "name": "Chessington Substation",
+      "x": 516903,
+      "y": 161847,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Chesterfield GSP": {
+      "osm": "way/92331023",
+      "name": "Chesterfield Substation",
+      "x": 440961,
+      "y": 369883,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Chickerell 400kV Substation": {
+      "osm": "way/49922626",
+      "name": "Chickerell Substation",
+      "x": 365609,
+      "y": 80579,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Cilfynydd 400kV Substation": {
+      "osm": "way/95749833",
+      "name": "Cilfynydd Supergrid Substation",
+      "x": 310086,
+      "y": 193798,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Cleve Hill 400kV Substation": {
+      "osm": "way/264104518",
+      "name": "Cleve Hill 400kV Substation",
+      "x": 604912,
+      "y": 164006,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Clunie GSP": {
+      "osm": "way/247279711",
+      "name": "Clunie Substation",
+      "x": 290920,
+      "y": 759790,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Coalburn 132kV": {
+      "osm": "way/143383456",
+      "name": "Coalburn Substation",
+      "x": 282487,
+      "y": 637334,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Coalburn 400/132kV": {
+      "osm": "way/143383456",
+      "name": "Coalburn Substation",
+      "x": 282487,
+      "y": 637334,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Coalburn 400kV GIS Substation": {
+      "osm": "way/143383456",
+      "name": "Coalburn Substation",
+      "x": 282487,
+      "y": 637334,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Coalburn 400kV Substation": {
+      "osm": "way/143383456",
+      "name": "Coalburn Substation",
+      "x": 282487,
+      "y": 637334,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Coatbridge GSP": {
+      "osm": "way/308724683",
+      "name": "Coatbridge Substation",
+      "x": 274062,
+      "y": 663833,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Cockenzie 275/33kV Substation": {
+      "osm": "way/65482882",
+      "name": "Cockenzie Substation",
+      "x": 339670,
+      "y": 675283,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Cockenzie 275kV substation": {
+      "osm": "way/65482882",
+      "name": "Cockenzie Substation",
+      "x": 339670,
+      "y": 675283,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Cockenzie 400/275kV": {
+      "osm": "way/65482882",
+      "name": "Cockenzie Substation",
+      "x": 339670,
+      "y": 675283,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Connagill 132kV Substation": {
+      "osm": "way/567187951",
+      "name": "Connagill Substation",
+      "x": 290620,
+      "y": 959750,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Connagill 275kV Substation": {
+      "osm": "way/567187951",
+      "name": "Connagill Substation",
+      "x": 290620,
+      "y": 959750,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Connah's Quay 400kV Substation": {
+      "osm": "way/1509150803",
+      "name": "Connahs Quay GIS Substation",
+      "x": 328402,
+      "y": 370857,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Corby 132kV Substation": {
+      "osm": "way/92144345",
+      "name": "Corby Substation",
+      "x": 490438,
+      "y": 288984,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Corriemoillie 132/33kV Substation": {
+      "osm": "way/295876243",
+      "name": "Corriemoillie Substation",
+      "x": 234782,
+      "y": 863867,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Corriemoillie 132kV Substation": {
+      "osm": "way/295876243",
+      "name": "Corriemoillie Substation",
+      "x": 234782,
+      "y": 863867,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Coryton South 400kV Substation": {
+      "osm": "way/100773252",
+      "name": "Coryton South Substation",
+      "x": 574039,
+      "y": 182304,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Cottam 400kV Substation": {
+      "osm": "way/314338790",
+      "name": "Cottam Substation",
+      "x": 481311,
+      "y": 378892,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Coupar Angus 132/33kV GSP": {
+      "osm": "way/218108351",
+      "name": "Coupar Angus Substation",
+      "x": 321782,
+      "y": 739205,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Coventry 275kV Substation": {
+      "osm": "way/55284068",
+      "name": "Coventry Substation",
+      "x": 436554,
+      "y": 284362,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Cowley 400kV Substation": {
+      "osm": "way/23059230",
+      "name": "Cowley Substation",
+      "x": 456028,
+      "y": 201689,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Cowley GSP": {
+      "osm": "way/23059230",
+      "name": "Cowley Substation",
+      "x": 456028,
+      "y": 201689,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Coylton 132/33kV": {
+      "osm": "way/143105488",
+      "name": "Coylton Substation",
+      "x": 246274,
+      "y": 619684,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Coylton 275/132kV": {
+      "osm": "way/143105488",
+      "name": "Coylton Substation",
+      "x": 246274,
+      "y": 619684,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Coylton 275/33kV Substation": {
+      "osm": "way/143105488",
+      "name": "Coylton Substation",
+      "x": 246274,
+      "y": 619684,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Coylton 275kV substation": {
+      "osm": "way/143105488",
+      "name": "Coylton Substation",
+      "x": 246274,
+      "y": 619684,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Creyke Beck 132kV": {
+      "osm": "way/1152801718",
+      "name": "Creyke Beck",
+      "x": 504588,
+      "y": 435060,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Creyke Beck 400kV Substation": {
+      "osm": "way/1152801718",
+      "name": "Creyke Beck",
+      "x": 504588,
+      "y": 435060,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Creyke Beck GSP": {
+      "osm": "way/1152801718",
+      "name": "Creyke Beck",
+      "x": 504588,
+      "y": 435060,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Crossaig 132kV Substation": {
+      "osm": "way/677513264",
+      "name": "Crossaig Substation",
+      "x": 182779,
+      "y": 650250,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Cruachan 275kV Substation": {
+      "osm": "way/307717807",
+      "name": "Cruachan Substation",
+      "x": 208014,
+      "y": 727741,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Crystal Rig 132/33kV": {
+      "osm": "way/262523325",
+      "name": "Crystal Rig Substation",
+      "x": 366360,
+      "y": 669231,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Crystal Rig 400kV substation": {
+      "osm": "way/262523325",
+      "name": "Crystal Rig Substation",
+      "x": 366360,
+      "y": 669231,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Culham Jet 400kV Substation": {
+      "osm": "way/115530033",
+      "name": "Culham JET Substation",
+      "x": 453478,
+      "y": 196093,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Culligran GSP": {
+      "osm": "way/295407192",
+      "name": "Culligran Substation",
+      "x": 237814,
+      "y": 840471,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Cumberhead Collector 132/33kV": {
+      "osm": "way/1227626965",
+      "name": "Cumberhead Collector Substation",
+      "x": 278719,
+      "y": 633704,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Cumbernauld 132/33kV": {
+      "osm": "way/308313098",
+      "name": "Cumbernauld",
+      "x": 277455,
+      "y": 674395,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Currie 275/132kV": {
+      "osm": "way/27332350",
+      "name": "Currie Substation",
+      "x": 318264,
+      "y": 668460,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "DALMARNOCK 132/33KV SUBSTATION": {
+      "osm": "way/119315557",
+      "name": "Dalmarnock",
+      "x": 262075,
+      "y": 662444,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "DEVOL MOOR 132/33KV GRID SUPPLY POINT SUBSTATION": {
+      "osm": "way/91056548",
+      "name": "Devol Moor Substation",
+      "x": 230806,
+      "y": 672513,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "DIDCOT 400/132KV SUBSTATION": {
+      "osm": "way/263863442",
+      "name": "Didcot Substation",
+      "x": 451377,
+      "y": 192130,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Daines 400kV Substation": {
+      "osm": "way/92529432",
+      "name": "Daines Substation",
+      "x": 374895,
+      "y": 392197,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Dalchork 132kV Substation": {
+      "osm": "way/1126346023",
+      "name": "Dalchork Substation",
+      "x": 258214,
+      "y": 909472,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Deanie GSP": {
+      "osm": "way/295407193",
+      "name": "Deanie Substation",
+      "x": 229243,
+      "y": 838795,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Denny North": {
+      "osm": "way/422486984",
+      "name": "Denny North Substation",
+      "x": 282388,
+      "y": 684568,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Denny North 275/132kV": {
+      "osm": "way/422486984",
+      "name": "Denny North Substation",
+      "x": 282388,
+      "y": 684568,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Dersalloch 132/33kV": {
+      "osm": "way/907459589",
+      "name": "Dersalloch",
+      "x": 243395,
+      "y": 605559,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Devol Moor 132kV Substation": {
+      "osm": "way/91056548",
+      "name": "Devol Moor Substation",
+      "x": 230806,
+      "y": 672513,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Devol Moor 400/132kV": {
+      "osm": "way/91056548",
+      "name": "Devol Moor Substation",
+      "x": 230806,
+      "y": 672513,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Devonside 132/33kV": {
+      "osm": "way/90807525",
+      "name": "Devonside Substation",
+      "x": 289509,
+      "y": 695257,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Devonside 132kV Substation": {
+      "osm": "way/90807525",
+      "name": "Devonside Substation",
+      "x": 289509,
+      "y": 695257,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Didcot 132kV GIS Substation": {
+      "osm": "way/263863442",
+      "name": "Didcot Substation",
+      "x": 451377,
+      "y": 192130,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Didcot 132kV Substation": {
+      "osm": "way/263863442",
+      "name": "Didcot Substation",
+      "x": 451377,
+      "y": 192130,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Didcot 400kV Substation": {
+      "osm": "way/263863442",
+      "name": "Didcot Substation",
+      "x": 451377,
+      "y": 192130,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Dounreay GSP": {
+      "osm": "relation/8087295",
+      "name": "Dounreay Substation",
+      "x": 298112,
+      "y": 966633,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Drakelow 132kV Substation": {
+      "osm": "way/87204522",
+      "name": "Drakelow Substation",
+      "x": 423596,
+      "y": 319573,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Drakelow 400kV Substation": {
+      "osm": "way/87204522",
+      "name": "Drakelow Substation",
+      "x": 423596,
+      "y": 319573,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Drax 132kV Substation": {
+      "osm": "way/160580052",
+      "name": "Drax",
+      "x": 466557,
+      "y": 427119,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Drax 400kV Substation": {
+      "osm": "way/160580052",
+      "name": "Drax",
+      "x": 466557,
+      "y": 427119,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Drumchapel 275/33kV": {
+      "osm": "way/162124572",
+      "name": "Drumchapel",
+      "x": 253273,
+      "y": 671655,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Dumfries 132/33kV": {
+      "osm": "way/310436911",
+      "name": "Dumfries",
+      "x": 298489,
+      "y": 575955,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Dun Hill 132/33kV": {
+      "osm": "way/820196441",
+      "name": "Dun Hill Substation",
+      "x": 260261,
+      "y": 604316,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Dunbar 132/33kV": {
+      "osm": "way/97559016",
+      "name": "Dunbar Substation",
+      "x": 364304,
+      "y": 676185,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Dungeness 275kV Substation": {
+      "osm": "way/1395910275",
+      "name": "Dungeness Substation",
+      "x": 608441,
+      "y": 116932,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Dungeness 400kV Substation": {
+      "osm": "way/1395910275",
+      "name": "Dungeness Substation",
+      "x": 608441,
+      "y": 116932,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Dunlop 132kV Substation": {
+      "osm": "way/855656171",
+      "name": "Dunlop Substation",
+      "x": 413009,
+      "y": 290229,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Dunvegan 132/33kV Grid Supply Point Substation": {
+      "osm": "way/292965497",
+      "name": "Dunvegan Substation",
+      "x": 127648,
+      "y": 847138,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Dyce 132/33kV GSP": {
+      "osm": "way/52979467",
+      "name": "Dyce Grid Supply Point",
+      "x": 388627,
+      "y": 813905,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "East Claydon 400kV Substation": {
+      "osm": "way/92340133",
+      "name": "East Claydon Substation",
+      "x": 475257,
+      "y": 225876,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "East Claydon GSP (NGED EM)": {
+      "osm": "way/92340133",
+      "name": "East Claydon Substation",
+      "x": 475257,
+      "y": 225876,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "East Kilbride 275/33kV GSP": {
+      "osm": "way/166703764",
+      "name": "East Kilbride Substation",
+      "x": 262524,
+      "y": 656910,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "East Kilbride 275kV Substation": {
+      "osm": "way/166703764",
+      "name": "East Kilbride Substation",
+      "x": 262524,
+      "y": 656910,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Easterhouse 275kV": {
+      "osm": "way/119315534",
+      "name": "Easterhouse Substation",
+      "x": 270325,
+      "y": 667063,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Eaton Socon 400kV Substation": {
+      "osm": "way/89038614",
+      "name": "Eaton Socon substation",
+      "x": 516129,
+      "y": 258737,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Eccles 400/132kV": {
+      "osm": "way/102198808",
+      "name": "Eccles Substation",
+      "x": 379365,
+      "y": 641804,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Eccles 400kV Substation": {
+      "osm": "way/102198808",
+      "name": "Eccles Substation",
+      "x": 379365,
+      "y": 641804,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Eccles GSP": {
+      "osm": "way/102198808",
+      "name": "Eccles Substation",
+      "x": 379365,
+      "y": 641804,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Edinbane 132/33kV Substation": {
+      "osm": "way/562993469",
+      "name": "Edinbane",
+      "x": 135033,
+      "y": 844143,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Eggborough 400kV Substation": {
+      "osm": "way/313495269",
+      "name": "Eggborough Substation",
+      "x": 457524,
+      "y": 424475,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Elderslie 132/33kV": {
+      "osm": "way/570087442",
+      "name": "Elderslie",
+      "x": 245800,
+      "y": 663567,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Elgin GSP": {
+      "osm": "way/89893627",
+      "name": "Elgin Grid Supply Point",
+      "x": 321278,
+      "y": 864642,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Elland 132kV Substation": {
+      "osm": "way/164380199",
+      "name": "Elland Substation",
+      "x": 411802,
+      "y": 422009,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Elvanfoot 275/132/33kV": {
+      "osm": "way/284874050",
+      "name": "Elvanfoot Substation",
+      "x": 294276,
+      "y": 617214,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Elvanfoot 400/275/33kV": {
+      "osm": "way/284874050",
+      "name": "Elvanfoot Substation",
+      "x": 294276,
+      "y": 617214,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Elvanfoot substation": {
+      "osm": "way/284874050",
+      "name": "Elvanfoot Substation",
+      "x": 294276,
+      "y": 617214,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Enderby 400kV Substation": {
+      "osm": "way/90534270",
+      "name": "Enderby Substation",
+      "x": 453145,
+      "y": 300303,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Enoch Hill 132/33kV Substation": {
+      "osm": "way/1421788789",
+      "name": "Enoch Hill substation",
+      "x": 255421,
+      "y": 609046,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Errochty 132kV Substation": {
+      "osm": "way/32809758",
+      "name": "Errochty Switching Station",
+      "x": 276968,
+      "y": 759064,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Erskine 132/33kV": {
+      "osm": "way/91046062",
+      "name": "Erskine Substation",
+      "x": 244877,
+      "y": 670680,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Exeter 132kV Substation": {
+      "osm": "way/26678829",
+      "name": "Exeter Substation",
+      "x": 300994,
+      "y": 97385,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Exeter 400kV Substation": {
+      "osm": "way/26678829",
+      "name": "Exeter Substation",
+      "x": 300994,
+      "y": 97385,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Exeter GSP": {
+      "osm": "way/26678829",
+      "name": "Exeter Substation",
+      "x": 300994,
+      "y": 97385,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "FARR WIND FARM 132/33KV SUBSTATION": {
+      "osm": "way/127019389",
+      "name": "Farr Wind Farm Substation",
+      "x": 270056,
+      "y": 829356,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "FIDDES 275/33KV GRID SUPPLY POINT SUBSTATION": {
+      "osm": "way/306451404",
+      "name": "Fiddes",
+      "x": 381719,
+      "y": 781517,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fallago 400/33kV": {
+      "osm": "way/262532045",
+      "name": "Fallago Substation",
+      "x": 358442,
+      "y": 659288,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fasnakyle GSP": {
+      "osm": "way/239248206",
+      "name": "Fasnakyle Substation",
+      "x": 231949,
+      "y": 830005,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fawley 132kV Substation": {
+      "osm": "relation/9409219",
+      "name": "Fawley Substation",
+      "x": 447385,
+      "y": 102676,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fawley 400kV Substation": {
+      "osm": "relation/9409219",
+      "name": "Fawley Substation",
+      "x": 447385,
+      "y": 102676,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fawley GSP": {
+      "osm": "relation/9409219",
+      "name": "Fawley Substation",
+      "x": 447385,
+      "y": 102676,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Feckenham 400kV Substation": {
+      "osm": "way/96107758",
+      "name": "Feckenham Substation",
+      "x": 401952,
+      "y": 261425,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Feckenham GSP": {
+      "osm": "way/96107758",
+      "name": "Feckenham Substation",
+      "x": 401952,
+      "y": 261425,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Ferrybridge B 132kV Substation": {
+      "osm": "way/25406532",
+      "name": "Ferrybridge B Substation",
+      "x": 447730,
+      "y": 425323,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Ferrybridge C 275kV Substation": {
+      "osm": "way/193617444",
+      "name": "Ferrybridge C Substation",
+      "x": 447425,
+      "y": 424847,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fetteresso 132/33kV GSP Substation": {
+      "osm": "way/241491759",
+      "name": "Fetteresso Substation",
+      "x": 378986,
+      "y": 785967,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fetteresso 132kV substation": {
+      "osm": "way/241491759",
+      "name": "Fetteresso Substation",
+      "x": 378986,
+      "y": 785967,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fetteresso GSP": {
+      "osm": "way/241491759",
+      "name": "Fetteresso Substation",
+      "x": 378986,
+      "y": 785967,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fiddes GSP": {
+      "osm": "way/306451404",
+      "name": "Fiddes",
+      "x": 381719,
+      "y": 781517,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fiddlers Ferry 275kV Substation": {
+      "osm": "way/315213317",
+      "name": "Fiddlers Ferry Substation",
+      "x": 354267,
+      "y": 386143,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Finnieston GSP": {
+      "osm": "way/1463563663",
+      "name": "Finnieston Substation",
+      "x": 257022,
+      "y": 665724,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fleet 132KV Substation": {
+      "osm": "way/88389243",
+      "name": "Fleet Substation",
+      "x": 478166,
+      "y": 150788,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fleet 400kV Substation": {
+      "osm": "way/88389243",
+      "name": "Fleet Substation",
+      "x": 478166,
+      "y": 150788,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fort Augustus 400kV": {
+      "osm": "way/1263095951",
+      "name": "Fort Augustus Substation",
+      "x": 235595,
+      "y": 808320,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fort Augustus GSP": {
+      "osm": "way/1263095951",
+      "name": "Fort Augustus Substation",
+      "x": 235595,
+      "y": 808320,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Foyers 275kV Substation": {
+      "osm": "way/127045977",
+      "name": "Foyers Substation",
+      "x": 250899,
+      "y": 822482,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Frodsham (Network Rail) GSP": {
+      "osm": "way/23164256",
+      "name": "Frodsham Substation",
+      "x": 352377,
+      "y": 379382,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Frodsham 132kV": {
+      "osm": "way/23164256",
+      "name": "Frodsham Substation",
+      "x": 352377,
+      "y": 379382,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Frodsham 400kV Substation": {
+      "osm": "way/23164256",
+      "name": "Frodsham Substation",
+      "x": 352377,
+      "y": 379382,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fyrish 132kV Substation": {
+      "osm": "way/630939126",
+      "name": "Fyrish Substation",
+      "x": 263028,
+      "y": 870004,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Fyrish 275kV Substation": {
+      "osm": "way/630939126",
+      "name": "Fyrish Substation",
+      "x": 263028,
+      "y": 870004,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Galashiels 132/33kV": {
+      "osm": "way/235142109",
+      "name": "Galashiels Substation",
+      "x": 351508,
+      "y": 635466,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Giffnock 275/33kV": {
+      "osm": "way/228000854",
+      "name": "Giffnock Substation",
+      "x": 255935,
+      "y": 658541,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Glenglass 132/33kV": {
+      "osm": "way/820223835",
+      "name": "Glenglass Substation",
+      "x": 272098,
+      "y": 606639,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Glenluce 132/33kV": {
+      "osm": "way/310436922",
+      "name": "Glenluce Substation",
+      "x": 219977,
+      "y": 557763,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Glenmoriston GSP": {
+      "osm": "way/562892209",
+      "name": "Glenmoriston Substation",
+      "x": 235790,
+      "y": 815609,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Glenniston GSP": {
+      "osm": "way/89700304",
+      "name": "Glenniston  Substation",
+      "x": 321041,
+      "y": 691668,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Glenrothes 275/33kV": {
+      "osm": "way/59736773",
+      "name": "Glenrothes Substation",
+      "x": 325596,
+      "y": 702253,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Glenrothes GSP": {
+      "osm": "way/59736773",
+      "name": "Glenrothes Substation",
+      "x": 325596,
+      "y": 702253,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Govan 132/33kV": {
+      "osm": "way/1328249376",
+      "name": "Govan",
+      "x": 255131,
+      "y": 664838,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Grendon 132kV Substation": {
+      "osm": "way/88287125",
+      "name": "Grendon Substation",
+      "x": 486968,
+      "y": 261306,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Grendon 400kV Substation": {
+      "osm": "way/88287125",
+      "name": "Grendon Substation",
+      "x": 486968,
+      "y": 261306,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Gretna 400/132kV": {
+      "osm": "relation/10377509",
+      "name": "Gretna Substation",
+      "x": 332950,
+      "y": 571407,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Greystones A 275kV Substation": {
+      "osm": "way/237042556",
+      "name": "Greystones A",
+      "x": 456676,
+      "y": 520360,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Greystones B 275kV Substation": {
+      "osm": "way/237042557",
+      "name": "Greystones B",
+      "x": 456387,
+      "y": 520229,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Grimsby West 132kV Substation": {
+      "osm": "way/160279525",
+      "name": "Grimsby West Substation",
+      "x": 522523,
+      "y": 409279,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Grimsby West 400kV Substation": {
+      "osm": "way/160279525",
+      "name": "Grimsby West Substation",
+      "x": 522523,
+      "y": 409279,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Grimsby West GSP": {
+      "osm": "way/160279525",
+      "name": "Grimsby West Substation",
+      "x": 522523,
+      "y": 409279,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Haggs Road GSP": {
+      "osm": "way/316250865",
+      "name": "Haggs Road Substation",
+      "x": 256253,
+      "y": 662031,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hams Hall 400kV Substation": {
+      "osm": "way/49499923",
+      "name": "Hams Hall Substation",
+      "x": 419482,
+      "y": 292615,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Harker 132kV Substation": {
+      "osm": "relation/14921826",
+      "name": "Harker Substation",
+      "x": 338492,
+      "y": 561288,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Harker 400/132KV Substation": {
+      "osm": "relation/14921826",
+      "name": "Harker Substation",
+      "x": 338492,
+      "y": 561288,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Harker 400kV Substation": {
+      "osm": "relation/14921826",
+      "name": "Harker Substation",
+      "x": 338492,
+      "y": 561288,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Harker GSP": {
+      "osm": "relation/14921826",
+      "name": "Harker Substation",
+      "x": 338492,
+      "y": 561288,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hartlepool 275kV Substation": {
+      "osm": "way/311840838",
+      "name": "Hartlepool",
+      "x": 452817,
+      "y": 527032,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hartmoor 275kV Substation": {
+      "osm": "way/1297690788",
+      "name": "Hartmoor",
+      "x": 445723,
+      "y": 534189,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hartmoor GSP": {
+      "osm": "way/1297690788",
+      "name": "Hartmoor",
+      "x": 445723,
+      "y": 534189,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hatfield 33kV Substation": {
+      "osm": "relation/8799993",
+      "name": "Hatfield Substation",
+      "x": 521664,
+      "y": 205648,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hawick 132kV Substation": {
+      "osm": "way/310438991",
+      "name": "Hawick Substation",
+      "x": 349364,
+      "y": 615747,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hawick GSP": {
+      "osm": "way/310438991",
+      "name": "Hawick Substation",
+      "x": 349364,
+      "y": 615747,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hawthorn Pit 400kV Substation": {
+      "osm": "way/1436767715",
+      "name": "Hawthorn Pit Substation",
+      "x": 438481,
+      "y": 545774,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hawthorn Pit GSP": {
+      "osm": "way/1436767715",
+      "name": "Hawthorn Pit Substation",
+      "x": 438481,
+      "y": 545774,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hedon 275kV Substation": {
+      "osm": "relation/19232033",
+      "name": "Hedon 275kV Substation",
+      "x": 516738,
+      "y": 429351,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Helensburgh 132/33kV": {
+      "osm": "way/307767571",
+      "name": "Helensburgh",
+      "x": 231285,
+      "y": 684482,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Heysham GSP": {
+      "osm": "relation/19169705",
+      "name": "Heysham Substation",
+      "x": 341780,
+      "y": 459962,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "High Marnham 275kV Substation": {
+      "osm": "way/143905069",
+      "name": "High Marnham Substation",
+      "x": 480623,
+      "y": 370796,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "High Marnham 400kV Substation": {
+      "osm": "way/143905069",
+      "name": "High Marnham Substation",
+      "x": 480623,
+      "y": 370796,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hirwaun GSP": {
+      "osm": "way/200436612",
+      "name": "Hirwaun Grid Substation",
+      "x": 293935,
+      "y": 205822,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Humber Gateway 33/132kV Offshore Substation": {
+      "osm": "way/1393665249",
+      "name": "Humber Gateway Offshore Substation",
+      "x": 548965,
+      "y": 420363,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hunningley 132kV Substation": {
+      "osm": "way/90539496",
+      "name": "Hunningley",
+      "x": 436585,
+      "y": 405894,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hunterston 400/132kV": {
+      "osm": "way/308653843",
+      "name": "Hunterston Substation",
+      "x": 218526,
+      "y": 651189,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hunterston East 400kV": {
+      "osm": "way/304620092",
+      "name": "Hunterston East Substation",
+      "x": 218750,
+      "y": 651180,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hunterston East 400kV substation": {
+      "osm": "way/304620092",
+      "name": "Hunterston East Substation",
+      "x": 218750,
+      "y": 651180,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hurst 275kV Substation": {
+      "osm": "way/32604320",
+      "name": "Hurst Substation",
+      "x": 549895,
+      "y": 172625,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hutton 132kV Substation": {
+      "osm": "relation/11051275",
+      "name": "Hutton Substation",
+      "x": 356472,
+      "y": 489332,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Hutton 400kV Substation": {
+      "osm": "relation/11051275",
+      "name": "Hutton Substation",
+      "x": 356472,
+      "y": 489332,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "INVERNESS 132/33KV GRID SUPPLY POINT SUBSTATION": {
+      "osm": "way/44171617",
+      "name": "Inverness Substation",
+      "x": 265282,
+      "y": 842629,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Imperial Park 400kV Substation": {
+      "osm": "way/42800878",
+      "name": "Imperial Park Substation",
+      "x": 328605,
+      "y": 183718,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Indian Queens 400kV Substation": {
+      "osm": "relation/9572254",
+      "name": "Indian Queens Substation",
+      "x": 194003,
+      "y": 59025,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Invergarry 132kV Substation": {
+      "osm": "way/305791136",
+      "name": "Invergarry Substation",
+      "x": 231940,
+      "y": 801306,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Inverkeithing 132/33kV": {
+      "osm": "way/114515147",
+      "name": "Inverkeithing Substation",
+      "x": 313522,
+      "y": 684132,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Inverkeithing GSP": {
+      "osm": "way/114515147",
+      "name": "Inverkeithing Substation",
+      "x": 313522,
+      "y": 684132,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Inverness GSP": {
+      "osm": "way/44171617",
+      "name": "Inverness Substation",
+      "x": 265282,
+      "y": 842629,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Iron Acton (South West) GSP": {
+      "osm": "way/45087479",
+      "name": "Iron Acton Substation",
+      "x": 366770,
+      "y": 185731,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Iron Acton 132kV Substation": {
+      "osm": "way/45087479",
+      "name": "Iron Acton Substation",
+      "x": 366770,
+      "y": 185731,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Iron Acton 275kV Substation": {
+      "osm": "way/45087479",
+      "name": "Iron Acton Substation",
+      "x": 366770,
+      "y": 185731,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Ironbridge 400kV Substation": {
+      "osm": "relation/7886014",
+      "name": "Ironbridge Substation",
+      "x": 365589,
+      "y": 304013,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Iver 275kV Substation": {
+      "osm": "way/23232738",
+      "name": "Iver Substation",
+      "x": 504264,
+      "y": 183792,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kaimes GSP": {
+      "osm": "way/27163121",
+      "name": "Kaimes Substation",
+      "x": 327211,
+      "y": 667103,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Keadby 400kV Substation": {
+      "osm": "relation/7881280",
+      "name": "Keadby Substation",
+      "x": 482430,
+      "y": 411994,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Keadby GSP": {
+      "osm": "relation/7881280",
+      "name": "Keadby Substation",
+      "x": 482430,
+      "y": 411994,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kearsley 132kV substation": {
+      "osm": "relation/20292689",
+      "name": "Kearsley Substation",
+      "x": 376374,
+      "y": 404674,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kearsley 275kV Substation": {
+      "osm": "relation/20292689",
+      "name": "Kearsley Substation",
+      "x": 376374,
+      "y": 404674,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Keith 132kV Substation": {
+      "osm": "way/115277975",
+      "name": "Keith Substation",
+      "x": 343925,
+      "y": 850407,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Keith GSP": {
+      "osm": "way/115277975",
+      "name": "Keith Substation",
+      "x": 343925,
+      "y": 850407,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kemsley 400kV Substation": {
+      "osm": "way/91010022",
+      "name": "Kemsley Substation",
+      "x": 590940,
+      "y": 166820,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kemsley GSP": {
+      "osm": "way/91010022",
+      "name": "Kemsley Substation",
+      "x": 590940,
+      "y": 166820,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kilbraur Wind Farm Substation": {
+      "osm": "way/232319495",
+      "name": "Kilbraur Wind Farm Substation",
+      "x": 278802,
+      "y": 907842,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Killermont GSP": {
+      "osm": "way/242038784",
+      "name": "Killermont",
+      "x": 255680,
+      "y": 670211,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Killin 132/11kV Substation": {
+      "osm": "way/130870161",
+      "name": "Killin Substation",
+      "x": 256619,
+      "y": 734084,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Killin GSP": {
+      "osm": "way/130870161",
+      "name": "Killin Substation",
+      "x": 256619,
+      "y": 734084,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Killingholme 400kV Substation": {
+      "osm": "way/205132633",
+      "name": "Killingholme Substation",
+      "x": 515327,
+      "y": 419114,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kilmarnock South 400kV Substation": {
+      "osm": "way/100077745",
+      "name": "Kilmarnock South Substation",
+      "x": 244803,
+      "y": 634159,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kilmarnock Town 275/33kV Substation": {
+      "osm": "way/143388743",
+      "name": "Kilmarnock Town Substation",
+      "x": 242862,
+      "y": 636628,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kilwinning 132/33kV": {
+      "osm": "way/91093679",
+      "name": "Kilwinning Substation",
+      "x": 231496,
+      "y": 644562,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kinardochy Substation 400/275kV": {
+      "osm": "way/1177951352",
+      "name": "Kinardochy Substation",
+      "x": 277187,
+      "y": 755706,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kingsnorth 132kV Substation": {
+      "osm": "way/1464877869",
+      "name": "Kingsnorth",
+      "x": 580618,
+      "y": 172198,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kingsnorth 400kV Substation": {
+      "osm": "way/1464877869",
+      "name": "Kingsnorth",
+      "x": 580618,
+      "y": 172198,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kingsnorth GSP": {
+      "osm": "way/1464877869",
+      "name": "Kingsnorth",
+      "x": 580618,
+      "y": 172198,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kintore 275kV": {
+      "osm": "way/118821349",
+      "name": "Kintore Grid Supply Point",
+      "x": 377062,
+      "y": 814287,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kintore GSP": {
+      "osm": "way/118821349",
+      "name": "Kintore Grid Supply Point",
+      "x": 377062,
+      "y": 814287,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kirkby 275/33kV Substation": {
+      "osm": "way/30930911",
+      "name": "Kirkby Substation",
+      "x": 343787,
+      "y": 397263,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Kirkby 275kV Substation": {
+      "osm": "way/30930911",
+      "name": "Kirkby Substation",
+      "x": 343787,
+      "y": 397263,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Knocknagael 132kV Substation": {
+      "osm": "way/820229174",
+      "name": "Knocknagael Substation",
+      "x": 265232,
+      "y": 839075,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Knocknagael 275kV": {
+      "osm": "way/820229174",
+      "name": "Knocknagael Substation",
+      "x": 265232,
+      "y": 839075,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Lackenby 400kV Substation": {
+      "osm": "way/109730296",
+      "name": "Lackenby Substation",
+      "x": 456241,
+      "y": 519412,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Lairg GSP": {
+      "osm": "way/305627326",
+      "name": "Lairg",
+      "x": 258779,
+      "y": 907103,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Laleham 132kV Substation": {
+      "osm": "way/23248656",
+      "name": "Laleham Substation",
+      "x": 506457,
+      "y": 170546,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Laleham GSP (SEPD)": {
+      "osm": "way/23248656",
+      "name": "Laleham Substation",
+      "x": 506457,
+      "y": 170546,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Landulph 400kV Substation": {
+      "osm": "way/34656007",
+      "name": "Landulph Substation",
+      "x": 240869,
+      "y": 62943,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Landulph GSP": {
+      "osm": "way/34656007",
+      "name": "Landulph Substation",
+      "x": 240869,
+      "y": 62943,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Langage 400kV Substation": {
+      "osm": "way/677845115",
+      "name": "Langage Substation",
+      "x": 257017,
+      "y": 56289,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Legacy 400kV Substation": {
+      "osm": "way/160412771",
+      "name": "Legacy Grid Substation",
+      "x": 329177,
+      "y": 347895,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Linnmill 132/33kV": {
+      "osm": "way/143382162",
+      "name": "Linnmill Substation",
+      "x": 285229,
+      "y": 643516,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Linnmill GSP": {
+      "osm": "way/143382162",
+      "name": "Linnmill Substation",
+      "x": 285229,
+      "y": 643516,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Lister Drive 132kV Substation": {
+      "osm": "relation/8824342",
+      "name": "Lister Drive Substation",
+      "x": 338597,
+      "y": 391722,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Lister Drive 275kV Substation": {
+      "osm": "relation/8824342",
+      "name": "Lister Drive Substation",
+      "x": 338597,
+      "y": 391722,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Little Horsted GSP": {
+      "osm": "way/555563722",
+      "name": "Little Horsted Substation",
+      "x": 549082,
+      "y": 117888,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Littlebrook 132kV Substation": {
+      "osm": "way/1275300370",
+      "name": "Littlebrook Substation",
+      "x": 555537,
+      "y": 176226,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Littlebrook 400kV Substation": {
+      "osm": "way/1275300370",
+      "name": "Littlebrook Substation",
+      "x": 555537,
+      "y": 176226,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Livingston East 132/33kV": {
+      "osm": "way/124059099",
+      "name": "Livingston East Substation",
+      "x": 306722,
+      "y": 666487,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Lochay 132/11kV Substation": {
+      "osm": "way/130870157",
+      "name": "Lochay Substation",
+      "x": 254516,
+      "y": 735008,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Lovedean 132KV Substation": {
+      "osm": "way/20851038",
+      "name": "Lovedean Substation",
+      "x": 467583,
+      "y": 113506,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Lovedean 400kV Substation": {
+      "osm": "way/20851038",
+      "name": "Lovedean Substation",
+      "x": 467583,
+      "y": 113506,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Luichart GSP": {
+      "osm": "way/295169544",
+      "name": "Luichart Substation",
+      "x": 239275,
+      "y": 857137,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Lunanhead GSP": {
+      "osm": "way/412985304",
+      "name": "Lunanhead",
+      "x": 347041,
+      "y": 751737,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Lyndhurst 132/33kV": {
+      "osm": "way/306595725",
+      "name": "Lyndhurst",
+      "x": 337432,
+      "y": 732577,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "MacDuff 132/33kV GSP Substation": {
+      "osm": "way/306595720",
+      "name": "Macduff",
+      "x": 370355,
+      "y": 863901,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Maentwrog GSP": {
+      "osm": "way/552227748",
+      "name": "Maentwrog Substation",
+      "x": 265425,
+      "y": 339457,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Mannington 400kV Substation": {
+      "osm": "way/90099036",
+      "name": "Mannington Substation",
+      "x": 407466,
+      "y": 105261,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Marchwood 400kV Substation": {
+      "osm": "way/22978838",
+      "name": "Marchwood Substation",
+      "x": 439235,
+      "y": 111021,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Margam 275kV Substation": {
+      "osm": "way/121820285",
+      "name": "Margam Substation",
+      "x": 278521,
+      "y": 186351,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Mark Hill 275/132kV": {
+      "osm": "way/260300448",
+      "name": "Mark Hill Substation",
+      "x": 223766,
+      "y": 586076,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Market Harborough 400kV Substation": {
+      "osm": "way/1133157406",
+      "name": "Market Harborough Substation",
+      "x": 475806,
+      "y": 285748,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Marston Vale 400kV Substation": {
+      "osm": "way/1249349666",
+      "name": "Marston Vale Substation",
+      "x": 500980,
+      "y": 240306,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Maybole 132/33kV": {
+      "osm": "way/143390824",
+      "name": "Maybole Substation",
+      "x": 229798,
+      "y": 608642,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Maybole GSP": {
+      "osm": "way/143390824",
+      "name": "Maybole Substation",
+      "x": 229798,
+      "y": 608642,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Meadowhead GSP": {
+      "osm": "way/162051851",
+      "name": "Meadowhead",
+      "x": 233815,
+      "y": 635433,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Melksham 400kV Substation": {
+      "osm": "way/103915328",
+      "name": "Melksham Substation",
+      "x": 389613,
+      "y": 166053,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Middleton 400KV Substation": {
+      "osm": "way/635735466",
+      "name": "Middleton Substation",
+      "x": 342108,
+      "y": 460239,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Mill Hill 275kV Substation": {
+      "osm": "way/4797228",
+      "name": "Mill Hill Substation",
+      "x": 524084,
+      "y": 192521,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Milton of Craigie GSP": {
+      "osm": "way/88816525",
+      "name": "Milton of Craigie",
+      "x": 343130,
+      "y": 731836,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Minety 400kV Substation": {
+      "osm": "way/95279334",
+      "name": "Minety Substation",
+      "x": 399955,
+      "y": 189861,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Minety GSP": {
+      "osm": "way/95279334",
+      "name": "Minety Substation",
+      "x": 399955,
+      "y": 189861,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Moffat 132/33kV": {
+      "osm": "way/676646876",
+      "name": "Moffat Substation",
+      "x": 309412,
+      "y": 601680,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Moffat 400kV Substation": {
+      "osm": "way/676646876",
+      "name": "Moffat Substation",
+      "x": 309412,
+      "y": 601680,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Monk Fryston 275kV Substation": {
+      "osm": "way/90547674",
+      "name": "Monk Fryston substation",
+      "x": 448466,
+      "y": 429124,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Monk Fryston 400kV Substation": {
+      "osm": "way/90547674",
+      "name": "Monk Fryston substation",
+      "x": 448466,
+      "y": 429124,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Nairn 132/33kV Grid Supply Point Substation": {
+      "osm": "way/96288586",
+      "name": "Nairn Grid Substation",
+      "x": 289559,
+      "y": 855571,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Necton 400kV Substation": {
+      "osm": "way/635229626",
+      "name": "Necton Substation",
+      "x": 589041,
+      "y": 310706,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Neilston 132kV Substation": {
+      "osm": "way/1263101676",
+      "name": "Neilston Substation",
+      "x": 244693,
+      "y": 659978,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Neilston 400kV Substation": {
+      "osm": "way/1263101676",
+      "name": "Neilston Substation",
+      "x": 244693,
+      "y": 659978,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "New Cumnock 275/132kV": {
+      "osm": "way/677510482",
+      "name": "New Cumnock Substation",
+      "x": 252022,
+      "y": 608091,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "New Cumnock 275/132kV Substation": {
+      "osm": "way/677510482",
+      "name": "New Cumnock Substation",
+      "x": 252022,
+      "y": 608091,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "New Deer 400kV Substation": {
+      "osm": "way/820231183",
+      "name": "New Deer Substation",
+      "x": 383015,
+      "y": 844560,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Newarthill 275 kV Substation": {
+      "osm": "way/222205173",
+      "name": "Newarthill Substation",
+      "x": 278200,
+      "y": 660730,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Newton Stewart 132/33kV": {
+      "osm": "way/310436910",
+      "name": "Newton Stewart Substation",
+      "x": 240074,
+      "y": 564943,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Newton Stewart GSP": {
+      "osm": "way/310436910",
+      "name": "Newton Stewart Substation",
+      "x": 240074,
+      "y": 564943,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Ninfield 400kV Substation": {
+      "osm": "way/28691559",
+      "name": "Ninfield Substation",
+      "x": 572342,
+      "y": 111943,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Ninfield GSP": {
+      "osm": "way/28691559",
+      "name": "Ninfield Substation",
+      "x": 572342,
+      "y": 111943,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Northfleet East 132kV": {
+      "osm": "way/16582436",
+      "name": "Northfleet East Substation",
+      "x": 562072,
+      "y": 172497,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Northfleet East 400kV Substation": {
+      "osm": "way/16582436",
+      "name": "Northfleet East Substation",
+      "x": 562072,
+      "y": 172497,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Norton 275kV Substation": {
+      "osm": "way/43472283",
+      "name": "Norton Substation",
+      "x": 441154,
+      "y": 522073,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Norton 400kV Substation": {
+      "osm": "way/43472283",
+      "name": "Norton Substation",
+      "x": 441154,
+      "y": 522073,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Norton GSP": {
+      "osm": "way/43472283",
+      "name": "Norton Substation",
+      "x": 441154,
+      "y": 522073,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Norwich Main 132kV": {
+      "osm": "way/32227788",
+      "name": "Norwich Main Substation",
+      "x": 621829,
+      "y": 302387,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Norwich Main 400kV Substation": {
+      "osm": "way/32227788",
+      "name": "Norwich Main Substation",
+      "x": 621829,
+      "y": 302387,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Nursling 132kV Substation": {
+      "osm": "way/23988786",
+      "name": "Nursling Substation",
+      "x": 436125,
+      "y": 115952,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Nursling 400kV Substation": {
+      "osm": "way/23988786",
+      "name": "Nursling Substation",
+      "x": 436125,
+      "y": 115952,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Nursling GSP": {
+      "osm": "way/23988786",
+      "name": "Nursling Substation",
+      "x": 436125,
+      "y": 115952,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Oldbury 275kV Substation": {
+      "osm": "way/318886142",
+      "name": "Oldbury Substation",
+      "x": 398329,
+      "y": 288939,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Osbaldwick 400kV Substation": {
+      "osm": "way/90125443",
+      "name": "Osbaldwick Grid Substation",
+      "x": 464203,
+      "y": 451633,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Padiham 132kV Substation": {
+      "osm": "way/1395117766",
+      "name": "Padiham Substation",
+      "x": 378949,
+      "y": 433276,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Paisley GSP": {
+      "osm": "way/308656179",
+      "name": "Paisley Substation",
+      "x": 248996,
+      "y": 663434,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Patford Bridge 400kV Substation": {
+      "osm": "way/635223494",
+      "name": "Patford Bridge Substation",
+      "x": 464537,
+      "y": 266371,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Pembroke 132kV Substation": {
+      "osm": "relation/13110367",
+      "name": "Pembroke Substation",
+      "x": 193433,
+      "y": 202388,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Pembroke 400kV Substation": {
+      "osm": "relation/13110367",
+      "name": "Pembroke Substation",
+      "x": 193433,
+      "y": 202388,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Penn 132kV Substation": {
+      "osm": "way/92458761",
+      "name": "Penn Substation",
+      "x": 385919,
+      "y": 295426,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Penn 275kV Substation": {
+      "osm": "way/92458761",
+      "name": "Penn Substation",
+      "x": 385919,
+      "y": 295426,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Penn GSP": {
+      "osm": "way/92458761",
+      "name": "Penn Substation",
+      "x": 385919,
+      "y": 295426,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Penrhos GSP": {
+      "osm": "way/295892310",
+      "name": "Penrhos",
+      "x": 226856,
+      "y": 380717,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Pentir 400kV Substation": {
+      "osm": "way/98899051",
+      "name": "Pentir Substation",
+      "x": 255901,
+      "y": 367775,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Pentir GSP": {
+      "osm": "way/98899051",
+      "name": "Pentir Substation",
+      "x": 255901,
+      "y": 367775,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Penwortham 400kV Substation": {
+      "osm": "relation/7894975",
+      "name": "Penwortham Substation",
+      "x": 350202,
+      "y": 427827,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Penwortham GSP": {
+      "osm": "relation/7894975",
+      "name": "Penwortham Substation",
+      "x": 350202,
+      "y": 427827,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Persley 132/33kV GSP Substation": {
+      "osm": "way/1562780880",
+      "name": "Persley Substation",
+      "x": 391697,
+      "y": 809274,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Peterhead 132KV Substation": {
+      "osm": "way/1225479222",
+      "name": "Peterhead Substation",
+      "x": 412052,
+      "y": 842927,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Peterhead 275kV": {
+      "osm": "way/1225479222",
+      "name": "Peterhead Substation",
+      "x": 412052,
+      "y": 842927,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Peterhead 400kV Substation": {
+      "osm": "way/1225479222",
+      "name": "Peterhead Substation",
+      "x": 412052,
+      "y": 842927,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Peterhead GSP": {
+      "osm": "way/1225479222",
+      "name": "Peterhead Substation",
+      "x": 412052,
+      "y": 842927,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Peterhead Grange GSP": {
+      "osm": "way/306595724",
+      "name": "Peterhead Grange",
+      "x": 411746,
+      "y": 846511,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Pitsmoor GSP": {
+      "osm": "way/116539370",
+      "name": "Pitsmoor Substation",
+      "x": 437088,
+      "y": 389463,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Port Ham 132kV Substation": {
+      "osm": "way/940757360",
+      "name": "Port Ham Substation",
+      "x": 381769,
+      "y": 219264,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Port Ham GSP": {
+      "osm": "way/940757360",
+      "name": "Port Ham Substation",
+      "x": 381769,
+      "y": 219264,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Pyworthy 400kV Substation": {
+      "osm": "way/100009326",
+      "name": "Pyworthy Substation",
+      "x": 230379,
+      "y": 102152,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Quoich GSP": {
+      "osm": "way/305791138",
+      "name": "Quoich Substation",
+      "x": 210725,
+      "y": 801191,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rainhill GSP": {
+      "osm": "way/367005272",
+      "name": "Rainhill Substation",
+      "x": 351025,
+      "y": 391849,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rannoch GSP": {
+      "osm": "way/467794254",
+      "name": "Rannoch Substation",
+      "x": 253089,
+      "y": 758286,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rassau 400kV Substation": {
+      "osm": "way/95895489",
+      "name": "Rassau Supergrid Substation",
+      "x": 315560,
+      "y": 212910,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rassau GSP": {
+      "osm": "way/95895489",
+      "name": "Rassau Supergrid Substation",
+      "x": 315560,
+      "y": 212910,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Ratcliffe-On-Soar 132kV Substation": {
+      "osm": "relation/13110368",
+      "name": "Ratcliffe-on-Soar Substation",
+      "x": 450248,
+      "y": 329815,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Ratcliffe-On-Soar 400kV Substation": {
+      "osm": "relation/13110368",
+      "name": "Ratcliffe-on-Soar Substation",
+      "x": 450248,
+      "y": 329815,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rayleigh Main 132kV Substation": {
+      "osm": "way/29111844",
+      "name": "Rayleigh Main Substation",
+      "x": 577867,
+      "y": 191447,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rayleigh Main 400kV Substation": {
+      "osm": "way/29111844",
+      "name": "Rayleigh Main Substation",
+      "x": 577867,
+      "y": 191447,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rayleigh Main GSP": {
+      "osm": "way/29111844",
+      "name": "Rayleigh Main Substation",
+      "x": 577867,
+      "y": 191447,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Redmoss GSP": {
+      "osm": "way/129407052",
+      "name": "Redmoss Grid Supply Point",
+      "x": 394548,
+      "y": 801949,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rhigos 400kV Substation": {
+      "osm": "way/553490952",
+      "name": "Rhigos Supergrid Substation",
+      "x": 293208,
+      "y": 206472,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Richborough 400kV Substation": {
+      "osm": "way/1411834746",
+      "name": "Richborough Grid",
+      "x": 633293,
+      "y": 161907,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Richborough GSP": {
+      "osm": "way/1411834746",
+      "name": "Richborough Grid",
+      "x": 633293,
+      "y": 161907,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rochdale 132kV Substation": {
+      "osm": "way/163036722",
+      "name": "Rochdale Substation",
+      "x": 385816,
+      "y": 413941,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rochdale 275kV Substation": {
+      "osm": "way/163036722",
+      "name": "Rochdale Substation",
+      "x": 385816,
+      "y": 413941,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rochdale GSP": {
+      "osm": "way/163036722",
+      "name": "Rochdale Substation",
+      "x": 385816,
+      "y": 413941,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rocksavage 400kV Substation": {
+      "osm": "way/635225890",
+      "name": "Rocksavage AIS Substation",
+      "x": 351800,
+      "y": 380029,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Roosecote 132kV Substation": {
+      "osm": "way/576861189",
+      "name": "Roosecote",
+      "x": 321462,
+      "y": 468884,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rothienorman 400/33kV Substation": {
+      "osm": "way/820237569",
+      "name": "Rothienorman Substation",
+      "x": 369082,
+      "y": 835627,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rothienorman 400kV Substation": {
+      "osm": "way/820237569",
+      "name": "Rothienorman Substation",
+      "x": 369082,
+      "y": 835627,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rothienorman GSP": {
+      "osm": "way/820237569",
+      "name": "Rothienorman Substation",
+      "x": 369082,
+      "y": 835627,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rowdown 400kV Substation": {
+      "osm": "way/23299657",
+      "name": "Rowdown Substation",
+      "x": 539107,
+      "y": 163314,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rugeley 400kV Substation": {
+      "osm": "way/142741752",
+      "name": "Rugeley Substation",
+      "x": 405835,
+      "y": 317678,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rugeley GSP": {
+      "osm": "way/142741752",
+      "name": "Rugeley Substation",
+      "x": 405835,
+      "y": 317678,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Rye House GSP": {
+      "osm": "way/1484569034",
+      "name": "Rye House GIS",
+      "x": 538859,
+      "y": 208571,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Ryhall 400kV Substation": {
+      "osm": "way/853268511",
+      "name": "Ryhall Substation",
+      "x": 504709,
+      "y": 311180,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "SEABANK 400/33kV SUBSTATION": {
+      "osm": "way/292471784",
+      "name": "Seabank Substation",
+      "x": 353610,
+      "y": 182197,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "ST FERGUS 132KV SWITCHING STATION": {
+      "osm": "way/305791401",
+      "name": "St Fergus",
+      "x": 407195,
+      "y": 852930,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Saltcoats 132/33kV": {
+      "osm": "way/91087476",
+      "name": "Saltcoats",
+      "x": 224143,
+      "y": 642821,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Saltend North GSP": {
+      "osm": "way/152899256",
+      "name": "Saltend North Substation",
+      "x": 516275,
+      "y": 428729,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Saltend South 400kV Substation": {
+      "osm": "way/152899136",
+      "name": "Saltend South Substation",
+      "x": 516004,
+      "y": 428159,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Saltholme 275kV Substation": {
+      "osm": "way/1274952328",
+      "name": "Saltholme Substation",
+      "x": 449380,
+      "y": 523628,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Seabank 400kV Substation": {
+      "osm": "way/292471784",
+      "name": "Seabank Substation",
+      "x": 353610,
+      "y": 182197,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Seabank GSP": {
+      "osm": "way/292471784",
+      "name": "Seabank Substation",
+      "x": 353610,
+      "y": 182197,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Sellindge 132kV Substation": {
+      "osm": "way/1271295345",
+      "name": "Sellindge Substation",
+      "x": 608167,
+      "y": 138247,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Sellindge 400kV Substation": {
+      "osm": "way/1271295345",
+      "name": "Sellindge Substation",
+      "x": 608167,
+      "y": 138247,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Shrewsbury 400/33kV Substation": {
+      "osm": "way/127184694",
+      "name": "Shrewsbury Substation",
+      "x": 353277,
+      "y": 312634,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Shrewsbury 400kV Substation": {
+      "osm": "way/127184694",
+      "name": "Shrewsbury Substation",
+      "x": 353277,
+      "y": 312634,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Shurton 400kV Substation": {
+      "osm": "way/1096160079",
+      "name": "Shurton Substation",
+      "x": 320578,
+      "y": 145509,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Sloy GSP": {
+      "osm": "way/562727179",
+      "name": "Sloy Switching Station",
+      "x": 230970,
+      "y": 709235,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Smeaton 400/275kV": {
+      "osm": "way/96905262",
+      "name": "Smeaton Substation",
+      "x": 335323,
+      "y": 668870,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Smeaton 400kV": {
+      "osm": "way/96905262",
+      "name": "Smeaton Substation",
+      "x": 335323,
+      "y": 668870,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Spalding North 400kV Substation": {
+      "osm": "way/376450057",
+      "name": "Spalding North Substation",
+      "x": 525933,
+      "y": 324770,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Spennymoor 400kV Substation": {
+      "osm": "relation/11543333",
+      "name": "Spennymoor Substation",
+      "x": 428775,
+      "y": 534620,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Spittal 132kV Substation": {
+      "osm": "way/1262971878",
+      "name": "Spittal Substation",
+      "x": 315412,
+      "y": 955558,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Spittal 400kV": {
+      "osm": "way/1262971878",
+      "name": "Spittal Substation",
+      "x": 315412,
+      "y": 955558,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "St Fergus": {
+      "osm": "way/305791401",
+      "name": "St Fergus",
+      "x": 407195,
+      "y": 852930,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Stalybridge 275kV Substation": {
+      "osm": "relation/9598269",
+      "name": "Stalybridge Substation",
+      "x": 397222,
+      "y": 399527,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Staythorpe 400kV Substation": {
+      "osm": "way/91003253",
+      "name": "Staythorpe Substation",
+      "x": 475924,
+      "y": 353950,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Staythorpe 400kv": {
+      "osm": "way/91003253",
+      "name": "Staythorpe Substation",
+      "x": 475924,
+      "y": 353950,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Stella South GSP": {
+      "osm": "way/146826119",
+      "name": "Stella South Substation",
+      "x": 417221,
+      "y": 564448,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Stirling 132/33kV": {
+      "osm": "way/119293282",
+      "name": "Stirling",
+      "x": 280760,
+      "y": 693296,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Stocksbridge 400kV Substation": {
+      "osm": "way/90539508",
+      "name": "Stocksbridge",
+      "x": 426513,
+      "y": 399074,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Stoke Bardolph 400kV Substation": {
+      "osm": "way/472164401",
+      "name": "Stoke Bardolph Substation",
+      "x": 463879,
+      "y": 340708,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Stoke Bardolph GSP": {
+      "osm": "way/472164401",
+      "name": "Stoke Bardolph Substation",
+      "x": 463879,
+      "y": 340708,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Stornoway GSP": {
+      "osm": "way/305010872",
+      "name": "Stornoway Substation",
+      "x": 140229,
+      "y": 932345,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Strathaven 400/275kV": {
+      "osm": "relation/7894974",
+      "name": "Strathaven Substation",
+      "x": 269557,
+      "y": 652895,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Strathaven 400kV Substation": {
+      "osm": "relation/7894974",
+      "name": "Strathaven Substation",
+      "x": 269557,
+      "y": 652895,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Strathaven GSP 33kV": {
+      "osm": "relation/7894974",
+      "name": "Strathaven Substation",
+      "x": 269557,
+      "y": 652895,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Strathleven GSP": {
+      "osm": "way/249654391",
+      "name": "Strathleven",
+      "x": 240181,
+      "y": 677213,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Strichen 132/33kV GSP Substation": {
+      "osm": "way/306595717",
+      "name": "Strichen Substation",
+      "x": 395906,
+      "y": 855123,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Strichen GSP": {
+      "osm": "way/306595717",
+      "name": "Strichen Substation",
+      "x": 395906,
+      "y": 855123,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Sundon 400kV Substation": {
+      "osm": "relation/7650368",
+      "name": "Sundon Substation",
+      "x": 503130,
+      "y": 227223,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Sundon GSP": {
+      "osm": "relation/7650368",
+      "name": "Sundon Substation",
+      "x": 503130,
+      "y": 227223,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Swansea North 132kV Substation": {
+      "osm": "relation/7879831",
+      "name": "Swansea North Supergrid Substation",
+      "x": 264698,
+      "y": 200413,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Swansea North 400kV Substation": {
+      "osm": "relation/7879831",
+      "name": "Swansea North Supergrid Substation",
+      "x": 264698,
+      "y": 200413,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Tarland GSP": {
+      "osm": "way/233399023",
+      "name": "Tarland Substation",
+      "x": 352468,
+      "y": 807062,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Taunton 400kV Substation": {
+      "osm": "way/119616836",
+      "name": "Taunton Substation",
+      "x": 319130,
+      "y": 124822,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Taunton GSP": {
+      "osm": "way/119616836",
+      "name": "Taunton Substation",
+      "x": 319130,
+      "y": 124822,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Taynuilt GSP": {
+      "osm": "way/562727162",
+      "name": "Taynuilt Substation",
+      "x": 201896,
+      "y": 731064,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Tealing 132kV Substation": {
+      "osm": "way/111528318",
+      "name": "Tealing Substation",
+      "x": 339932,
+      "y": 737011,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Tealing 275/33kV Substation": {
+      "osm": "way/111528318",
+      "name": "Tealing Substation",
+      "x": 339932,
+      "y": 737011,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Tealing 400kV Substation": {
+      "osm": "way/111528318",
+      "name": "Tealing Substation",
+      "x": 339932,
+      "y": 737011,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Tealing IDNO 132/33kV GSP": {
+      "osm": "way/111528318",
+      "name": "Tealing Substation",
+      "x": 339932,
+      "y": 737011,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Thornton 400kV Substation": {
+      "osm": "way/25629803",
+      "name": "Thornton Substation",
+      "x": 477476,
+      "y": 445555,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Thorpe Marsh 400kV Substation": {
+      "osm": "way/90547679",
+      "name": "Thorpe Marsh Substation",
+      "x": 460392,
+      "y": 409157,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Thorpe Marsh GSP": {
+      "osm": "way/90547679",
+      "name": "Thorpe Marsh Substation",
+      "x": 460392,
+      "y": 409157,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Thurcroft 275kV Substation": {
+      "osm": "way/90547685",
+      "name": "Thurcroft Substation",
+      "x": 448724,
+      "y": 390030,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Thurso South 275kV Substation": {
+      "osm": "way/495624575",
+      "name": "Thurso South Substation",
+      "x": 312096,
+      "y": 965013,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Thurso South 400kV Substation": {
+      "osm": "way/495624575",
+      "name": "Thurso South Substation",
+      "x": 312096,
+      "y": 965013,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Thurso South GSP": {
+      "osm": "way/495624575",
+      "name": "Thurso South Substation",
+      "x": 312096,
+      "y": 965013,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Tilbury 132kV Substation": {
+      "osm": "way/94530230",
+      "name": "Tilbury Substation",
+      "x": 566223,
+      "y": 176180,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Tilbury 275kV Substation": {
+      "osm": "way/94530230",
+      "name": "Tilbury Substation",
+      "x": 566223,
+      "y": 176180,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Tod Point 275kV Substation": {
+      "osm": "way/97561542",
+      "name": "Tod Point Substation",
+      "x": 457150,
+      "y": 523840,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Tongland 132/11kV": {
+      "osm": "way/165011750",
+      "name": "Tongland Substation",
+      "x": 269467,
+      "y": 553680,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Torness 400/132kV": {
+      "osm": "way/111550033",
+      "name": "Torness Substation",
+      "x": 374484,
+      "y": 674876,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Trawsfynydd 275kV Substation": {
+      "osm": "way/89573357",
+      "name": "Trawsfynydd Substation",
+      "x": 269233,
+      "y": 338407,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Tynemouth 275kV Substation": {
+      "osm": "way/96630594",
+      "name": "Tynemouth Substation",
+      "x": 432062,
+      "y": 570023,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Tynemouth GSP (NPG)": {
+      "osm": "way/96630594",
+      "name": "Tynemouth Substation",
+      "x": 432062,
+      "y": 570023,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Upper Boat 275kV Substation": {
+      "osm": "relation/12543034",
+      "name": "Upper Boat Supergrid Substation",
+      "x": 310079,
+      "y": 186989,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Uskmouth 132kV Substation": {
+      "osm": "relation/19897532",
+      "name": "Uskmouth Grid Substation",
+      "x": 332324,
+      "y": 183643,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Uskmouth 275kV Substation": {
+      "osm": "relation/19897532",
+      "name": "Uskmouth Grid Substation",
+      "x": 332324,
+      "y": 183643,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Walham 400kV Substation": {
+      "osm": "way/92460913",
+      "name": "Walham Substation",
+      "x": 382647,
+      "y": 220116,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Walpole 132kV Substation": {
+      "osm": "way/38528291",
+      "name": "Walpole Substation",
+      "x": 548598,
+      "y": 316630,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Walpole 400kV Substation": {
+      "osm": "way/38528291",
+      "name": "Walpole Substation",
+      "x": 548598,
+      "y": 316630,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Waltham Cross 400kV Substation": {
+      "osm": "way/22975329",
+      "name": "Waltham Cross Substation",
+      "x": 537467,
+      "y": 203585,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Warley 132kV Substation": {
+      "osm": "way/23229136",
+      "name": "Warley Substation",
+      "x": 559606,
+      "y": 186267,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Warley 275kV Substation": {
+      "osm": "way/23229136",
+      "name": "Warley Substation",
+      "x": 559606,
+      "y": 186267,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Warley GSP": {
+      "osm": "way/23229136",
+      "name": "Warley Substation",
+      "x": 559606,
+      "y": 186267,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Washway Farm GSP": {
+      "osm": "way/81098733",
+      "name": "Washway Farm Substation",
+      "x": 345815,
+      "y": 407645,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "West Burton 132kV Substation": {
+      "osm": "way/1468976756",
+      "name": "West Burton Substation",
+      "x": 479354,
+      "y": 385365,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "West Burton 400kV Substation": {
+      "osm": "way/1468976756",
+      "name": "West Burton Substation",
+      "x": 479354,
+      "y": 385365,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "West Melton GSP": {
+      "osm": "way/101082325",
+      "name": "West Melton Substation",
+      "x": 441298,
+      "y": 400769,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "West Weybridge 275kV Substation": {
+      "osm": "relation/7880111",
+      "name": "West Weybridge Substation",
+      "x": 505643,
+      "y": 162372,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Westermost Rough Offshore Substation": {
+      "osm": "way/1393796253",
+      "name": "Westermost Rough Offshore Substation",
+      "x": 540571,
+      "y": 436411,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Westfield 132/33kV": {
+      "osm": "way/95374266",
+      "name": "Westfield Substation",
+      "x": 319342,
+      "y": 697606,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Westfield 400kV Substation": {
+      "osm": "way/95374266",
+      "name": "Westfield Substation",
+      "x": 319342,
+      "y": 697606,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Whitegate 275kV Substation": {
+      "osm": "way/135693940",
+      "name": "Whitegate Substation",
+      "x": 389013,
+      "y": 403581,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Whitehouse 275kV Substation": {
+      "osm": "way/1488010349",
+      "name": "Whitehouse",
+      "x": 325027,
+      "y": 671565,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Whitson 275kV Substation": {
+      "osm": "way/884174267",
+      "name": "Whitson Substation",
+      "x": 337112,
+      "y": 185498,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Willesden 132kV Substation": {
+      "osm": "way/49601061",
+      "name": "Willesden Substation",
+      "x": 520923,
+      "y": 183103,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Willington 400kV Substation": {
+      "osm": "way/71118225",
+      "name": "Willington East Substation",
+      "x": 430371,
+      "y": 328773,
+      "method": "hand",
+      "checked": "2026-10-07",
+      "reason": "The 400kV substation at Willington is called Willington East in OpenStreetMap (400kV/132kV, National Grid)."
+    },
+    "Willington East 400kV Substation": {
+      "osm": "way/71118225",
+      "name": "Willington East Substation",
+      "x": 430370,
+      "y": 328772,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Wilton 66kV Substation": {
+      "osm": "way/100095752",
+      "name": "Wilton Substation",
+      "x": 456223,
+      "y": 520408,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Windyhill 132kV": {
+      "osm": "way/86071326",
+      "name": "Windyhill Substation",
+      "x": 251598,
+      "y": 673326,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Windyhill 275/132kV": {
+      "osm": "way/86071326",
+      "name": "Windyhill Substation",
+      "x": 251598,
+      "y": 673326,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Wishaw 400/275kV": {
+      "osm": "way/1274943512",
+      "name": "Wishaw substation",
+      "x": 278948,
+      "y": 654020,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Wylfa 132kV Substation": {
+      "osm": "way/1450403657",
+      "name": "Wylfa",
+      "x": 235125,
+      "y": 393624,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Wylfa 400kV Substation": {
+      "osm": "way/1450403657",
+      "name": "Wylfa",
+      "x": 235125,
+      "y": 393624,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Wymondley 400/33kV Substation": {
+      "osm": "way/24165071",
+      "name": "Wymondley Substation",
+      "x": 520493,
+      "y": 226914,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Wymondley 400kV Substation": {
+      "osm": "way/24165071",
+      "name": "Wymondley Substation",
+      "x": 520493,
+      "y": 226914,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Wymondley GSP": {
+      "osm": "way/24165071",
+      "name": "Wymondley Substation",
+      "x": 520493,
+      "y": 226914,
+      "method": "name",
+      "checked": "2026-10-07"
+    },
+    "Yaxley 400kV Substation": {
+      "osm": "way/1389837653",
+      "name": "Yaxley Substation",
+      "x": 611676,
+      "y": 274972,
+      "method": "name",
+      "checked": "2026-10-07"
+    }
+  }
+}

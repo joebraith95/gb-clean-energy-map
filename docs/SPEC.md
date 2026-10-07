@@ -106,6 +106,15 @@ How the badge is worked out (`pipeline/connection.py`), from the TEC register ma
 - **Overrides.** `pipeline/tec_matches.json` forces a TEC project onto a list of REPD IDs (an empty list confirms it is not in REPD) or stops it matching one REPD ID. Each entry gives a reason. An entry whose TEC project or REPD record has gone is skipped and flagged in the report.
 - **Review.** Every run writes `pipeline/raw/tec-match-review.csv` with each project's match or best candidates.
 
+### Locating connection sites
+
+TEC projects with no REPD record are placed at their connection substation (`pipeline/substations.py`), and the card says the dot marks the substation, not the project.
+- **Source.** OpenStreetMap substations at 132kV or above, or tagged as transmission. `python -m pipeline.substation_candidates --fetch` downloads them from the Overpass API and writes `pipeline/substations.json`, which is checked by hand before it is committed. The weekly run only reads that file, so a new connection site stays unlocated until the script is run again.
+- **Matching.** A site is located only when its name, with voltages, bracketed notes and generic words ("Substation", "GSP", "Supergrid" and so on) removed, exactly matches such a substation in the right transmission owner's area (NGET, SPT or SHET, by rough northing), and every match lies within 5km of the others.
+- **Never guessed.** Planned sites ("Connection Node", "not yet constructed") stay unlocated, as do names with no match or with matches far apart. Their projects are kept in the data but not drawn, and the pipeline report counts them.
+- **Hand entries** in `pipeline/substations.json` have `"method": "hand"` and a reason, and later runs keep them.
+- **Check.** For TEC projects that do match REPD, the distance between the REPD location and the located substation is a test of the substation choice: half are within 3km.
+
 ### Interconnectors
 
 Ofgem cap and floor milestones mapped onto the same headline stages:
