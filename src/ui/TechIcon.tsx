@@ -1,30 +1,27 @@
 import { useEffect, useRef } from 'react';
-import { TILE_SIZE, tilePixels, type SpriteKind } from '../map/sprites';
+import { drawBadge } from '../map/icons';
+import type { TechKind } from '../map/kinds';
 import type { Stage } from '../theme/tokens';
 
-const SCALE = 3;
+const SIZE = 32;
 
-/** The map sprite tile, drawn at a whole-pixel scale for the card. */
-export function TechIcon({ kind, stage }: { kind: SpriteKind; stage: Stage }) {
+/** The map's badge for a technology and stage, drawn for the card. */
+export function TechIcon({ kind, stage }: { kind: TechKind; stage: Stage }) {
   const ref = useRef<HTMLCanvasElement>(null);
+  const scale = Math.ceil(window.devicePixelRatio || 1);
 
   useEffect(() => {
     const context = ref.current?.getContext('2d');
-    if (!context) return;
-    tilePixels(kind, 0, stage).forEach((line, row) =>
-      line.forEach((colour, col) => {
-        context.fillStyle = colour;
-        context.fillRect(col * SCALE, row * SCALE, SCALE, SCALE);
-      }),
-    );
-  }, [kind, stage]);
+    if (context) drawBadge(context, SIZE, scale, kind, stage);
+  }, [kind, stage, scale]);
 
   return (
     <canvas
       ref={ref}
       className="tech-icon"
-      width={TILE_SIZE * SCALE}
-      height={TILE_SIZE * SCALE}
+      width={SIZE * scale}
+      height={SIZE * scale}
+      style={{ width: SIZE, height: SIZE }}
       aria-hidden="true"
     />
   );

@@ -1,18 +1,17 @@
-// Which projects are drawn at a zoom level, in which cell, and how big.
+// Which projects are drawn in a zoom band, where, and how big.
 
 import { linkCapacity, type Interconnector } from '../data/interconnectors';
-import { MARINE_TECHNOLOGIES, type ProjectIndex } from '../data/projects';
+import type { ProjectIndex } from '../data/projects';
 import type { Stage } from '../theme/tokens';
-import { SEA } from './grid';
-import { EXTENT, type ZoomLevel } from './levels';
-import { spriteKind, type SpriteKind } from './sprites';
+import { techKind, type TechKind } from './kinds';
+import type { ZoomBand } from './levels';
 
 /** Capacity tier boundaries in MW: under 10, 10 to 50, 50 to 300, 300 and over. */
 export const TIER_LIMITS_MW = [10, 50, 300];
-/** Dot size in CSS pixels for the two smallest tiers. Larger tiers use sprite tiles. */
-export const DOT_SIZES = [3, 5];
-/** First tier drawn as a sprite tile rather than a dot. */
-export const FIRST_SPRITE_TIER = DOT_SIZES.length;
+/** Marker diameter in CSS pixels for each tier. The two smallest are plain dots. */
+export const MARKER_SIZES = [9, 13, 24, 32];
+/** First tier drawn as a badge with a technology icon rather than a dot. */
+export const FIRST_BADGE_TIER = 2;
 
 /** What a marker or the card shows: a REPD project or an interconnector, by position in its list. */
 export interface Selection {
@@ -28,17 +27,18 @@ export interface Marker {
   source: Selection['source'];
   /** Position in the project index arrays, or in the interconnector list. */
   index: number;
-  col: number;
-  row: number;
+  /** British National Grid metres. */
+  x: number;
+  y: number;
   /** Capacity in MW; the combined total when phases are clustered. */
   mw: number;
   tier: number;
   stage: Stage;
-  kind: SpriteKind;
+  kind: TechKind;
   /**
    * For projects sharing a connection substation: this marker's place in the spiral around it,
    * in steps of the largest marker in the group (`tier`). The renderer turns it into pixels, so
-   * the group fans out just enough at any zoom level. The cell stays the substation's.
+   * the group fans out just enough at any zoom. The position stays the substation's.
    */
   spread?: { dx: number; dy: number; tier: number };
 }
@@ -48,20 +48,25 @@ export function capacityTier(mw: number): number {
   return tier === -1 ? TIER_LIMITS_MW.length : tier;
 }
 
+/** How far (CSS px) a marker is drawn from its position, to fan out a shared substation. */
+export function spreadOffset(marker: Marker): [number, number] {
+  if (!marker.spread) return [0, 0];
+  // The largest marker in the group plus a small gap.
+  const step = MARKER_SIZES[marker.spread.tier] + 2;
+  return [marker.spread.dx * step, marker.spread.dy * step];
+}
+
 /**
- * Markers for one level, smallest first so larger projects draw on top.
- * `include` is the user's filter; projects hidden by the pipeline or below the level's
- * capacity floor are always left out. Where the level clusters phases, the phases of one
- * project that pass the filter become a single marker at the largest phase, sized by their
- * combined capacity. Onshore projects that fall on a sea cell next to the coast are drawn on
- * the nearest land cell; their data is unchanged. Projects placed at the same connection
- * substation (TEC-only projects) would share one cell, so the largest sits on the substation and
- * the rest fan out around it, nearest first (see `spread`).
+ * Markers for one band, smallest first so larger projects draw on top.
+ * `include` is the user's filter; projects hidden by the pipeline or below the band's capacity
+ * floor are always left out. Where the band clusters phases, the phases of one project that pass
+ * the filter become a single marker at the largest phase, sized by their combined capacity.
+ * Projects placed at the same connection substation (TEC-only projects) share one position, so
+ * the largest sits on the substation and the rest fan out around it, nearest first (see `spread`).
  */
 export function buildMarkers(
   projects: ProjectIndex,
-  level: ZoomLevel,
-  land: { cells: Uint8Array; cols: number; rows: number },
+  band: ZoomBand,
   include: (index: number) => boolean,
 ): Marker[] {
   // Candidates: drawable projects that pass the filter, with their phases combined if clustering.
@@ -72,7 +77,7 @@ export function buildMarkers(
     if (projects.hidden[i] >= 0 || projects.x[i] === null || projects.y[i] === null) continue;
     if (mw === null || !include(i)) continue;
     const group = projects.group[i];
-    if (!level.clusterPhases || group < 0) {
+    if (!band.clusterPhases || group < 0) {
       candidates.set(i, { index: i, mw });
       continue;
     }
@@ -96,24 +101,16 @@ export function buildMarkers(
 
   const markers: Marker[] = [];
   for (const { index: i, mw } of candidates.values()) {
-    if (mw < level.minMw) continue;
-    const x = projects.x[i]!;
-    const y = projects.y[i]!;
-    const technology = projects.technologies[projects.tech[i]];
-    const [px, py] = MARINE_TECHNOLOGIES.has(technology)
-      ? [x, y]
-      : nearestLandPoint(x, y, level.landMetres, land);
-    const col = Math.floor((px - EXTENT.minX) / level.cellMetres);
-    const row = Math.floor((py - EXTENT.maxY) / -level.cellMetres);
+    if (mw < band.minMw) continue;
     markers.push({
       source: 'project',
       index: i,
-      col,
-      row,
+      x: projects.x[i]!,
+      y: projects.y[i]!,
       mw,
       tier: capacityTier(mw),
       stage: projects.stages[projects.stage[i]] as Stage,
-      kind: spriteKind(technology),
+      kind: techKind(projects.technologies[projects.tech[i]]),
     });
   }
   spreadSharedSites(markers, projects);
@@ -141,7 +138,7 @@ function spreadSharedSites(markers: Marker[], projects: ProjectIndex): void {
   }
 }
 
-/** The first `n` cell offsets around a centre: the centre, then each surrounding ring in turn. */
+/** The first `n` offsets around a centre: the centre, then each surrounding ring in turn. */
 export function spiralOffsets(n: number): [number, number][] {
   const offsets: [number, number][] = [[0, 0]];
   for (let ring = 1; offsets.length < n; ring++) {
@@ -151,7 +148,7 @@ export function spiralOffsets(n: number): [number, number][] {
         if (Math.max(Math.abs(dx), Math.abs(dy)) === ring) cells.push([dx, dy]);
       }
     }
-    // Within a ring, the cells closest to the centre come first.
+    // Within a ring, the places closest to the centre come first.
     cells.sort((a, b) => a[0] ** 2 + a[1] ** 2 - (b[0] ** 2 + b[1] ** 2));
     offsets.push(...cells);
   }
@@ -161,18 +158,18 @@ export function spiralOffsets(n: number): [number, number][] {
 /** Markers at the GB landing point of each interconnector that passes the filter. */
 export function buildLinkMarkers(
   links: Interconnector[],
-  level: ZoomLevel,
+  band: ZoomBand,
   include: (index: number) => boolean,
 ): Marker[] {
   const markers: Marker[] = [];
   links.forEach((link, i) => {
     const mw = linkCapacity(link);
-    if (!link.gbEnd || !link.stage || mw === null || mw < level.minMw || !include(i)) return;
+    if (!link.gbEnd || !link.stage || mw === null || mw < band.minMw || !include(i)) return;
     markers.push({
       source: 'interconnector',
       index: i,
-      col: Math.floor((link.gbEnd.x - EXTENT.minX) / level.cellMetres),
-      row: Math.floor((EXTENT.maxY - link.gbEnd.y) / level.cellMetres),
+      x: link.gbEnd.x,
+      y: link.gbEnd.y,
       mw,
       tier: capacityTier(mw),
       stage: link.stage,
@@ -180,37 +177,4 @@ export function buildLinkMarkers(
     });
   });
   return markers.sort((a, b) => a.mw - b.mw);
-}
-
-/**
- * Where to draw an onshore project: its own position if its land cell is land, otherwise the
- * centre of the nearest neighbouring land cell, or its own position if there is none.
- */
-function nearestLandPoint(
-  x: number,
-  y: number,
-  landMetres: number,
-  land: { cells: Uint8Array; cols: number; rows: number },
-): [number, number] {
-  const col = Math.floor((x - EXTENT.minX) / landMetres);
-  const row = Math.floor((EXTENT.maxY - y) / landMetres);
-  const at = (c: number, r: number) =>
-    c >= 0 && r >= 0 && c < land.cols && r < land.rows ? land.cells[r * land.cols + c] : SEA;
-  if (at(col, row) !== SEA) return [x, y];
-
-  let best: [number, number] = [x, y];
-  let bestDistance = Infinity;
-  for (let dr = -1; dr <= 1; dr++) {
-    for (let dc = -1; dc <= 1; dc++) {
-      if (at(col + dc, row + dr) === SEA) continue;
-      const cx = EXTENT.minX + (col + dc + 0.5) * landMetres;
-      const cy = EXTENT.maxY - (row + dr + 0.5) * landMetres;
-      const distance = (cx - x) ** 2 + (cy - y) ** 2;
-      if (distance < bestDistance) {
-        bestDistance = distance;
-        best = [cx, cy];
-      }
-    }
-  }
-  return best;
 }

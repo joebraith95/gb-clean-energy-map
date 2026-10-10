@@ -22,8 +22,7 @@ body {
 h1,
 h2,
 h3 {
-  font-family: var(--font-pixel);
-  font-weight: 400;
+  font-weight: 700;
 }
 
 .app {
@@ -42,8 +41,8 @@ h3 {
 }
 
 .app-header h1 {
-  font-size: 0.75rem;
-  line-height: 1.4;
+  font-size: 1.125rem;
+  line-height: 1.3;
   margin: 0;
 }
 
@@ -64,13 +63,10 @@ h3 {
   overflow: hidden;
 }
 
-/* Out of flow, so rounding in the canvas size can never resize the host or add scrollbars. */
-.map-host canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: block;
-  image-rendering: pixelated;
+/* Shown while the imagery loads. */
+.map-host,
+.map-host .maplibregl-canvas {
+  background: var(--color-sea);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -85,9 +81,117 @@ h3 {
   inset: 0;
 }
 
-.map-host:focus-visible {
+.map-host .maplibregl-canvas:focus-visible {
   outline: 2px solid var(--color-ink);
   outline-offset: -2px;
+}
+
+/* Effects for recent events, drawn around a marker in the new stage's colour. */
+.map-effect {
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.map-effect::before,
+.map-effect::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--effect-size) + 12px);
+  height: calc(var(--effect-size) + 12px);
+  box-sizing: border-box;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  animation-duration: 1.2s;
+  animation-delay: var(--effect-delay);
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+/* Consent: a ring spreading outwards. */
+.map-effect-consented::before {
+  border: 3px solid var(--effect-colour);
+  border-radius: 50%;
+  animation-name: effect-ring;
+}
+
+/* Construction: scaffold corners blinking on and off. */
+.map-effect-construction-started::before {
+  width: calc(var(--effect-size) + 16px);
+  height: calc(var(--effect-size) + 16px);
+  background:
+    linear-gradient(var(--effect-colour) 0 0) top left / 9px 3px,
+    linear-gradient(var(--effect-colour) 0 0) top left / 3px 9px,
+    linear-gradient(var(--effect-colour) 0 0) top right / 9px 3px,
+    linear-gradient(var(--effect-colour) 0 0) top right / 3px 9px,
+    linear-gradient(var(--effect-colour) 0 0) bottom left / 9px 3px,
+    linear-gradient(var(--effect-colour) 0 0) bottom left / 3px 9px,
+    linear-gradient(var(--effect-colour) 0 0) bottom right / 9px 3px,
+    linear-gradient(var(--effect-colour) 0 0) bottom right / 3px 9px;
+  background-repeat: no-repeat;
+  animation-name: effect-blink;
+  animation-timing-function: steps(1);
+}
+
+/* Energisation: a ring with sparks shooting out in eight directions. */
+.map-effect-operational::before {
+  border: 3px solid var(--effect-colour);
+  border-radius: 50%;
+  animation-name: effect-ring;
+}
+
+.map-effect-operational::after {
+  border-radius: 50%;
+  background: repeating-conic-gradient(var(--effect-colour) 0 6deg, transparent 6deg 45deg);
+  mask: radial-gradient(circle, transparent 0 58%, #000 60% 100%);
+  animation-name: effect-sparks;
+}
+
+@keyframes effect-ring {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.4);
+  }
+}
+
+@keyframes effect-blink {
+  0%,
+  40%,
+  80% {
+    opacity: 1;
+  }
+  20%,
+  60%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes effect-sparks {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-3deg) scale(1.2);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-3deg) scale(3.2);
+  }
+}
+
+/* Reduced motion: a still ring instead of any movement. */
+@media (prefers-reduced-motion: reduce) {
+  .map-effect::before {
+    border: 3px solid var(--effect-colour);
+    border-radius: 50%;
+    background: none;
+    opacity: 1;
+  }
 }
 
 .zoom-controls {
@@ -103,11 +207,14 @@ h3 {
 .zoom-controls button {
   width: 44px;
   height: 44px;
-  font-family: var(--font-pixel);
-  font-size: 1rem;
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
   color: var(--color-ink);
   background: var(--color-panel);
   border: 2px solid var(--color-panelEdge);
+  border-radius: 6px;
   cursor: pointer;
 }
 
@@ -121,6 +228,7 @@ h3 {
   color: var(--color-ink);
   background: var(--color-panel);
   padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .status {
@@ -145,6 +253,7 @@ a {
   color: var(--color-ink);
   background: var(--color-panel);
   border: 2px solid var(--color-panelEdge);
+  border-radius: 6px;
   text-decoration: none;
   cursor: pointer;
 }
@@ -215,13 +324,10 @@ a {
 
 .tech-icon {
   flex: none;
-  image-rendering: pixelated;
 }
 
-/* Project names stay in the body font: long names in the pixel font are hard to read. */
 .card-name {
   margin: 0;
-  font-family: var(--font-body);
   font-size: 1.125rem;
   font-weight: 700;
   line-height: 1.3;
@@ -241,6 +347,7 @@ a {
 
 .chip {
   padding: 4px 8px;
+  border-radius: 4px;
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--color-panel);
@@ -316,10 +423,14 @@ a {
 }
 
 .card-phases h3,
-.panel h2,
 .about h3 {
-  font-size: 0.75rem;
-  line-height: 1.5;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.panel h2 {
+  font-size: 1.125rem;
+  line-height: 1.4;
 }
 
 .card-phases ul {
@@ -383,7 +494,20 @@ a {
   width: 14px;
   height: 14px;
   border: 2px solid var(--color-panel);
+  border-radius: 50%;
   outline: 1px solid var(--color-ink);
+}
+
+/* A short sample of a map line, beside the option that shows it. */
+.line-key {
+  flex: none;
+  width: 22px;
+  height: 0;
+  border-top: 2px solid var(--map-regionLine);
+}
+
+.line-key-dno {
+  border-top: 2px dashed var(--map-dnoLine);
 }
 
 .slider {
@@ -399,10 +523,14 @@ a {
   position: absolute;
   left: 8px;
   bottom: 8px;
+  /* Leaves room for the zoom controls beside it. */
+  max-width: calc(100% - 84px);
   margin: 0;
   padding: 4px 8px;
   font-size: 0.75rem;
   background: var(--color-panel);
+  border-radius: 4px;
+  opacity: 0.92;
   z-index: 1;
 }
 
@@ -422,7 +550,7 @@ a {
 }
 
 .about h2 {
-  font-size: 0.875rem;
+  font-size: 1.375rem;
   outline: none;
 }
 
@@ -496,7 +624,7 @@ a {
 
 .feed-month h3 {
   margin: 16px 0 6px;
-  font-size: 0.75rem;
+  font-size: 1rem;
 }
 
 .feed-month ul {
@@ -561,7 +689,7 @@ button.feed-item:focus-visible .feed-name {
 .live h3,
 .live-section h3 {
   margin: 16px 0 4px;
-  font-size: 0.75rem;
+  font-size: 1rem;
 }
 
 .mix-bar {

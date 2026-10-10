@@ -1,5 +1,6 @@
 import type { Interconnector } from '../data/interconnectors';
 import type { ProjectIndex } from '../data/projects';
+import type { LineChoice } from '../map/MapView';
 import type { Stage } from '../theme/tokens';
 import {
   CAPACITY_STEPS,
@@ -17,6 +18,8 @@ interface Props {
   links: Interconnector[];
   filters: Filters;
   onChange: (filters: Filters) => void;
+  lines: LineChoice;
+  onLinesChange: (lines: LineChoice) => void;
   onClose: () => void;
 }
 
@@ -24,7 +27,15 @@ function toggle<T>(list: T[], item: T): T[] {
   return list.includes(item) ? list.filter((x) => x !== item) : [...list, item];
 }
 
-export function FilterPanel({ projects, links, filters, onChange, onClose }: Props) {
+export function FilterPanel({
+  projects,
+  links,
+  filters,
+  onChange,
+  lines,
+  onLinesChange,
+  onClose,
+}: Props) {
   const shown = countShown(projects, filters);
   const linksShown = countLinksShown(links, filters);
   const stepIndex = Math.max(0, CAPACITY_STEPS.indexOf(filters.minMw));
@@ -129,6 +140,32 @@ export function FilterPanel({ projects, links, filters, onChange, onClose }: Pro
         <p className="muted small">
           Projects with a Gate 2 grid connection agreement in the NESO TEC register that are not yet
           energised.
+        </p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Map lines</legend>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={lines.regions}
+            onChange={() => onLinesChange({ ...lines, regions: !lines.regions })}
+          />
+          <span className="line-key line-key-region" aria-hidden="true" />
+          Nations and regions
+        </label>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={lines.dno}
+            onChange={() => onLinesChange({ ...lines, dno: !lines.dno })}
+          />
+          <span className="line-key line-key-dno" aria-hidden="true" />
+          Electricity network regions
+        </label>
+        <p className="muted small">
+          The 14 network regions are the distribution network operator (DNO) licence areas used for
+          the regional figures in the Live panel.
         </p>
       </fieldset>
 

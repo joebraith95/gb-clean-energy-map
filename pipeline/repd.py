@@ -23,7 +23,7 @@ PUBLICATION_API = (
 )
 SOURCE_PAGE = "https://www.gov.uk/government/publications/renewable-energy-planning-database-quarterly-extract"
 
-# Map extent in British National Grid metres. Keep in step with src/map/levels.ts.
+# Map extent in British National Grid metres: records outside it are kept but not drawn.
 EXTENT = {"min_x": 0, "min_y": 0, "max_x": 760_000, "max_y": 1_230_000}
 
 # Why a kept record is not drawn on the map. Order matters: the first that applies is recorded.

@@ -3,10 +3,9 @@ import { isAnimated, loadChanges, type Change, type ChangeFile } from './data/ch
 import { loadInterconnectors, type InterconnectorFile } from './data/interconnectors';
 import { isFresh, loadBmuMap, loadNational, type NationalLive } from './data/live';
 import { loadProjects, parseProjectId, type ProjectId, type ProjectIndex } from './data/projects';
-import { loadGrid, type GridFile } from './map/grid';
 import type { EffectKind, EventCandidate } from './map/animations';
 import { MapCanvas } from './map/MapCanvas';
-import type { EffectTarget } from './map/MapView';
+import type { EffectTarget, LineChoice } from './map/MapView';
 import type { Selection } from './map/markers';
 import { AboutPage } from './ui/AboutPage';
 import { FeedPanel } from './ui/FeedPanel';
@@ -18,12 +17,12 @@ import { ProjectCard } from './ui/ProjectCard';
 import { palette, stageColours, type Stage } from './theme/tokens';
 
 interface MapData {
-  grid: GridFile;
   projects: ProjectIndex;
   links: InterconnectorFile;
 }
 
 const ABOUT_HASH = '#about';
+const DEFAULT_LINES: LineChoice = { regions: true, dno: true };
 
 type Panel = 'filters' | 'feed' | 'live';
 /** Shareable links: ?project=<REPD ID or tec-...> or ?interconnector=<id>. */
@@ -47,6 +46,7 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Selection | null>(null);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const [lines, setLines] = useState<LineChoice>(DEFAULT_LINES);
   /** The side panel (bottom sheet on phones): filters or the change feed, one at a time. */
   const [panel, setPanel] = useState<Panel | null>(null);
   const [national, setNational] = useState<NationalLive | null>(null);
@@ -63,9 +63,9 @@ export function App() {
   const [aboutOpen, setAboutOpen] = useState(() => window.location.hash === ABOUT_HASH);
 
   useEffect(() => {
-    Promise.all([loadGrid(), loadProjects(), loadInterconnectors()])
-      .then(([grid, projects, links]) => {
-        const loaded = { grid, projects, links };
+    Promise.all([loadProjects(), loadInterconnectors()])
+      .then(([projects, links]) => {
+        const loaded = { projects, links };
         setData(loaded);
         setSelected(selectionFromUrl(loaded));
       })
@@ -252,7 +252,6 @@ export function App() {
       >
         {data && (
           <MapCanvas
-            grid={data.grid}
             projects={data.projects}
             links={data.links.interconnectors}
             include={include}
@@ -262,6 +261,7 @@ export function App() {
             openingEvents={openingEvents}
             play={play}
             flows={flows}
+            lines={lines}
           />
         )}
         {!data && !error && <p className="status">Loading map data…</p>}
@@ -273,6 +273,8 @@ export function App() {
             links={data.links.interconnectors}
             filters={filters}
             onChange={setFilters}
+            lines={lines}
+            onLinesChange={setLines}
             onClose={closePanel}
           />
         )}
@@ -320,7 +322,7 @@ export function App() {
         )}
 
         <p className="credit">
-          Data: DESNZ, NESO, ONS, OS (OGL), © OpenStreetMap contributors.{' '}
+          Imagery: Sentinel-2 cloudless by EOX. Places: © OpenStreetMap. Data: DESNZ, NESO, ONS.{' '}
           <a href={ABOUT_HASH}>About the data</a>
         </p>
       </main>

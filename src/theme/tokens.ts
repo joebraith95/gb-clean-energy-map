@@ -1,18 +1,28 @@
 // All colours used by the map and UI. Nothing else should hard-code a colour.
 // Stage colours started from the Okabe-Ito colour-blind safe set and were tuned so every pair, and
-// each against land, stays clearly apart under protan, deutan and tritan vision (see colourCheck.test.ts).
+// each against the dark marker ink, stays clearly apart under protan, deutan and tritan vision (see
+// colourCheck.test.ts). Markers sit on satellite imagery, so each also has a light ring and a dark edge.
 
 export const palette = {
-  sea: '#1d2b53',
-  seaDeep: '#14203f',
-  land: '#40651d',
-  landEdge: '#2f4b15',
-  // Land outside GB (Ireland, France, Isle of Man, Channel Islands): scenery only, kept muted.
-  otherLand: '#4a4f5c',
+  // Shown behind the satellite imagery while it loads.
+  sea: '#0b1a2b',
   ink: '#f4f1e8',
   inkMuted: '#b8b3a6',
   panel: '#101624',
   panelEdge: '#2a3550',
+} as const;
+
+/** Lines and lettering drawn over the satellite imagery. */
+export const mapColours = {
+  // Nations and English regions.
+  regionLine: '#ffffff',
+  // Electricity distribution (DNO) licence areas.
+  dnoLine: '#ffb454',
+  // Dark edge under lines and around lettering, so both read on bright and dark ground alike.
+  casing: '#0a101c',
+  placeName: '#ffffff',
+  // Light outer ring that lifts markers off the imagery.
+  markerRing: '#f4f1e8',
 } as const;
 
 export const stageColours = {
@@ -23,8 +33,8 @@ export const stageColours = {
   operational: '#28a16d',
 } as const;
 
-/** Dark ink for sprite glyphs and marker outlines. */
-export const spriteInk = '#101624';
+/** Dark ink for marker icons and outlines. */
+export const markerInk = '#101624';
 
 export type Stage = keyof typeof stageColours;
 
@@ -49,4 +59,6 @@ export function applyCssTokens(root: HTMLElement): void {
     root.style.setProperty(`--color-${name}`, value);
   for (const [name, value] of Object.entries(stageColours))
     root.style.setProperty(`--stage-${name.replaceAll('_', '-')}`, value);
+  for (const [name, value] of Object.entries(mapColours))
+    root.style.setProperty(`--map-${name}`, value);
 }

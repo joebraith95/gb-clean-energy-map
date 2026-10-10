@@ -15,8 +15,10 @@ A public, personal project showing where clean energy projects in Great Britain 
 | Hand-curated interconnector file (`pipeline/interconnectors.json`) | Partner country, landing points, Ofgem milestones | Manual | 1 |
 | NESO Interconnector Register | Interconnector capacity, status, connection site, Gate | Twice weekly | 1 |
 | OpenStreetMap | Interconnector landing points (converter stations and substations) | Checked by hand when the curated file changes | 1 |
-| ONS Countries (December 2024) Boundaries UK BGC | GB coastline for the land grid (already in BNG) | When ONS republishes | 1 |
-| Natural Earth 1:10m admin 0 map units | Non-GB land drawn as muted scenery (Ireland, France, Isle of Man) | Rarely | 1 |
+| Sentinel-2 cloudless (EOX) | Satellite imagery, as map tiles loaded by the browser | Yearly | 1 |
+| OpenStreetMap vector tiles (OpenFreeMap) | Place names on the map | Weekly | 1 |
+| ONS International Territorial Level 1 (January 2025) Boundaries UK BUC | Lines between the nations and English regions | When ONS republishes | 1 |
+| NESO GIS Boundaries for GB DNO Licence Areas | Lines between the 14 electricity network regions | Rarely | 1 |
 | NESO TEC register | Transmission connection contracts and dates | Frequent | 4 |
 | NESO TEC register, `Gate` column | Gate 1 or Gate 2 status (blank until the agreement is countersigned) | Twice weekly | 4 |
 | Elexon Insights API | Generation by fuel type, interconnector flows, large wind farm output | Near real time | 3 |
@@ -154,7 +156,7 @@ How the data is put together:
 - **Matching.** A curated interconnector missing from the register stops the pipeline.
 - **Scope.** Built links, links under construction, and links Ofgem has approved in principle. Other register entries (scoping only) belong to Early development and arrive with phase 4.
 - **Landing points.** Where no converter station exists yet, the GB landing point is the connection substation named in the register, and the card says so. Interconnectors with no published landing point are kept in the data but not drawn.
-- **Drawing.** Each interconnector is a straight dashed pixel line from the GB landing point towards the partner end, clipped to the map. The card calls it a schematic, not the real route. Operational cables pulse outwards; there is no animation under `prefers-reduced-motion`.
+- **Drawing.** Each interconnector is a straight dashed line from the GB landing point to the partner end. The card calls it a schematic, not the real route. Operational cables pulse outwards; there is no animation under `prefers-reduced-motion`.
 - **Filtering.** Interconnectors are part of the flexibility layer, with their own "Interconnectors" filter. Their capacity for filtering and marker size is the larger of import and export.
 - **Connection badge.** "Energised" when the register says Built, "Gate 2 contracted" with the contracted date for Gate 2, otherwise "Not published".
 - **Sharing.** A link can be shared as `?interconnector=<id>`.
@@ -182,18 +184,18 @@ REPD has no field linking phases, so the pipeline (`pipeline/phases.py`) groups 
   - "Gate 2 contracted only" shows only projects and interconnectors whose badge is Gate 2 contracted, so it also hides energised projects and Early development. The feed panel does not apply it.
 - A project can be shared as `?project=<REPD ID>`, which opens its card.
 - On screens narrower than 768px the card and filters are bottom sheets and only one is open at a time; on wider screens they are side panels and can be open together.
-- Zoom: seven fixed levels (National, Regional, Local, District, Town, Village, Site), each roughly doubling the detail of the one before; values in `src/map/levels.ts`.
-  - National uses 4km cells and shows 50MW or more; Regional uses 2km cells and shows 5MW or more; Local (1km) and deeper show every size.
-  - Each level places markers on its own grid (down to 62.5m at Site), so nearby projects separate as you zoom.
-  - Land is drawn from the 4km, 2km, 1km and 500m grids; deeper levels draw the 500m grid with bigger pixels, which keeps the largest land texture (1,520 x 2,460) inside the 4,096-pixel limit of many phones.
-  - The national view uses the largest whole number of physical pixels per cell that fits the screen, and every other level is a fixed multiple of it, so every cell is a whole number of physical pixels at any screen density.
-- Zoom controls: plus and minus buttons, mouse wheel, pinch, and the + and - keys, each moving one level and keeping the point under the cursor or fingers fixed. Drag or the arrow keys to pan.
-- Onshore projects whose cell is sea but next to the coast are drawn on the nearest land cell at that level. This affects drawing only; the data keeps REPD's coordinates.
+- Zoom: smooth, from the whole of Great Britain down to a single site (map zoom 4 to 15). Seven named bands (National, Regional, Local, District, Town, Village, Site) are shown in the zoom readout; values in `src/map/levels.ts`.
+  - National (below zoom 6.5) shows 50MW or more and draws the phases of one project as one marker; Regional (6.5 to 8) shows 5MW or more; Local and deeper show every size.
+  - The imagery is 10 metres a pixel, so zoom stops at 15, where a single site fills the view.
+  - The map opens on the whole of Great Britain and keeps it fitted to the window until the viewer moves it.
+- Zoom controls: plus and minus buttons, mouse wheel, pinch, double click, and the + and - keys. Drag or the arrow keys to pan. The map stays flat and north-up.
 - The map extent must include offshore wind areas as far out as Dogger Bank.
-- Capacity is shown in four tiers: under 10MW a 3px stage-coloured dot, 10 to 50MW a 5px dot, 50 to 300MW a 9px sprite tile, and 300MW or more the same tile at double size (single size on the national view, to limit clutter).
+- Capacity is shown in four tiers: under 10MW a 9px stage-coloured dot, 10 to 50MW a 13px dot, 50 to 300MW a 24px badge with the technology icon, and 300MW or more a 32px badge. Markers shrink on the national view (to about half size at the widest zoom) to limit clutter.
+- Every project is drawn at its published position. Projects sharing a connection substation fan out around it.
+- Region lines: the nations and English regions as solid white lines, and the 14 electricity network (DNO) regions as dashed amber lines, each with its area names on the wider views. Only borders between areas are drawn, as the coast is visible in the imagery. Each set can be turned off under "Map lines" in the filter panel. Built by `pipeline/build_boundaries.py` into `data/boundaries.json`.
+- Place names: cities from the national view, towns from zoom 7, villages from 9.5, suburbs from 11 and hamlets from 12.5. Markers never hide behind a name, and are drawn over it.
 - Rows with no coordinates, coordinates outside the map extent, or no published capacity are kept in the data but not shown on the map. Nothing is estimated to fill the gap, and the pipeline report lists each hidden reason.
 - Map extent: BNG x 0 to 760,000 and y 0 to 1,230,000 (Scilly to Shetland, east past Dogger Bank).
-- Land grid: cells of 4km, 2km, 1km and 500m. GB land and other land are sampled every 250m, and a cell counts as land when at least 40% of its samples are land. Only GB land is drawn in the main land colour.
 
 ## Project card
 
@@ -216,16 +218,17 @@ REPD has no field linking phases, so the pipeline (`pipeline/phases.py`) groups 
 **Footer**
 - Source and last updated date
 
-The project name uses the body font rather than the pixel font, because long names in the pixel font are hard to read. "Onshore" or "Offshore" is shown for wind only, as REPD states it only through the technology. The card notes when connection data was matched by name, and that the match may be wrong.
+"Onshore" or "Offshore" is shown for wind only, as REPD states it only through the technology. The card notes when connection data was matched by name, and that the match may be wrong.
 
 ## Design
 
-- Flat, top-down pixel-art map of GB, like an old game overworld
-- Sprites: turbine with two-frame spinning blades, solar panel, battery, hydro, tidal; interconnectors as dashed cables pulsing out to sea
-- Retro-feeling palette, checked for colour-blind safety, rather than copying a console palette exactly. A test (`src/theme/colourCheck.test.ts`) simulates protan, deutan and tritan vision and requires every pair of stage colours, and each against land, to differ by at least 20 (CIE76).
-- Sprite tiles: a dark outline, the stage colour as background, and a dark technology glyph (turbine, solar panel, battery for all non-hydrogen storage, hydrogen "H", water drop for hydro and pumped storage, waves for tidal and wave). Defined as character grids in `src/map/sprites.ts`.
-- Only operational wind turbines spin, as they are the ones generating. No animation under `prefers-reduced-motion`.
-- Pixel font (for example Press Start 2P) for titles only; clean sans-serif for everything else
+- Flat, top-down satellite view of GB (Sentinel-2 cloudless), with region lines and place names over it and nothing else from a street map
+- Markers: round badges in the stage colour with a dark technology icon (turbine, solar panel, battery for all non-hydrogen storage, hydrogen "H", water drop for hydro and pumped storage, waves for tidal and wave, two-way arrows for interconnectors); plain dots for projects under 50MW. Each has a light outer ring and a dark edge so it reads on any ground. Drawn in code in `src/map/icons.ts`; the card uses the same badge.
+- Interconnectors as dashed cables with the dashes moving out to sea
+- Stage colours checked for colour-blind safety. A test (`src/theme/colourCheck.test.ts`) simulates protan, deutan and tritan vision and requires every pair of stage colours, and each against the dark marker ink, to differ by at least 20 (CIE76).
+- Only operational wind turbines turn, as they are the ones generating. No animation under `prefers-reduced-motion`.
+- One clean sans-serif typeface throughout
+- Lines and lettering over the imagery have a dark casing or halo
 
 ## Change feed and animations
 
@@ -261,14 +264,14 @@ Rules for dated events:
 
 **The change list.** `data/changes.json` is rebuilt every run: the dated events plus spotted changes from the last 12 months, newest first. Two runs on unchanged sources produce byte-identical output.
 
-**The feed panel** applies the same technology, flexibility and capacity filters as the map, so by default it lists projects of 1MW and above. It does not apply the stage filter, so refusals and withdrawals still show; it has its own type filter (All, Consents, Construction, Operational, Planning) instead. Tapping an entry opens its card. If the project is not drawn at the current zoom because of the level's capacity floor, the map zooms in until it is.
+**The feed panel** applies the same technology, flexibility and capacity filters as the map, so by default it lists projects of 1MW and above. It does not apply the stage filter, so refusals and withdrawals still show; it has its own type filter (All, Consents, Construction, Operational, Planning) instead. Tapping an entry opens its card. If the project is not drawn at the current zoom because of the zoom band's capacity floor, the map jumps to the first band that draws it.
 
 **Animations** (`src/map/animations.ts`). They play for dated consent, construction-start and operational events of 5MW or more:
-- **Consent:** an expanding square ring.
+- **Consent:** a ring spreading outwards.
 - **Construction:** blinking scaffold corners.
-- **Operational:** eight sparks.
+- **Operational:** a ring with eight sparks shooting outwards.
 
-Each effect is drawn in the new stage's colour, lasts about 1.2 seconds, and scales with the marker so it clears the tile.
+Each effect is drawn in the new stage's colour, lasts about 1.2 seconds, and scales with the marker so it clears it. The shapes and motion are CSS (`.map-effect` in `src/index.css`).
 
 When effects play:
 - **When the map opens:** events from the three months before the newest event that are on screen and pass the filters play once, largest first, staggered, at most 30.
@@ -297,9 +300,9 @@ When effects play:
 **Scheduled output.** Sampled every 15 minutes. At each moment, a unit's level is the latest accepted bid or offer (BOALF) covering that time, otherwise its Physical Notification. Levels are summed across the farm's units. A sample is left empty, never shown as zero, unless every unit has a level. Only REPD IDs in `data/bmu-map.json` are served, so the endpoint cannot be used as an open proxy.
 
 **In the interface.**
-- **Live panel** (header button): generation now as a pixel bar and table, each interconnector's import or export with the net flow, and the 14 regions with forecast intensity and main sources. Times are in UK time and each source is credited. National figures refresh every 5 minutes while the page is visible.
+- **Live panel** (header button): generation now as a bar and table, each interconnector's import or export with the net flow, and the 14 regions with forecast intensity and main sources. Times are in UK time and each source is credited. National figures refresh every 5 minutes while the page is visible.
 - **Cables:** while live flows are known, cables pulse inwards when Great Britain is importing, outwards when exporting, and stay still with no flow. Without live data they keep the Phase 2 behaviour. The interconnector card shows "Now: importing (or exporting) X MW".
-- **Wind farm cards:** a Live section appears only for mapped farms, with the latest scheduled output, a 24-hour pixel sparkline, and the note that live output is only available for large transmission-connected wind farms.
+- **Wind farm cards:** a Live section appears only for mapped farms, with the latest scheduled output, a 24-hour sparkline, and the note that live output is only available for large transmission-connected wind farms.
 
 **When a source is down.** Each source is fetched with an 8-second timeout and cached separately in Cloudflare's cache. If a fetch fails, the last good copy (kept for 6 hours) is served marked `stale`. With no copy available, that part is `null` with a reason, and the page hides it. One failing source never affects the others.
 
@@ -316,10 +319,11 @@ When effects play:
 | NESO Carbon Intensity API | CC BY 4.0 | Credit "Carbon Intensity API (NESO)" with a link to the licence |
 | Elexon Insights / BMRS | BMRS data licence | "Contains BMRS data © Elexon Limited copyright and database right [year]", linked to the licence |
 | Sheffield Solar PV_Live | CC BY 4.0 | "PV_Live by Sheffield Solar is licensed under CC BY 4.0" |
-| ONS country boundaries | Open Government Licence v3.0 | "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right 2024." |
-| Natural Earth | Public domain | None required; credited as "Made with Natural Earth" |
+| ONS ITL1 boundaries | Open Government Licence v3.0 | "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right 2025." |
+| NESO DNO licence area boundaries | NESO Open Data Licence v1.0 | "Supported by National Energy SO Open Data" |
+| Sentinel-2 cloudless (EOX) | CC BY-NC-SA 4.0 (non-commercial use only; a commercial site would need a licence from EOX) | "Sentinel-2 cloudless by EOX IT Services GmbH (contains modified Copernicus Sentinel data 2025)", linked to s2maps.eu |
 | NESO Interconnector Register | NESO Open Data Licence v1.0 | "Supported by National Energy SO Open Data" |
-| OpenStreetMap | Open Database Licence (ODbL) | "© OpenStreetMap contributors", linked to openstreetmap.org/copyright. `data/interconnectors.json` is a derived database and is shared under the ODbL. |
+| OpenStreetMap | Open Database Licence (ODbL) | "© OpenStreetMap contributors", linked to openstreetmap.org/copyright. Also covers the place names, served as vector tiles by OpenFreeMap. `data/interconnectors.json` is a derived database and is shared under the ODbL. |
 | Ofgem decisions | Open Government Licence v3.0 | Linked from each milestone on the card |
 
 ## Hosting and domain
@@ -338,11 +342,11 @@ The site starts on Cloudflare Pages and will later move to a custom domain. To m
 ## Phases
 
 **1. Static map**
-Pipeline for REPD and the interconnector file, pixel GB grid at three zoom levels, sprites, filters, project card, about page.
+Pipeline for REPD and the interconnector file, the map with markers at three zoom levels, filters, project card, about page. (Built as a pixel-art grid; redrawn on satellite imagery in October 2026.)
 *Done when:* all included REPD projects of 1MW or more appear in the right place with the right stage, filters work, and the card works at 380px.
 
 **2. Change feed and animations**
-Snapshots, change detection, feed panel, pixel animations.
+Snapshots, change detection, feed panel, animations.
 *Done when:* two consecutive pipeline runs produce a correct change list and animations play for qualifying events.
 
 **3. Live layer**

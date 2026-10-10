@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { VISION, difference } from './colourCheck';
-import { palette, stageColours } from './tokens';
+import { markerInk, stageColours } from './tokens';
 
 // CIE76 difference of 20 or more reads as clearly different colours, even on small markers.
 const MIN_DIFFERENCE = 20;
 
-const colours: Record<string, string> = { ...stageColours, land: palette.land };
+const colours: Record<string, string> = { ...stageColours, ink: markerInk };
 const names = Object.keys(colours);
 
 describe('stage colours', () => {

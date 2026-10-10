@@ -1,57 +1,11 @@
-// Schematic interconnector cables: a straight pixel line from the GB landing point towards the
-// partner end, clipped to the map. Drawn in grid cells so it stays pixel-perfect at every level.
+// Schematic interconnector cables: a dashed line from the GB landing point to the partner end,
+// with the dashes moving in the direction power is flowing.
 
-import { EXTENT } from './levels';
-
-/** Every DASH_PERIOD cells, the first DASH_ON are drawn. */
-export const DASH_PERIOD = 4;
-export const DASH_ON = 2;
-
-export interface CableCell {
-  col: number;
-  row: number;
-  /** Position along the cable from the GB end, for dashes and the pulse. */
-  step: number;
-}
-
-/** Cells on the line between two BNG points (Bresenham), keeping only those inside the grid. */
-export function cableCells(
-  from: { x: number; y: number },
-  to: { x: number; y: number },
-  level: { cellMetres: number },
-  cols: number,
-  rows: number,
-): CableCell[] {
-  const cell = (x: number, y: number) => ({
-    col: Math.floor((x - EXTENT.minX) / level.cellMetres),
-    row: Math.floor((EXTENT.maxY - y) / level.cellMetres),
-  });
-  const start = cell(from.x, from.y);
-  const end = cell(to.x, to.y);
-  const dc = Math.abs(end.col - start.col);
-  const dr = -Math.abs(end.row - start.row);
-  const sc = start.col < end.col ? 1 : -1;
-  const sr = start.row < end.row ? 1 : -1;
-  let error = dc + dr;
-  let { col, row } = start;
-  const cells: CableCell[] = [];
-  for (let step = 0; ; step++) {
-    const inside = col >= 0 && row >= 0 && col < cols && row < rows;
-    if (inside) cells.push({ col, row, step });
-    else if (cells.length > 0) break; // Left the map: the rest is off screen.
-    if (col === end.col && row === end.row) break;
-    const twice = 2 * error;
-    if (twice >= dr) {
-      error += dr;
-      col += sc;
-    }
-    if (twice <= dc) {
-      error += dc;
-      row += sr;
-    }
-  }
-  return cells;
-}
+/** Dash and gap lengths, in multiples of the line width. */
+export const DASH = 2;
+export const GAP = 2;
+/** Steps the dashes move through before the pattern repeats. */
+export const PULSE_STEPS = 8;
 
 /**
  * Which way a cable's dashes move: 1 outwards (Great Britain exporting), -1 inwards (importing),
@@ -64,7 +18,14 @@ export function pulseDirection(stage: string, flowMw: number | undefined): -1 | 
   return 0;
 }
 
-/** Whether a cable cell is part of a dash, given the pulse phase. */
-export function isDash(step: number, phase: number): boolean {
-  return (((step - phase) % DASH_PERIOD) + DASH_PERIOD) % DASH_PERIOD < DASH_ON;
+/**
+ * The dash pattern (dash, gap, dash, gap) with the dashes moved `step` steps along the line,
+ * away from its start. Stepping through 0 to PULSE_STEPS - 1 makes the dashes travel.
+ */
+export function dashPattern(step: number): number[] {
+  const period = DASH + GAP;
+  const wrapped = ((step % PULSE_STEPS) + PULSE_STEPS) % PULSE_STEPS;
+  const shift = (wrapped / PULSE_STEPS) * period;
+  // Either the pattern opens with part of the gap, or with the tail of a dash that has wrapped.
+  return shift <= GAP ? [0, shift, DASH, GAP - shift] : [shift - GAP, GAP, period - shift, 0];
 }

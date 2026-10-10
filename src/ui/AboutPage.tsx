@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { IMAGERY_YEAR } from '../map/imagery';
 import type { InterconnectorFile } from '../data/interconnectors';
 import type { ProjectIndex } from '../data/projects';
 import { formatDate } from './format';
@@ -12,9 +13,10 @@ interface Props {
 const REPD_ATTRIBUTION =
   'Contains public sector information licensed under the Open Government Licence v3.0.';
 const ONS_ATTRIBUTION =
-  'Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right 2024.';
+  'Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right 2025.';
 const NESO_ATTRIBUTION = 'Supported by National Energy SO Open Data';
 const OSM_ATTRIBUTION = '© OpenStreetMap contributors';
+const IMAGERY_ATTRIBUTION = `Sentinel-2 cloudless by EOX IT Services GmbH (contains modified Copernicus Sentinel data ${IMAGERY_YEAR})`;
 
 export function AboutPage({ projects, links, onClose }: Props) {
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -100,9 +102,34 @@ export function AboutPage({ projects, links, onClose }: Props) {
                     OpenStreetMap
                   </a>
                 </td>
-                <td>Interconnector landing points and grid connection substations</td>
+                <td>
+                  Place names on the map (served by{' '}
+                  <a href="https://openfreemap.org" target="_blank" rel="noreferrer">
+                    OpenFreeMap
+                  </a>
+                  ), interconnector landing points and grid connection substations
+                </td>
                 <td>Open Database Licence (ODbL)</td>
-                <td>Checked when the interconnector list is updated</td>
+                <td>Place names weekly; the rest when the interconnector list is updated</td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="https://s2maps.eu" target="_blank" rel="noreferrer">
+                    Sentinel-2 cloudless
+                  </a>{' '}
+                  (EOX)
+                </td>
+                <td>The satellite imagery, a cloud-free mosaic of {IMAGERY_YEAR}</td>
+                <td>
+                  <a
+                    href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    CC BY-NC-SA 4.0
+                  </a>
+                </td>
+                <td>Yearly</td>
               </tr>
               <tr>
                 <td>Ofgem decisions</td>
@@ -111,16 +138,25 @@ export function AboutPage({ projects, links, onClose }: Props) {
                 <td>As decisions are published</td>
               </tr>
               <tr>
-                <td>Countries boundaries, December 2024 (ONS)</td>
-                <td>The coastline of Great Britain</td>
+                <td>International Territorial Level 1 boundaries, January 2025 (ONS)</td>
+                <td>The lines between the nations and the English regions</td>
                 <td>Open Government Licence v3.0</td>
                 <td>When ONS republishes</td>
               </tr>
               <tr>
-                <td>Natural Earth</td>
-                <td>Land outside Great Britain, shown in grey</td>
-                <td>Public domain</td>
-                <td>Rarely</td>
+                <td>
+                  <a
+                    href="https://www.neso.energy/data-portal/gis-boundaries-gb-dno-license-areas"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    DNO licence area boundaries
+                  </a>{' '}
+                  (NESO)
+                </td>
+                <td>The lines between the 14 electricity network regions</td>
+                <td>NESO Open Data Licence</td>
+                <td>Rarely. NESO describes the boundaries as approximate.</td>
               </tr>
             </tbody>
           </table>
@@ -129,10 +165,10 @@ export function AboutPage({ projects, links, onClose }: Props) {
         <p className="attribution">{ONS_ATTRIBUTION}</p>
         <p className="attribution">{NESO_ATTRIBUTION}.</p>
         <p className="attribution">
-          Interconnector landing points and connection substations {OSM_ATTRIBUTION}, available
-          under the Open Database Licence.
+          Place names, interconnector landing points and connection substations {OSM_ATTRIBUTION},
+          available under the Open Database Licence.
         </p>
-        <p className="attribution">Made with Natural Earth.</p>
+        <p className="attribution">Imagery: {IMAGERY_ATTRIBUTION}.</p>
 
         <h3>How stages are worked out</h3>
         <p>

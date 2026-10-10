@@ -1,32 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cableCells, isDash, pulseDirection } from './cables';
-import { ZOOM_LEVELS } from './levels';
-
-const level = { ...ZOOM_LEVELS[2], cellMetres: 1000 };
-// Centre of a cell at the 1km level.
-const at = (col: number, row: number) => ({ x: col * 1000 + 500, y: 1_230_000 - row * 1000 - 500 });
-
-describe('cableCells', () => {
-  it('runs from the GB end to the partner end', () => {
-    const cells = cableCells(at(0, 0), at(3, 0), level, 10, 10);
-    expect(cells.map((c) => c.col)).toEqual([0, 1, 2, 3]);
-    expect(cells.map((c) => c.step)).toEqual([0, 1, 2, 3]);
-  });
-
-  it('draws a connected diagonal', () => {
-    const cells = cableCells(at(0, 0), at(4, 2), level, 10, 10);
-    for (let i = 1; i < cells.length; i++) {
-      expect(Math.abs(cells[i].col - cells[i - 1].col)).toBeLessThanOrEqual(1);
-      expect(Math.abs(cells[i].row - cells[i - 1].row)).toBeLessThanOrEqual(1);
-    }
-    expect(cells.at(-1)).toMatchObject({ col: 4, row: 2 });
-  });
-
-  it('stops at the edge of the map', () => {
-    const cells = cableCells(at(7, 1), at(30, 1), level, 10, 10);
-    expect(cells.at(-1)?.col).toBe(9);
-  });
-});
+import { DASH, GAP, PULSE_STEPS, dashPattern, pulseDirection } from './cables';
 
 describe('pulseDirection', () => {
   it('follows live flows, and falls back to outwards for operational links', () => {
@@ -38,9 +11,24 @@ describe('pulseDirection', () => {
   });
 });
 
-describe('isDash', () => {
-  it('draws two cells in every four and moves with the phase', () => {
-    expect([0, 1, 2, 3, 4].map((s) => isDash(s, 0))).toEqual([true, true, false, false, true]);
-    expect([0, 1, 2, 3].map((s) => isDash(s, 1))).toEqual([false, true, true, false]);
+describe('dashPattern', () => {
+  it('starts with a whole dash', () => {
+    expect(dashPattern(0)).toEqual([0, 0, DASH, GAP]);
+  });
+
+  it('always covers one period with the same amount of dash', () => {
+    for (let step = -PULSE_STEPS; step < 2 * PULSE_STEPS; step++) {
+      const [dashA, gapA, dashB, gapB] = dashPattern(step);
+      expect(dashA + gapA + dashB + gapB).toBeCloseTo(DASH + GAP);
+      expect(dashA + dashB).toBeCloseTo(DASH);
+      for (const length of [dashA, gapA, dashB, gapB]) expect(length).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('moves the dashes along the line and repeats', () => {
+    // The first dash starts further along with each step, until it wraps round.
+    expect(dashPattern(1)[1]).toBeGreaterThan(dashPattern(0)[1]);
+    expect(dashPattern(PULSE_STEPS)).toEqual(dashPattern(0));
+    expect(dashPattern(-1)).toEqual(dashPattern(PULSE_STEPS - 1));
   });
 });

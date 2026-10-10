@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Interconnector } from '../data/interconnectors';
-import { ZOOM_LEVELS } from '../map/levels';
+import { ZOOM_BANDS } from '../map/levels';
 import { buildLinkMarkers } from '../map/markers';
 import { DEFAULT_FILTERS, countLinksShown, makeIncludeLink } from './filters';
 
@@ -47,8 +47,8 @@ describe('interconnector filters', () => {
 
 describe('interconnector markers', () => {
   it('sit at the GB landing point and use the larger capacity', () => {
-    const [marker] = buildLinkMarkers(links, ZOOM_LEVELS[2], () => true);
-    expect(marker).toMatchObject({ source: 'interconnector', index: 0, col: 608, mw: 1050 });
-    expect(buildLinkMarkers(links, ZOOM_LEVELS[2], () => true)).toHaveLength(1);
+    const [marker] = buildLinkMarkers(links, ZOOM_BANDS[2], () => true);
+    expect(marker).toMatchObject({ source: 'interconnector', index: 0, x: 608_000, mw: 1050 });
+    expect(buildLinkMarkers(links, ZOOM_BANDS[2], () => true)).toHaveLength(1);
   });
 });

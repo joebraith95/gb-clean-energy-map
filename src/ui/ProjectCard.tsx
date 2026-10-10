@@ -8,7 +8,7 @@ import {
   type ProjectIndex,
   type TecDetails,
 } from '../data/projects';
-import { spriteKind } from '../map/sprites';
+import { techKind } from '../map/kinds';
 import type { Stage } from '../theme/tokens';
 import { STAGE_LABELS, STAGE_ORDER } from './filters';
 import { NOT_PUBLISHED, formatDate, formatMw, orNotPublished } from './format';
@@ -122,7 +122,7 @@ export function ProjectCard({ projects, index, indexById, onSelect, onClose, has
       </button>
 
       <header className="card-top">
-        {onTrack && <TechIcon kind={spriteKind(technology)} stage={onTrack} />}
+        {onTrack && <TechIcon kind={techKind(technology)} stage={onTrack} />}
         <div>
           <h2 id="card-title" className="card-name">
             {projects.name[index]}

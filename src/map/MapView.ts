@@ -1,63 +1,69 @@
-// The PixiJS map: land grid, project markers, snap zoom and panning.
-// Every cell and marker edge lands on a whole physical pixel, so nothing is ever smoothed.
-// Frames are drawn on demand (and for the turbine animation), not on a constant loop.
+// The MapLibre map: satellite imagery, region lines and place names, with project markers,
+// interconnector cables and event effects drawn over them.
+// Project data stays in British National Grid; positions are converted as they are drawn.
 
-import { Application, Container, Graphics, Sprite, Texture } from 'pixi.js';
+import {
+  Map as MapLibreMap,
+  Marker as MapMarker,
+  type GeoJSONSource,
+  type PointLike,
+  type StyleImageInterface,
+  setWorkerUrl,
+} from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+// MapLibre finds its worker script relative to its own file, which a bundled build moves, so the
+// bundler is asked for the worker's address instead.
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import type { Interconnector } from '../data/interconnectors';
 import type { ProjectIndex } from '../data/projects';
-import { palette, spriteInk, stageColours } from '../theme/tokens';
-import { GB_LAND, OTHER_LAND, SEA, decodeLevel, type GridFile } from './grid';
-import { gridTexture } from './gridTexture';
+import { stageColours, type Stage } from '../theme/tokens';
 import {
-  NO_INSETS,
-  ZOOM_LEVELS,
-  anchorOffset,
-  clampAxis,
-  nationalScale,
-  physicalScale,
-  screenToBng,
-  snap,
-  type Insets,
-} from './levels';
-import {
-  FRAMES,
-  FRAME_MS,
+  EFFECT_MS,
   STAGGER_MS,
   STILL_MS,
-  effectPixels,
   pickOnLoad,
-  stillPixels,
   type EffectKind,
   type EventCandidate,
 } from './animations';
-import { cableCells, isDash, pulseDirection, type CableCell } from './cables';
+import { bngToLonLat } from './bng';
+import { dashPattern, pulseDirection } from './cables';
+import { drawBadge, drawDot, drawSelection, selectionSize } from './icons';
+import { TECH_KINDS, type TechKind } from './kinds';
 import {
-  DOT_SIZES,
-  FIRST_SPRITE_TIER,
+  GB_BOUNDS,
+  MAX_ZOOM,
+  MIN_ZOOM,
+  NO_INSETS,
+  ZOOM_BANDS,
+  bandIndex,
+  type Insets,
+} from './levels';
+import {
+  FIRST_BADGE_TIER,
+  MARKER_SIZES,
   buildLinkMarkers,
   buildMarkers,
   sameSelection,
+  spreadOffset,
   type Marker,
   type Selection,
 } from './markers';
-import { TILE_SIZE, tileTexture } from './sprites';
+import { LAYERS, SOURCES, mapStyle, markerScale } from './style';
 
-const LAND_COLOURS = {
-  [SEA]: palette.sea,
-  [GB_LAND]: palette.land,
-  [OTHER_LAND]: palette.otherLand,
-};
+setWorkerUrl(workerUrl);
 
-/** Pointer travel (CSS px) below which a press counts as a tap rather than a drag. */
-const TAP_SLOP = 6;
+/** How far the map can be panned, as [west, south, east, north]: GB and its neighbours. */
+const MAX_BOUNDS: [number, number, number, number] = [-32, 38, 28, 70];
+/** Space left around Great Britain when the map opens (CSS px). */
+const FIT_PADDING = 16;
 /** Extra reach (CSS px) around small markers so they are easy to tap. */
 const TAP_REACH = 8;
-/** Pinch distance ratio that triggers one zoom step. */
-const PINCH_STEP = 1.5;
-/** Minimum gap between wheel-triggered zoom steps (ms). */
-const WHEEL_COOLDOWN = 250;
-/** Time between turbine blade frames (ms). */
-const SPIN_INTERVAL = 450;
+/** Time between animation steps: cable dashes move and turbine blades turn (ms). */
+const TICK_MS = 120;
+/** Time for a turbine's blades to turn once (ms). */
+const TURN_MS = 5000;
+/** Space kept between a revealed marker and the edge of the visible map (CSS px). */
+const REVEAL_MARGIN = 32;
 
 /** What an effect plays on: the selection and its stage colour. */
 export interface EffectTarget {
@@ -65,9 +71,16 @@ export interface EffectTarget {
   colour: string;
 }
 
+/** Which sets of region lines are drawn. */
+export interface LineChoice {
+  regions: boolean;
+  dno: boolean;
+}
+
 export interface MapViewEvents {
   onSelect: (selection: Selection | null) => void;
-  onLevelChange: (level: number) => void;
+  /** The zoom band changed, or the map reached or left the end of its zoom range. */
+  onZoomChange: (zoom: { band: number; canZoomIn: boolean; canZoomOut: boolean }) => void;
 }
 
 interface Point {
@@ -75,165 +88,262 @@ interface Point {
   y: number;
 }
 
-export class MapView {
-  private readonly app = new Application();
-  private readonly world = new Container();
-  private readonly land = new Sprite();
-  private readonly cableLayer = new Graphics();
-  private readonly markerLayer = new Graphics();
-  private readonly spriteLayer = new Container();
-  private readonly highlight = new Graphics();
-  private readonly effectLayer = new Graphics();
-  private effects: { selection: Selection; kind: EffectKind; colour: string; startAt: number }[] =
-    [];
-  private effectTimer: number | undefined;
-  private turbines: { sprite: Sprite; marker: Marker; pixelSize: number }[] = [];
-  private spinFrame = 0;
-  private spinTimer: number | undefined;
-  private readonly motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-  private renderQueued = false;
-  private landTextures: Texture[] = [];
-  private landCells: Uint8Array[] = [];
-  /** For each zoom level, the index of the land grid it draws. */
-  private landFor: number[] = [];
+interface Drawn extends Marker {
+  lonLat: [number, number];
+  offset: [number, number];
+}
 
-  private level = 0;
-  private national = 1;
-  private dpr = 1;
-  private offset: Point = { x: 0, y: 0 };
+function iconName(marker: { kind: TechKind; stage: Stage; tier: number }): string {
+  return marker.tier < FIRST_BADGE_TIER
+    ? `dot-${marker.stage}-${marker.tier}`
+    : `${marker.kind}-${marker.stage}-${marker.tier}`;
+}
+
+function pointFeature(marker: Drawn, icon: string) {
+  return {
+    type: 'Feature' as const,
+    properties: { icon, mw: marker.mw, dx: marker.offset[0], dy: marker.offset[1] },
+    geometry: { type: 'Point' as const, coordinates: marker.lonLat },
+  };
+}
+
+/** A turbine badge whose blades turn: the map redraws it whenever `turn` has changed. */
+class TurningBadge implements StyleImageInterface {
+  readonly width: number;
+  readonly height: number;
+  data: Uint8ClampedArray;
+  private readonly context: CanvasRenderingContext2D;
+  private drawn = -1;
+  turn = 0;
+
+  constructor(
+    private readonly size: number,
+    private readonly scale: number,
+    private readonly stage: Stage,
+  ) {
+    this.width = this.height = size * scale;
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = this.width;
+    this.context = canvas.getContext('2d', { willReadFrequently: true })!;
+    this.data = new Uint8ClampedArray(this.width * this.height * 4);
+    this.render();
+  }
+
+  render(): boolean {
+    if (this.turn === this.drawn) return false;
+    this.drawn = this.turn;
+    drawBadge(this.context, this.size, this.scale, 'wind', this.stage, this.turn);
+    this.data = this.context.getImageData(0, 0, this.width, this.height).data;
+    return true;
+  }
+}
+
+export class MapView {
+  private readonly map: MapLibreMap;
+  private readonly motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  private readonly turbineImages: TurningBadge[] = [];
+  private readonly effects = new Set<{ marker: MapMarker; timer: number }>();
+  private tickTimer: number | undefined;
+  private pulseStep = 0;
+  private ready = false;
+  private destroyed = false;
+
+  private band: number;
   private insets: Insets = NO_INSETS;
-  private markers: Marker[] = [];
-  private cables: { cells: CableCell[]; stage: Marker['stage']; direction: -1 | 0 | 1 }[] = [];
+  private markers: Drawn[] = [];
+  private hasTurbines = false;
+  private hasMovingCables = false;
   /** Live interconnector flows in MW (positive means importing), or null when unknown. */
   private flows: Record<string, number> | null = null;
-  private pulsePhase = 0;
+  private lines: LineChoice = { regions: true, dno: true };
   private selected: Selection | null = null;
   private include: (index: number) => boolean = () => true;
   private includeLink: (index: number) => boolean = () => true;
-
-  private pointers = new Map<number, Point>();
-  private dragStart: Point | null = null;
-  private dragMoved = false;
-  private pinchDistance = 0;
-  private lastWheel = 0;
-  private resizeObserver: ResizeObserver | null = null;
-  private destroyed = false;
+  private zoomState = '';
+  /** True while the map still shows its opening view of the whole of Great Britain. */
+  private fitted = true;
   /** Removes listeners on the host element, which outlives this view. */
   private readonly hostListeners = new AbortController();
 
   private constructor(
-    private readonly host: HTMLElement,
-    private readonly grid: GridFile,
+    host: HTMLElement,
     private readonly projects: ProjectIndex,
     private readonly links: Interconnector[],
     private readonly events: MapViewEvents,
-  ) {}
+    label: string,
+  ) {
+    this.map = new MapLibreMap({
+      container: host,
+      style: mapStyle(),
+      bounds: GB_BOUNDS,
+      fitBoundsOptions: { padding: FIT_PADDING },
+      minZoom: MIN_ZOOM,
+      maxZoom: MAX_ZOOM,
+      maxBounds: MAX_BOUNDS,
+      // North stays up: the map is flat and never rotates or tilts.
+      dragRotate: false,
+      pitchWithRotate: false,
+      touchPitch: false,
+      renderWorldCopies: false,
+      // Sources are credited in the map's own credit line and on the About page.
+      attributionControl: false,
+    });
+    this.map.touchZoomRotate.disableRotation();
+    this.map.keyboard.disableRotation();
+    this.map.getCanvas().setAttribute('aria-label', label);
+    this.band = bandIndex(this.map.getZoom());
+  }
 
-  static async create(
+  static create(
     host: HTMLElement,
-    grid: GridFile,
     projects: ProjectIndex,
     links: Interconnector[],
     events: MapViewEvents,
+    label: string,
   ): Promise<MapView> {
-    const view = new MapView(host, grid, projects, links, events);
-    await view.init();
-    return view;
+    const view = new MapView(host, projects, links, events, label);
+    return new Promise((resolve) => {
+      view.map.once('style.load', () => {
+        if (!view.destroyed) view.init(host);
+        resolve(view);
+      });
+    });
   }
 
-  private async init(): Promise<void> {
-    this.dpr = window.devicePixelRatio || 1;
-    await this.app.init({
-      width: this.host.clientWidth,
-      height: this.host.clientHeight,
-      resolution: this.dpr,
-      autoDensity: true,
-      antialias: false,
-      background: palette.sea,
-      autoStart: false,
-    });
-    this.app.ticker.stop();
-    this.landTextures = this.grid.levels.map((level) => gridTexture(level, LAND_COLOURS));
-    this.landCells = this.grid.levels.map(decodeLevel);
-    this.landFor = ZOOM_LEVELS.map((level) => {
-      const index = this.grid.levels.findIndex((g) => g.cellMetres === level.landMetres);
-      if (index < 0) throw new Error(`No ${level.landMetres}m land grid in grid.json`);
-      return index;
-    });
+  private init(host: HTMLElement): void {
+    this.addImages();
+    this.ready = true;
+    this.applyLines();
+    this.drawMarkers();
+    this.reportZoom();
 
-    this.world.addChild(
-      this.land,
-      this.cableLayer,
-      this.markerLayer,
-      this.spriteLayer,
-      this.highlight,
-      this.effectLayer,
+    this.map.on('zoom', () => {
+      const band = bandIndex(this.map.getZoom());
+      if (band !== this.band) {
+        const before = ZOOM_BANDS[this.band];
+        const after = ZOOM_BANDS[band];
+        this.band = band;
+        if (before.minMw !== after.minMw || before.clusterPhases !== after.clusterPhases) {
+          this.drawMarkers();
+        }
+      }
+      this.reportZoom();
+    });
+    // Until the viewer moves the map, it keeps the whole of Great Britain in view at any size.
+    const stopFitting = () => {
+      this.fitted = false;
+    };
+    for (const gesture of ['dragstart', 'wheel', 'touchstart'] as const) {
+      this.map.on(gesture, stopFitting);
+    }
+    host.addEventListener('keydown', stopFitting, { signal: this.hostListeners.signal });
+    this.map.on('resize', () => {
+      if (this.fitted) this.map.fitBounds(GB_BOUNDS, { padding: FIT_PADDING, animate: false });
+    });
+    this.map.on('click', (event) => this.select(this.markerAt(event.point)));
+    this.map.on('mouseenter', LAYERS.markers, () => {
+      this.map.getCanvas().style.cursor = 'pointer';
+    });
+    this.map.on('mouseleave', LAYERS.markers, () => {
+      this.map.getCanvas().style.cursor = '';
+    });
+    host.addEventListener(
+      'keydown',
+      (event) => {
+        if (event.key === 'Escape') this.select(null);
+      },
+      { signal: this.hostListeners.signal },
     );
-    this.app.stage.addChild(this.world);
-    this.host.appendChild(this.app.canvas);
-    this.bindInput();
-
-    this.resizeObserver = new ResizeObserver(() => this.resize());
-    this.resizeObserver.observe(this.host);
-    this.national = nationalScale(this.host.clientWidth, this.host.clientHeight, this.dpr);
-    this.render();
-    this.spinTimer = window.setInterval(() => this.spin(), SPIN_INTERVAL);
+    this.tickTimer = window.setInterval(() => this.tick(), TICK_MS);
   }
 
   destroy(): void {
     this.destroyed = true;
     this.hostListeners.abort();
-    window.clearInterval(this.spinTimer);
-    window.clearInterval(this.effectTimer);
-    this.resizeObserver?.disconnect();
-    // Sprite tile textures are shared through a cache, so only the land textures are destroyed here.
-    for (const texture of this.landTextures) texture.destroy(true);
-    this.app.destroy(true, { children: true, texture: false });
+    window.clearInterval(this.tickTimer);
+    for (const effect of this.effects) window.clearTimeout(effect.timer);
+    this.map.remove();
   }
 
-  private requestRender(): void {
-    if (this.renderQueued || this.destroyed) return;
-    this.renderQueued = true;
-    requestAnimationFrame(() => {
-      this.renderQueued = false;
-      if (!this.destroyed) this.app.render();
+  /** Marker images for every stage, size and technology, at the screen's pixel density. */
+  private addImages(): void {
+    const scale = Math.max(2, Math.ceil(window.devicePixelRatio || 1));
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d', { willReadFrequently: true })!;
+    const add = (name: string, size: number, draw: () => void) => {
+      canvas.width = canvas.height = size * scale;
+      draw();
+      this.map.addImage(name, context.getImageData(0, 0, canvas.width, canvas.height), {
+        pixelRatio: scale,
+      });
+    };
+    MARKER_SIZES.forEach((size, tier) => {
+      add(`selection-${tier}`, selectionSize(size), () => drawSelection(context, size, scale));
+      for (const stage of Object.keys(stageColours) as Stage[]) {
+        if (tier < FIRST_BADGE_TIER) {
+          add(`dot-${stage}-${tier}`, size, () => drawDot(context, size, scale, stage));
+          continue;
+        }
+        for (const kind of TECH_KINDS) {
+          const name = iconName({ kind, stage, tier });
+          // Only operational turbines turn, as they are the ones generating.
+          if (kind === 'wind' && stage === 'operational') {
+            const image = new TurningBadge(size, scale, stage);
+            this.turbineImages.push(image);
+            this.map.addImage(name, image, { pixelRatio: scale });
+          } else {
+            add(name, size, () => drawBadge(context, size, scale, kind, stage));
+          }
+        }
+      }
     });
   }
 
   /**
-   * Turns the blades of operational turbines and moves the pulse along operational cables,
-   * unless the viewer prefers reduced motion.
+   * Moves the dashes along cables that are carrying power and turns the blades of operational
+   * turbines, unless the viewer prefers reduced motion.
    */
-  private spin(): void {
-    if (this.motionQuery.matches) return;
-    if (this.cables.some((c) => c.direction !== 0)) {
-      this.pulsePhase += 1;
-      this.drawCables();
+  private tick(): void {
+    if (this.motionQuery.matches || document.visibilityState !== 'visible') return;
+    if (this.hasMovingCables) {
+      this.pulseStep += 1;
+      this.map.setPaintProperty(LAYERS.cablesOut, 'line-dasharray', dashPattern(this.pulseStep));
+      this.map.setPaintProperty(LAYERS.cablesIn, 'line-dasharray', dashPattern(-this.pulseStep));
     }
-    if (this.turbines.length === 0) return;
-    this.spinFrame = 1 - this.spinFrame;
-    for (const { sprite, marker, pixelSize } of this.turbines) {
-      sprite.texture = tileTexture(marker.kind, this.spinFrame, marker.stage, pixelSize);
+    if (this.hasTurbines) {
+      const turn = ((performance.now() % TURN_MS) / TURN_MS) * 2 * Math.PI;
+      for (const image of this.turbineImages) image.turn = turn;
+      this.map.triggerRepaint();
     }
-    this.requestRender();
   }
 
-  get levelIndex(): number {
-    return this.level;
+  zoomIn(): void {
+    this.fitted = false;
+    this.map.zoomIn();
   }
 
-  zoomIn(anchor?: Point): void {
-    this.zoomTo(this.level + 1, anchor);
+  zoomOut(): void {
+    this.fitted = false;
+    this.map.zoomOut();
   }
 
-  zoomOut(anchor?: Point): void {
-    this.zoomTo(this.level - 1, anchor);
+  private reportZoom(): void {
+    const zoom = this.map.getZoom();
+    const state = {
+      band: this.band,
+      canZoomIn: zoom < this.map.getMaxZoom() - 0.01,
+      canZoomOut: zoom > this.map.getMinZoom() + 0.01,
+    };
+    const key = JSON.stringify(state);
+    if (key === this.zoomState) return;
+    this.zoomState = key;
+    this.events.onZoomChange(state);
   }
 
   /** Live interconnector flows; cables pulse inwards for imports and outwards for exports. */
   setFlows(flows: Record<string, number> | null): void {
     this.flows = flows;
-    this.drawMarkers();
+    this.drawCables();
   }
 
   /** Redraws markers with new filters, for example from the filter panel. */
@@ -243,6 +353,23 @@ export class MapView {
     this.drawMarkers();
   }
 
+  /** Shows or hides each set of region lines, with its names. */
+  setLines(lines: LineChoice): void {
+    this.lines = lines;
+    this.applyLines();
+  }
+
+  private applyLines(): void {
+    if (!this.ready) return;
+    const show = (layers: readonly string[], visible: boolean) => {
+      for (const layer of layers) {
+        this.map.setLayoutProperty(layer, 'visibility', visible ? 'visible' : 'none');
+      }
+    };
+    show(LAYERS.regions, this.lines.regions);
+    show(LAYERS.dno, this.lines.dno);
+  }
+
   /**
    * Shows a selection made outside the map (for example from a card link) without raising
    * onSelect, and pans to the marker if it is drawn but off screen.
@@ -250,17 +377,16 @@ export class MapView {
   showSelection(selection: Selection | null): void {
     if (sameSelection(selection, this.selected)) return;
     this.selected = selection;
-    this.drawHighlight();
+    this.drawSelected();
     this.revealSelected();
   }
 
   /**
-   * Tells the map which parts of it are covered by the card or filter panel. The map can then
-   * pan far enough to show anything in the uncovered part, and keeps the selection in view.
+   * Tells the map which parts of it are covered by the card or filter panel, so it can keep the
+   * selection in the uncovered part.
    */
   setInsets(insets: Insets): void {
     this.insets = insets;
-    this.applyOffset();
     this.revealSelected();
   }
 
@@ -270,436 +396,191 @@ export class MapView {
    */
   playOnLoad(candidates: EventCandidate<EffectTarget>[]): void {
     const picked = pickOnLoad(candidates, (target) => this.isOnScreen(target.selection));
-    const now = performance.now();
-    picked.forEach((c, i) =>
-      this.addEffect(c.target.selection, c.kind, c.target.colour, now + i * STAGGER_MS),
-    );
+    picked.forEach((c, i) => {
+      const marker = this.find(c.target.selection);
+      if (marker) this.addEffect(marker, c.kind, c.target.colour, i * STAGGER_MS);
+    });
   }
 
   /**
    * Shows an event picked in the feed: if the marker is not drawn at this zoom because of the
-   * level's capacity floor, zooms in until it is, then plays the effect (if the event has one).
+   * band's capacity floor, zooms in to the first band that draws it, then plays the effect (if
+   * the event has one).
    */
   playEvent(selection: Selection, kind: EffectKind | null, colour: string): void {
-    if (!this.markers.some((m) => sameSelection(m, selection))) {
-      for (let level = this.level + 1; level < ZOOM_LEVELS.length; level++) {
-        this.zoomTo(level);
-        if (this.markers.some((m) => sameSelection(m, selection))) break;
-      }
-      this.revealSelected();
-    }
-    if (kind) this.addEffect(selection, kind, colour, performance.now());
-  }
-
-  private isOnScreen(selection: Selection): boolean {
-    const marker = this.markers.find((m) => sameSelection(m, selection));
-    if (!marker) return false;
-    const { left, top, size } = this.markerBox(marker);
-    const x = this.world.position.x + left + size / 2;
-    const y = this.world.position.y + top + size / 2;
-    const area = this.visibleArea;
-    return x >= area.left && x <= area.right && y >= area.top && y <= area.bottom;
-  }
-
-  private addEffect(selection: Selection, kind: EffectKind, colour: string, startAt: number): void {
-    this.effects.push({ selection, kind, colour, startAt });
-    if (this.effectTimer === undefined) {
-      this.effectTimer = window.setInterval(() => this.drawEffects(), FRAME_MS);
-    }
-    this.drawEffects();
-  }
-
-  /** Draws running effects; under reduced motion, a still outline instead of moving frames. */
-  private drawEffects(): void {
-    const now = performance.now();
-    const still = this.motionQuery.matches;
-    const length = still ? STILL_MS : FRAMES * FRAME_MS;
-    this.effects = this.effects.filter((e) => now - e.startAt < length);
-    const g = this.effectLayer.clear();
-    for (const effect of this.effects) {
-      if (now < effect.startAt) continue;
-      const marker = this.markers.find((m) => sameSelection(m, effect.selection));
-      if (!marker) continue;
-      const { left, top, size } = this.markerBox(marker);
-      const unit =
-        (marker.tier < FIRST_SPRITE_TIER
-          ? Math.max(1, Math.round(this.dpr))
-          : this.spritePixelSize(marker.tier)) / this.dpr;
-      const cx = left + size / 2;
-      const cy = top + size / 2;
-      const frame = Math.floor((now - effect.startAt) / FRAME_MS);
-      const pixels = still ? stillPixels() : effectPixels(effect.kind, frame);
-      for (const [px, py] of pixels) {
-        g.rect(
-          snap(cx + px * unit - unit / 2, this.dpr),
-          snap(cy + py * unit - unit / 2, this.dpr),
-          unit,
-          unit,
-        ).fill(effect.colour);
+    let marker = this.find(selection);
+    if (!marker) {
+      for (let band = this.band + 1; band < ZOOM_BANDS.length && !marker; band++) {
+        marker = this.build(band).find((m) => sameSelection(m, selection));
+        if (marker) {
+          this.fitted = false;
+          this.map.jumpTo({ center: marker.lonLat, zoom: ZOOM_BANDS[band].minZoom });
+          this.revealSelected();
+        }
       }
     }
-    if (this.effects.length === 0) {
-      window.clearInterval(this.effectTimer);
-      this.effectTimer = undefined;
-    }
-    this.requestRender();
-  }
-
-  /** Pans the selected marker into the uncovered part of the map if it is hidden or near an edge. */
-  private revealSelected(): void {
-    const marker = this.markers.find((m) => sameSelection(m, this.selected));
-    if (!marker) return;
-    const { left, top, size } = this.markerBox(marker);
-    const x = this.world.position.x + left + size / 2;
-    const y = this.world.position.y + top + size / 2;
-    const margin = 32;
-    const area = this.visibleArea;
-    const hidden =
-      x < area.left + margin ||
-      y < area.top + margin ||
-      x > area.right - margin ||
-      y > area.bottom - margin;
-    if (!hidden) return;
-    this.offset = {
-      x: (area.left + area.right) / 2 - (left + size / 2),
-      y: (area.top + area.bottom) / 2 - (top + size / 2),
-    };
-    this.applyOffset();
-  }
-
-  /** The part of the view not covered by panels, in CSS px. */
-  private get visibleArea(): { left: number; top: number; right: number; bottom: number } {
-    return {
-      left: this.insets.left,
-      top: this.insets.top,
-      right: this.view.width - this.insets.right,
-      bottom: this.view.height - this.insets.bottom,
-    };
+    if (marker && kind) this.addEffect(marker, kind, colour, 0);
   }
 
   select(selection: Selection | null): void {
     this.selected = selection;
-    this.drawHighlight();
+    this.drawSelected();
     this.events.onSelect(selection);
   }
 
-  private get cssPerCell(): number {
-    return physicalScale(ZOOM_LEVELS[this.level], this.national) / this.dpr;
+  private find(selection: Selection | null): Drawn | undefined {
+    return this.markers.find((m) => sameSelection(m, selection));
   }
 
-  /** CSS pixels per land texture cell at the current level. */
-  private get cssPerLandCell(): number {
-    const level = ZOOM_LEVELS[this.level];
-    return this.cssPerCell * (level.landMetres / level.cellMetres);
+  /** Where a marker's centre is drawn, in CSS px from the map's top-left corner. */
+  private screenPoint(marker: Drawn): Point {
+    const point = this.map.project(marker.lonLat);
+    const scale = markerScale(this.map.getZoom());
+    return { x: point.x + marker.offset[0] * scale, y: point.y + marker.offset[1] * scale };
   }
 
-  private get view(): { width: number; height: number } {
-    return { width: this.app.screen.width, height: this.app.screen.height };
-  }
-
-  private zoomTo(target: number, anchor?: Point): void {
-    const next = Math.max(0, Math.min(ZOOM_LEVELS.length - 1, target));
-    if (next === this.level) return;
-    const area = this.visibleArea;
-    const screen = anchor ?? { x: (area.left + area.right) / 2, y: (area.top + area.bottom) / 2 };
-    const bng = screenToBng(screen, this.offset, ZOOM_LEVELS[this.level], this.cssPerCell);
-    this.level = next;
-    this.offset = anchorOffset(screen, bng, ZOOM_LEVELS[next], this.cssPerCell);
-    this.render();
-    this.events.onLevelChange(next);
-  }
-
-  private resize(): void {
-    if (this.destroyed) return;
-    const { clientWidth: width, clientHeight: height } = this.host;
-    if (width === 0 || height === 0) return;
-    const centre = { x: this.view.width / 2, y: this.view.height / 2 };
-    const bng = screenToBng(centre, this.offset, ZOOM_LEVELS[this.level], this.cssPerCell);
-    this.app.renderer.resize(width, height);
-    this.national = nationalScale(width, height, this.dpr);
-    this.offset = anchorOffset(
-      { x: width / 2, y: height / 2 },
-      bng,
-      ZOOM_LEVELS[this.level],
-      this.cssPerCell,
-    );
-    this.render();
-  }
-
-  private render(): void {
-    this.land.texture = this.landTextures[this.landFor[this.level]];
-    this.land.scale.set(this.cssPerLandCell);
-    this.drawMarkers();
-    this.applyOffset();
-  }
-
-  private applyOffset(): void {
-    const level = this.grid.levels[this.landFor[this.level]];
-    this.offset = {
-      x: clampAxis(
-        this.offset.x,
-        level.cols * this.cssPerLandCell,
-        this.view.width,
-        this.insets.left,
-        this.insets.right,
-      ),
-      y: clampAxis(
-        this.offset.y,
-        level.rows * this.cssPerLandCell,
-        this.view.height,
-        this.insets.top,
-        this.insets.bottom,
-      ),
-    };
-    this.world.position.set(snap(this.offset.x, this.dpr), snap(this.offset.y, this.dpr));
-    this.requestRender();
-  }
-
-  /** Physical pixels per sprite art pixel. The largest tier doubles, except on the national view. */
-  private spritePixelSize(tier: number): number {
-    const doubled = tier > FIRST_SPRITE_TIER && this.level > 0;
-    return Math.max(1, Math.round(this.dpr)) * (doubled ? 2 : 1);
-  }
-
-  /** Drawn size of a marker of this tier, in CSS pixels. */
-  private markerSize(tier: number): number {
-    return tier < FIRST_SPRITE_TIER
-      ? Math.max(2, Math.round(DOT_SIZES[tier] * this.dpr)) / this.dpr
-      : (TILE_SIZE * this.spritePixelSize(tier)) / this.dpr;
-  }
-
-  private markerBox(marker: Marker): { left: number; top: number; size: number } {
-    const size = this.markerSize(marker.tier);
-    const css = this.cssPerCell;
-    // Markers sharing a substation fan out by the largest one's size plus a pixel's gap.
-    const step = marker.spread ? this.markerSize(marker.spread.tier) + 1 : 0;
+  /** The part of the view not covered by panels, in CSS px. */
+  private get visibleArea(): { left: number; top: number; right: number; bottom: number } {
+    const canvas = this.map.getContainer();
     return {
-      left: snap((marker.col + 0.5) * css - size / 2 + (marker.spread?.dx ?? 0) * step, this.dpr),
-      top: snap((marker.row + 0.5) * css - size / 2 + (marker.spread?.dy ?? 0) * step, this.dpr),
-      size,
+      left: this.insets.left,
+      top: this.insets.top,
+      right: canvas.clientWidth - this.insets.right,
+      bottom: canvas.clientHeight - this.insets.bottom,
     };
+  }
+
+  private isOnScreen(selection: Selection): boolean {
+    const marker = this.find(selection);
+    if (!marker) return false;
+    const { x, y } = this.screenPoint(marker);
+    const area = this.visibleArea;
+    return x >= area.left && x <= area.right && y >= area.top && y <= area.bottom;
+  }
+
+  /** Pans the selected marker into the uncovered part of the map if it is hidden or near an edge. */
+  private revealSelected(): void {
+    const marker = this.find(this.selected);
+    if (!marker) return;
+    const { x, y } = this.screenPoint(marker);
+    const area = this.visibleArea;
+    const hidden =
+      x < area.left + REVEAL_MARGIN ||
+      y < area.top + REVEAL_MARGIN ||
+      x > area.right - REVEAL_MARGIN ||
+      y > area.bottom - REVEAL_MARGIN;
+    if (!hidden) return;
+    this.fitted = false;
+    this.map.panBy([x - (area.left + area.right) / 2, y - (area.top + area.bottom) / 2], {
+      duration: this.motionQuery.matches ? 0 : 300,
+    });
+  }
+
+  /** Plays an effect around a marker, in the new stage's colour, after `delay` ms. */
+  private addEffect(marker: Drawn, kind: EffectKind, colour: string, delay: number): void {
+    const element = document.createElement('div');
+    const size = MARKER_SIZES[marker.tier];
+    element.className = `map-effect map-effect-${kind.replaceAll('_', '-')}`;
+    element.style.setProperty('--effect-colour', colour);
+    element.style.setProperty('--effect-size', `${size}px`);
+    element.style.setProperty('--effect-delay', `${delay}ms`);
+    const effect = {
+      marker: new MapMarker({ element, offset: marker.offset as PointLike })
+        .setLngLat(marker.lonLat)
+        .addTo(this.map),
+      timer: window.setTimeout(
+        () => {
+          effect.marker.remove();
+          this.effects.delete(effect);
+        },
+        delay + (this.motionQuery.matches ? STILL_MS : EFFECT_MS),
+      ),
+    };
+    this.effects.add(effect);
+  }
+
+  /** Markers for a zoom band, with their map positions. */
+  private build(band: number): Drawn[] {
+    return buildMarkers(this.projects, ZOOM_BANDS[band], this.include)
+      .concat(buildLinkMarkers(this.links, ZOOM_BANDS[band], this.includeLink))
+      .map((marker) => ({
+        ...marker,
+        lonLat: bngToLonLat(marker.x, marker.y),
+        offset: spreadOffset(marker),
+      }));
   }
 
   private drawMarkers(): void {
-    const landIndex = this.landFor[this.level];
-    const gridLevel = this.grid.levels[landIndex];
-    this.markers = buildMarkers(
-      this.projects,
-      ZOOM_LEVELS[this.level],
-      { cells: this.landCells[landIndex], cols: gridLevel.cols, rows: gridLevel.rows },
-      this.include,
-    ).concat(buildLinkMarkers(this.links, ZOOM_LEVELS[this.level], this.includeLink));
-    this.cables = this.links.flatMap((link, i) => {
-      if (!link.gbEnd || !link.partnerEnd || !link.stage || !this.includeLink(i)) return [];
-      const cells = cableCells(
-        link.gbEnd,
-        link.partnerEnd,
-        gridLevel,
-        gridLevel.cols,
-        gridLevel.rows,
-      );
-      return [
-        { cells, stage: link.stage, direction: pulseDirection(link.stage, this.flows?.[link.id]) },
-      ];
+    if (!this.ready) return;
+    this.markers = this.build(this.band);
+    this.hasTurbines = this.markers.some(
+      (m) => m.kind === 'wind' && m.stage === 'operational' && m.tier >= FIRST_BADGE_TIER,
+    );
+    this.source(SOURCES.markers).setData({
+      type: 'FeatureCollection',
+      features: this.markers.map((marker) => pointFeature(marker, iconName(marker))),
     });
     this.drawCables();
-    const outline = 1 / this.dpr;
-    const g = this.markerLayer.clear();
-    for (const child of this.spriteLayer.removeChildren()) child.destroy();
-    this.turbines = [];
-    for (const marker of this.markers) {
-      const { left, top, size } = this.markerBox(marker);
-      if (marker.tier < FIRST_SPRITE_TIER) {
-        g.rect(left - outline, top - outline, size + 2 * outline, size + 2 * outline).fill(
-          spriteInk,
-        );
-        g.rect(left, top, size, size).fill(stageColours[marker.stage]);
-        continue;
-      }
-      const pixelSize = this.spritePixelSize(marker.tier);
-      const sprite = new Sprite(tileTexture(marker.kind, this.spinFrame, marker.stage, pixelSize));
-      sprite.scale.set(1 / this.dpr);
-      sprite.position.set(left, top);
-      this.spriteLayer.addChild(sprite);
-      if (marker.kind === 'wind' && marker.stage === 'operational') {
-        this.turbines.push({ sprite, marker, pixelSize });
-      }
-    }
-    this.drawHighlight();
+    this.drawSelected();
   }
 
-  /** Dashed pixel cables, pulsing in the direction power is flowing. */
+  /** Dashed cables from each landing point to the partner end, in the stage's colour. */
   private drawCables(): void {
-    const g = this.cableLayer.clear();
-    // Cables are drawn on the land grid, so they stay a sensible number of cells long.
-    const css = this.cssPerLandCell;
-    for (const cable of this.cables) {
-      const phase = this.pulsePhase * cable.direction;
-      for (const { col, row, step } of cable.cells) {
-        if (step === 0 || !isDash(step, phase)) continue;
-        g.rect(col * css, row * css, css, css).fill(stageColours[cable.stage]);
-      }
-    }
-    this.requestRender();
+    if (!this.ready) return;
+    const features = this.links.flatMap((link, i) => {
+      if (!link.gbEnd || !link.partnerEnd || !link.stage || !this.includeLink(i)) return [];
+      return [
+        {
+          type: 'Feature' as const,
+          properties: {
+            colour: stageColours[link.stage],
+            direction: pulseDirection(link.stage, this.flows?.[link.id]),
+          },
+          geometry: {
+            type: 'LineString' as const,
+            coordinates: [
+              bngToLonLat(link.gbEnd.x, link.gbEnd.y),
+              bngToLonLat(link.partnerEnd.x, link.partnerEnd.y),
+            ],
+          },
+        },
+      ];
+    });
+    this.hasMovingCables = features.some((f) => f.properties.direction !== 0);
+    this.source(SOURCES.cables).setData({ type: 'FeatureCollection', features });
   }
 
-  private drawHighlight(): void {
-    const g = this.highlight.clear();
-    const marker = this.markers.find((m) => sameSelection(m, this.selected));
-    if (!marker) {
-      this.requestRender();
-      return;
-    }
-    const { left, top, size } = this.markerBox(marker);
-    const gap = 2 / this.dpr;
-    const width = Math.max(1, Math.round(this.dpr)) / this.dpr;
-    g.rect(
-      left - gap - width,
-      top - gap - width,
-      size + 2 * (gap + width),
-      size + 2 * (gap + width),
-    ).stroke({ color: palette.ink, width, alignment: 1 });
-    this.requestRender();
+  private drawSelected(): void {
+    if (!this.ready) return;
+    const marker = this.find(this.selected);
+    this.source(SOURCES.selection).setData({
+      type: 'FeatureCollection',
+      features: marker ? [pointFeature(marker, `selection-${marker.tier}`)] : [],
+    });
   }
 
-  /** Topmost marker within reach of a screen point. */
+  private source(id: string): GeoJSONSource {
+    return this.map.getSource(id) as GeoJSONSource;
+  }
+
+  /** The marker nearest a screen point, if one is within reach. */
   private markerAt(screen: Point): Selection | null {
-    const x = screen.x - this.world.position.x;
-    const y = screen.y - this.world.position.y;
-    let best: Selection | null = null;
+    let best: Drawn | null = null;
     let bestDistance = Infinity;
-    for (let i = this.markers.length - 1; i >= 0; i--) {
-      const { left, top, size } = this.markerBox(this.markers[i]);
-      const reach = Math.max(size / 2, TAP_REACH);
-      const dx = Math.abs(x - (left + size / 2));
-      const dy = Math.abs(y - (top + size / 2));
+    const scale = markerScale(this.map.getZoom());
+    // Markers are sorted smallest first, so on a tie the one drawn on top wins.
+    for (const marker of this.markers) {
+      const centre = this.screenPoint(marker);
+      const reach = Math.max((MARKER_SIZES[marker.tier] * scale) / 2, TAP_REACH);
+      const dx = Math.abs(screen.x - centre.x);
+      const dy = Math.abs(screen.y - centre.y);
       if (dx > reach || dy > reach) continue;
       const distance = dx * dx + dy * dy;
-      if (distance < bestDistance) {
+      if (distance <= bestDistance) {
         bestDistance = distance;
-        best = { source: this.markers[i].source, index: this.markers[i].index };
+        best = marker;
       }
     }
-    return best;
-  }
-
-  private bindInput(): void {
-    const canvas = this.app.canvas;
-    canvas.style.touchAction = 'none';
-    const local = (event: PointerEvent | WheelEvent): Point => {
-      const rect = canvas.getBoundingClientRect();
-      return { x: event.clientX - rect.left, y: event.clientY - rect.top };
-    };
-
-    canvas.addEventListener('pointerdown', (event) => {
-      canvas.setPointerCapture(event.pointerId);
-      this.pointers.set(event.pointerId, local(event));
-      if (this.pointers.size === 1) {
-        this.dragStart = local(event);
-        this.dragMoved = false;
-      } else if (this.pointers.size === 2) {
-        this.pinchDistance = this.pointerSpread();
-        this.dragMoved = true;
-      }
-    });
-
-    canvas.addEventListener('pointermove', (event) => {
-      const previous = this.pointers.get(event.pointerId);
-      if (!previous) return;
-      const point = local(event);
-      this.pointers.set(event.pointerId, point);
-
-      if (this.pointers.size === 1 && this.dragStart) {
-        if (Math.hypot(point.x - this.dragStart.x, point.y - this.dragStart.y) > TAP_SLOP) {
-          this.dragMoved = true;
-        }
-        if (this.dragMoved) {
-          this.offset = {
-            x: this.offset.x + point.x - previous.x,
-            y: this.offset.y + point.y - previous.y,
-          };
-          this.applyOffset();
-        }
-      } else if (this.pointers.size === 2) {
-        const spread = this.pointerSpread();
-        const ratio = spread / this.pinchDistance;
-        if (ratio > PINCH_STEP || ratio < 1 / PINCH_STEP) {
-          this.zoomTo(this.level + (ratio > 1 ? 1 : -1), this.pointerMidpoint());
-          this.pinchDistance = spread;
-        }
-      }
-    });
-
-    const release = (event: PointerEvent) => {
-      if (!this.pointers.has(event.pointerId)) return;
-      this.pointers.delete(event.pointerId);
-      if (this.pointers.size === 0) {
-        if (!this.dragMoved && event.type === 'pointerup') this.select(this.markerAt(local(event)));
-        this.dragStart = null;
-      }
-    };
-    canvas.addEventListener('pointerup', release);
-    canvas.addEventListener('pointercancel', release);
-
-    canvas.addEventListener(
-      'wheel',
-      (event) => {
-        event.preventDefault();
-        const now = performance.now();
-        if (now - this.lastWheel < WHEEL_COOLDOWN || event.deltaY === 0) return;
-        this.lastWheel = now;
-        this.zoomTo(this.level + (event.deltaY < 0 ? 1 : -1), local(event));
-      },
-      { passive: false },
-    );
-
-    this.host.addEventListener(
-      'keydown',
-      (event) => {
-        const step = 0.25;
-        const pan = (dx: number, dy: number) => {
-          this.offset = { x: this.offset.x + dx, y: this.offset.y + dy };
-          this.applyOffset();
-        };
-        switch (event.key) {
-          case '+':
-          case '=':
-            this.zoomIn();
-            break;
-          case '-':
-            this.zoomOut();
-            break;
-          case 'ArrowLeft':
-            pan(this.view.width * step, 0);
-            break;
-          case 'ArrowRight':
-            pan(-this.view.width * step, 0);
-            break;
-          case 'ArrowUp':
-            pan(0, this.view.height * step);
-            break;
-          case 'ArrowDown':
-            pan(0, -this.view.height * step);
-            break;
-          case 'Escape':
-            this.select(null);
-            break;
-          default:
-            return;
-        }
-        event.preventDefault();
-      },
-      { signal: this.hostListeners.signal },
-    );
-  }
-
-  private pointerSpread(): number {
-    const [a, b] = [...this.pointers.values()];
-    return Math.hypot(a.x - b.x, a.y - b.y);
-  }
-
-  private pointerMidpoint(): Point {
-    const [a, b] = [...this.pointers.values()];
-    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    return best && { source: best.source, index: best.index };
   }
 }

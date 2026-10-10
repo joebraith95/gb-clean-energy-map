@@ -1,28 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FRAMES, effectPixels, pickOnLoad, stillPixels, type EventCandidate } from './animations';
-
-describe('effect frames', () => {
-  it('draws something for every frame of each effect except construction blinks', () => {
-    for (let frame = 0; frame < FRAMES; frame++) {
-      expect(effectPixels('consented', frame).length).toBeGreaterThan(0);
-      expect(effectPixels('operational', frame).length).toBe(16);
-      expect(effectPixels('construction_started', frame).length).toBe(frame % 2 ? 0 : 20);
-    }
-  });
-
-  it('expands the consent ring and stops after the last frame', () => {
-    const radius = (frame: number) => Math.max(...effectPixels('consented', frame).map(([x]) => x));
-    expect(radius(1)).toBeGreaterThan(radius(0));
-    expect(effectPixels('consented', FRAMES)).toEqual([]);
-  });
-
-  it('keeps effects clear of a single-size sprite tile', () => {
-    // A 9px tile reaches 4 art pixels from its centre.
-    for (const pixel of [...effectPixels('consented', 0), ...stillPixels()]) {
-      expect(Math.max(Math.abs(pixel[0]), Math.abs(pixel[1]))).toBeGreaterThan(4);
-    }
-  });
-});
+import { pickOnLoad, type EventCandidate } from './animations';
 
 describe('pickOnLoad', () => {
   const candidate = (target: number, date: string, mw: number): EventCandidate<number> => ({

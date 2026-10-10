@@ -1,20 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { TextureStyle } from 'pixi.js';
 import type { Interconnector } from '../data/interconnectors';
 import type { ProjectIndex } from '../data/projects';
 import { ZoomControls } from '../ui/ZoomControls';
 import type { EffectKind, EventCandidate } from './animations';
-import type { GridFile } from './grid';
-import { ZOOM_LEVELS } from './levels';
+import { ZOOM_BANDS } from './levels';
 import type { Selection } from './markers';
-import { MapView, type EffectTarget } from './MapView';
+import { MapView, type EffectTarget, type LineChoice } from './MapView';
 import { useOverlayInsets } from './useOverlayInsets';
 
-// Pixel-perfect rendering: nearest-neighbour sampling for every texture.
-TextureStyle.defaultOptions.scaleMode = 'nearest';
+const MAP_LABEL =
+  'Map of clean energy projects in Great Britain. Use plus and minus to zoom and the arrow keys to pan.';
 
 interface Props {
-  grid: GridFile;
   projects: ProjectIndex;
   links: Interconnector[];
   /** Filter predicates; new functions redraw the markers. */
@@ -28,11 +25,12 @@ interface Props {
   play: { selection: Selection; kind: EffectKind | null; colour: string } | null;
   /** Live interconnector flows in MW (positive means importing), or null when unknown. */
   flows: Record<string, number> | null;
+  /** Which sets of region lines are drawn. */
+  lines: LineChoice;
 }
 
-/** Mounts the PixiJS map. React owns the UI around it; MapView owns the canvas. */
+/** Mounts the map. React owns the UI around it; MapView owns the canvas. */
 export function MapCanvas({
-  grid,
   projects,
   links,
   include,
@@ -42,19 +40,20 @@ export function MapCanvas({
   openingEvents,
   play,
   flows,
+  lines,
 }: Props) {
   const frameRef = useRef<HTMLDivElement>(null);
   const hostRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<MapView | null>(null);
   const insets = useOverlayInsets(frameRef);
-  const latest = useRef({ include, includeLink, selected, onSelect, insets });
-  const [level, setLevel] = useState(0);
+  const latest = useRef({ include, includeLink, selected, onSelect, insets, lines });
+  const [zoom, setZoom] = useState({ band: 0, canZoomIn: true, canZoomOut: true });
   const [ready, setReady] = useState(false);
   const openingPlayed = useRef(false);
 
   useEffect(() => {
-    latest.current = { include, includeLink, selected, onSelect, insets };
-  }, [include, includeLink, selected, onSelect, insets]);
+    latest.current = { include, includeLink, selected, onSelect, insets, lines };
+  }, [include, includeLink, selected, onSelect, insets, lines]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -62,16 +61,23 @@ export function MapCanvas({
     let cancelled = false;
     let view: MapView | null = null;
 
-    MapView.create(host, grid, projects, links, {
-      onSelect: (selection) => latest.current.onSelect(selection),
-      onLevelChange: setLevel,
-    }).then((created) => {
+    MapView.create(
+      host,
+      projects,
+      links,
+      {
+        onSelect: (selection) => latest.current.onSelect(selection),
+        onZoomChange: setZoom,
+      },
+      MAP_LABEL,
+    ).then((created) => {
       if (cancelled) {
         created.destroy();
         return;
       }
       view = created;
       viewRef.current = created;
+      created.setLines(latest.current.lines);
       created.setFilter(latest.current.include, latest.current.includeLink);
       created.showSelection(latest.current.selected);
       created.setInsets(latest.current.insets);
@@ -84,7 +90,7 @@ export function MapCanvas({
       viewRef.current = null;
       setReady(false);
     };
-  }, [grid, projects, links]);
+  }, [projects, links]);
 
   useEffect(() => {
     viewRef.current?.setFilter(include, includeLink);
@@ -93,6 +99,10 @@ export function MapCanvas({
   useEffect(() => {
     viewRef.current?.showSelection(selected);
   }, [selected]);
+
+  useEffect(() => {
+    viewRef.current?.setLines(lines);
+  }, [lines]);
 
   // The opening sequence plays once, as soon as both the map and the change list are ready.
   useEffect(() => {
@@ -116,16 +126,11 @@ export function MapCanvas({
 
   return (
     <div ref={frameRef} className="map-frame">
-      <div
-        ref={hostRef}
-        className="map-host"
-        tabIndex={0}
-        role="application"
-        aria-label="Map of clean energy projects in Great Britain. Use plus and minus to zoom and the arrow keys to pan."
-      />
+      <div ref={hostRef} className="map-host" />
       <ZoomControls
-        level={level}
-        levels={ZOOM_LEVELS.length}
+        name={ZOOM_BANDS[zoom.band].name}
+        canZoomIn={zoom.canZoomIn}
+        canZoomOut={zoom.canZoomOut}
         onZoomIn={() => viewRef.current?.zoomIn()}
         onZoomOut={() => viewRef.current?.zoomOut()}
       />

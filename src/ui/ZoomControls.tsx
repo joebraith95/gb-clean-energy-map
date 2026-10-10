@@ -1,22 +1,22 @@
-import { LEVEL_NAMES } from '../map/levels';
-
 interface Props {
-  level: number;
-  levels: number;
+  /** Name of the current zoom band, for example "Regional". */
+  name: string;
+  canZoomIn: boolean;
+  canZoomOut: boolean;
   onZoomIn: () => void;
   onZoomOut: () => void;
 }
 
-export function ZoomControls({ level, levels, onZoomIn, onZoomOut }: Props) {
+export function ZoomControls({ name, canZoomIn, canZoomOut, onZoomIn, onZoomOut }: Props) {
   return (
     <div className="zoom-controls" role="group" aria-label="Zoom">
-      <button type="button" onClick={onZoomIn} disabled={level >= levels - 1} aria-label="Zoom in">
+      <button type="button" onClick={onZoomIn} disabled={!canZoomIn} aria-label="Zoom in">
         +
       </button>
       <span className="zoom-level" aria-live="polite">
-        {LEVEL_NAMES[level]}
+        {name}
       </span>
-      <button type="button" onClick={onZoomOut} disabled={level <= 0} aria-label="Zoom out">
+      <button type="button" onClick={onZoomOut} disabled={!canZoomOut} aria-label="Zoom out">
         −
       </button>
     </div>

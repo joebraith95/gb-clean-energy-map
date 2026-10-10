@@ -1,10 +1,7 @@
-@import '@fontsource/press-start-2p/400.css';
 @import '@fontsource/atkinson-hyperlegible/400.css';
 @import '@fontsource/atkinson-hyperlegible/700.css';
 
 :root {
-  /* Pixel font for titles and headings only. */
-  --font-pixel: 'Press Start 2P', monospace;
-  /* All numbers and card text. */
+  /* One clear typeface for everything: headings, numbers and card text. */
   --font-body: 'Atkinson Hyperlegible', system-ui, sans-serif;
 }
